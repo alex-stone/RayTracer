@@ -13,14 +13,17 @@
 Scene::Scene() {
     setDefaultCoordinates();
     setDefaultImageSize(); 
+    setDefaultSampleFilm(); 
 }
 
 Scene::Scene(int h, int w) {
     setDefaultCoordinates();
     if (isValidDimensions(h, w)) {
         setImageSize(h, w);
+	initializeSampleFilm(h, w);
     } else {
         setDefaultImageSize();
+	setDefaultSampleFilm();
     }
 }
 
@@ -29,8 +32,10 @@ Scene::Scene(Coordinate ep, Coordinate UL, Coordinate UR, Coordinate LR, Coordin
     setCorners(UL, UR, LR, LL);
     if (isValidDimensions(h, w)) {
         setImageSize(h, w);
+	initializeSampleFilm(h, w);
     } else {
         setDefaultImageSize();
+	setDefaultSampleFilm();
     }
 }
 
@@ -52,8 +57,14 @@ void Scene::setImageSize(int h, int w) {
     }
 }
 
-void Scene::initializeSampler(int h, int w) {
+void Scene::initializeSampleFilm(int h, int w) {
     sceneSampler = new Sampler(h, w);
+    sceneFilm = new Film(h, w);
+}
+
+void Scene::setDefaultSampleFilm() {
+    sceneSampler = new Sampler(480, 640);
+    sceneFilm = new Film(480, 640);
 }
 
 void Scene::setDefaultCoordinates() {

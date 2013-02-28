@@ -16,6 +16,15 @@ class Scene {
     int pixelWidth;
     
     Sampler sceneSampler;
+    Film sceneFilm;
+
+    void initializeSampleFilm(int h, int w);
+
+    void setDefaultSampleFilm();
+    void setDefaultCoordinates();
+    void setDefaultImageSize();
+
+    bool isValidDimensions(int h, int w);
 
   public:
     Scene();
@@ -26,11 +35,6 @@ class Scene {
     void setCorners(Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL);
     void setImageSize(int height, int width);
 
-    void initializeSampler(int h, int w);
-
-    void setDefaultCoordinates();
-    void setDefaultImageSize();
-
     Coordinate getUL() {return upperLeft; }
     Coordinate getUR() {return upperRight; }
     Coordinate getLR() {return lowerRight; }
@@ -38,7 +42,5 @@ class Scene {
 
     int getHeight {return pixelHeight; }
     int getWidth {return pixelWidth; }
-
-    bool isValidDimensions(int h, int w);
 
 }
