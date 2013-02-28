@@ -10,7 +10,7 @@ class Scene {
     Coordinate lowerLeft;
     int pixelHeight;
     int pixelWidth;
-    
+
   public:
     Scene();
     Scene(int h, int w);
@@ -28,8 +28,9 @@ class Scene {
     Coordinate getLR() {return lowerRight; }
     Coordinate getLL() {return lowerLeft; }
 
-
     int getHeight {return pixelHeight; }
     int getWidth {return pixelWidth; }
+
+    bool isValidDimensions(int h, int w);
 
 }

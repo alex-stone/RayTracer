@@ -16,14 +16,21 @@ Scene::Scene() {
 
 Scene::Scene(int h, int w) {
     setDefaultCoordinates();
-    setImageSize(h, w);
+    if (isValidDimensions(h, w)) {
+        setImageSize(h, w);
+    } else {
+        setDefaultImageSize();
+    }
 }
 
 Scene::Scene(Coordinate ep, Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL, int h, int w) {
     setEyePosition(ep);
     setCorners(UL, UR, LR, LL);
-    setImageSize(h, w,);
-
+    if (isValidDimensions(h, w)) {
+        setImageSize(h, w);
+    } else {
+        setDefaultImageSize();
+    }
 }
 
 void Scene::setEyePosition(Coordinate ep) {
@@ -38,8 +45,27 @@ void Scene::setCorners(Coordinate UL, Coordinate UR, Coordinate LR, Coordinate L
 }
 
 void Scene::setImageSize(int h, int w) {
-    pixelHeight = h;
-    pixelWidth = w;
+    if (isValidDimensions(h, w)) {
+        pixelHeight = h;
+        pixelWidth = w;
+    }
+}
+
+void setDefaultCoordinates() {
+    ep = new Coordinate(0, 0, 0);
+    upperLeft = new Coordinate(-1, 1, -1);
+    upperRight = new Coordinate(1, 1, -1);
+    lowerRight = new Coordinate(1, -1, -1);
+    lowerLeft= new Coordinate(-1, -1, -1);
+}
+
+void setDefaultImageSize() {
+    pixelHeight = 480;
+    pixelWidth = 640;
+}
+
+bool isValidDimensions(int h, int w) {
+    return (h >= 480 && h <= 2000) && (w >= 640 && w<= 2000);
 }
 
 
