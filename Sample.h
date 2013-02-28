@@ -2,14 +2,14 @@
 
 class Sample {
   private:
-    float x, y;
+    int x, y;
 
   public:
     Sample();
-    Sample(float a, float b);
+    Sample(int a, int b);
     
-    void getX() {return x; }
-    void getY() {return y; }
+    int getX() {return x; }
+    int getY() {return y; }
 
     // No Set Functions, because a Sample's don't change coordinates
 }

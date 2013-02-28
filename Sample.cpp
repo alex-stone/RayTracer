@@ -9,10 +9,10 @@ using namespace std;
 //****************************************************
 
 Sample::Sample() {
-  x = 0.0f;
-  y = 0.0f;
+  x = 0;
+  y = 0;
 }
-Sample::Sample(float a, float b) {
+Sample::Sample(int a, int b) {
   x = a;
   y = b;  
 }
