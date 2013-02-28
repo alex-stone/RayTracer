@@ -1,14 +1,44 @@
 
 #include <iostream>
 
+#include "Scene.h"
+
 #include <time.h>
 #include <math.h>
 
 
-class Scene {
-  public:
-    Coordinate eyePosition;
-    Coordinate UL, UR, LR, LL;
-
+// Scene Constructor
+Scene::Scene() {
+    setDefaultCoordinates();
+    setDefaultImageSize(); 
 
 }
+
+Scene::Scene(int h, int w) {
+    setDefaultCoordinates();
+    setImageSize(h, w);
+}
+
+Scene::Scene(Coordinate ep, Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL, int h, int w) {
+    setEyePosition(ep);
+    setCorners(UL, UR, LR, LL);
+    setImageSize(h, w,);
+
+}
+
+void Scene::setEyePosition(Coordinate ep) {
+    eyePosition = ep;
+}
+
+void Scene::setCorners(Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL) {
+    upperLeft = UL;
+    upperRight = UR;
+    lowerRight = LR;
+    lowerLeft = LL;
+}
+
+void Scene::setImageSize(int h, int w) {
+    pixelHeight = h;
+    pixelWidth = w;
+}
+
