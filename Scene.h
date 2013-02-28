@@ -1,6 +1,10 @@
 
 #include <iostream>
 
+//****************************************************
+// Scene Header Definition
+//****************************************************
+
 class Scene {
   private:
     Coordinate eyePosition;
@@ -10,6 +14,8 @@ class Scene {
     Coordinate lowerLeft;
     int pixelHeight;
     int pixelWidth;
+    
+    Sampler sceneSampler;
 
   public:
     Scene();
@@ -19,6 +25,8 @@ class Scene {
     void setEyePosition(Coordinate ep); 
     void setCorners(Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL);
     void setImageSize(int height, int width);
+
+    void initializeSampler(int h, int w);
 
     void setDefaultCoordinates();
     void setDefaultImageSize();

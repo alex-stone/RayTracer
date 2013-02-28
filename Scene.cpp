@@ -6,12 +6,13 @@
 #include <time.h>
 #include <math.h>
 
+//****************************************************
+// Scene Class 
+//****************************************************
 
-// Scene Constructor
 Scene::Scene() {
     setDefaultCoordinates();
     setDefaultImageSize(); 
-
 }
 
 Scene::Scene(int h, int w) {
@@ -51,7 +52,11 @@ void Scene::setImageSize(int h, int w) {
     }
 }
 
-void setDefaultCoordinates() {
+void Scene::initializeSampler(int h, int w) {
+    sceneSampler = new Sampler(h, w);
+}
+
+void Scene::setDefaultCoordinates() {
     ep = new Coordinate(0, 0, 0);
     upperLeft = new Coordinate(-1, 1, -1);
     upperRight = new Coordinate(1, 1, -1);
@@ -59,12 +64,12 @@ void setDefaultCoordinates() {
     lowerLeft= new Coordinate(-1, -1, -1);
 }
 
-void setDefaultImageSize() {
+void Scene::setDefaultImageSize() {
     pixelHeight = 480;
     pixelWidth = 640;
 }
 
-bool isValidDimensions(int h, int w) {
+bool Scene::isValidDimensions(int h, int w) {
     return (h >= 480 && h <= 2000) && (w >= 640 && w<= 2000);
 }
 
