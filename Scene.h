@@ -10,7 +10,7 @@ class Scene {
     Coordinate lowerLeft;
     int pixelHeight;
     int pixelWidth;
-
+    
   public:
     Scene();
     Scene(int h, int w);
@@ -19,6 +19,9 @@ class Scene {
     void setEyePosition(Coordinate ep); 
     void setCorners(Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL);
     void setImageSize(int height, int width);
+
+    void setDefaultCoordinates();
+    void setDefaultImageSize();
 
     Coordinate getUL() {return upperLeft; }
     Coordinate getUR() {return upperRight; }
