@@ -42,3 +42,19 @@ void Scene::setImageSize(int h, int w) {
     pixelWidth = w;
 }
 
+
+//****************************************************
+// Main Render Loop
+// 	Sampler   - Generate Sample
+// 	Camera    - Generate Ray
+// 	RayTracer - Calculate Color
+//	Film      - Commit that Color to that Sample
+//****************************************************
+
+
+
+
+
+
+
+
