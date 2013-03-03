@@ -1,5 +1,7 @@
-#include <iostream>
+#ifndef VECTOR_H
+#define VECTOR_H
 
+#include <iostream>
 
 //****************************************************
 // Vector Header Definition
@@ -26,3 +28,5 @@ class Vector {
     float dot(Vector v);
 
 };
+
+#endif
