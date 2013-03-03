@@ -1,4 +1,11 @@
-#include <iostream>
+#ifndef SAMPLER_H
+#define SAMPLER_H
+
+#include "Sample.h"
+
+//****************************************************
+// Sampler Header Definition
+//****************************************************
 
 class Sampler {
   private:
@@ -14,4 +21,6 @@ class Sampler {
     Sample getNextSample();
     Sample getSample(int x, int y);
 
-}
+};
+
+#endif
