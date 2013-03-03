@@ -13,19 +13,18 @@
 
 class Camera {
   private:
-    Coordinate eyePosition;
-    Coordinate upperLeft;
-    Coordinate upperRight;
-    Coordinate lowerRight;
-    Coordinate lowerLeft;
+    Coordinate* eyePosition;
+    Coordinate* upperLeft;
+    Coordinate* upperRight;
+    Coordinate* lowerRight;
+    Coordinate* lowerLeft;
 
     int pixelHeight;
     int pixelWidth;
 
   public:
     Camera();
-    Camera(Coordinate ep, Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL, int h, int w);
-
+    Camera(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
 
     Vector pixelToVector(int x, int y);
 

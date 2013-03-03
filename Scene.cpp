@@ -2,6 +2,9 @@
 #include <iostream>
 
 #include "Scene.h"
+#include "Sampler.h"
+#include "Coordinate.h"
+#include "Film.h"
 
 #include <time.h>
 #include <math.h>
@@ -27,7 +30,7 @@ Scene::Scene(int h, int w) {
     }
 }
 
-Scene::Scene(Coordinate ep, Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL, int h, int w) {
+Scene::Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w) {
     setEyePosition(ep);
     setCorners(UL, UR, LR, LL);
     if (isValidDimensions(h, w)) {
@@ -39,11 +42,11 @@ Scene::Scene(Coordinate ep, Coordinate UL, Coordinate UR, Coordinate LR, Coordin
     }
 }
 
-void Scene::setEyePosition(Coordinate ep) {
+void Scene::setEyePosition(Coordinate* ep) {
     eyePosition = ep;
 }
 
-void Scene::setCorners(Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL) {
+void Scene::setCorners(Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL) {
     upperLeft = UL;
     upperRight = UR;
     lowerRight = LR;
@@ -68,7 +71,7 @@ void Scene::setDefaultSampleFilm() {
 }
 
 void Scene::setDefaultCoordinates() {
-    ep = new Coordinate(0, 0, 0);
+    eyePosition = new Coordinate(0, 0, 0);
     upperLeft = new Coordinate(-1, 1, -1);
     upperRight = new Coordinate(1, 1, -1);
     lowerRight = new Coordinate(1, -1, -1);
@@ -92,6 +95,21 @@ bool Scene::isValidDimensions(int h, int w) {
 // 	RayTracer - Calculate Color
 //	Film      - Commit that Color to that Sample
 //****************************************************
+
+
+
+//****************************************************
+// Main Loop
+//****************************************************
+int main(int argc, char *argv[]) {
+    Scene* temp = new Scene();
+
+     
+
+}
+
+
+
 
 
 

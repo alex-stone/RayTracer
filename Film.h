@@ -2,6 +2,7 @@
 #define FILM_H
 
 #include "Color.h"
+#include "Sample.h"
 
 //****************************************************
 // Film Header Definition
@@ -11,7 +12,7 @@ class Film {
   private:
     int pixelHeight;
     int pixelWidth;
-    Color[][] pixelBucket;
+    Color** pixelBucket;
 
   public:
     Film();
