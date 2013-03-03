@@ -8,8 +8,8 @@ class Sample {
     Sample();
     Sample(int a, int b);
     
-    int getX() {return x; }
-    int getY() {return y; }
+    int getX() {return x; };
+    int getY() {return y; };
 
     // No Set Functions, because a Sample's don't change coordinates
 };
