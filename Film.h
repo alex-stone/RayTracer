@@ -1,4 +1,6 @@
 #include <iostream>
+#include "Color.h"
+#include "Sample.h"
 
 class Film {
   private:
@@ -15,4 +17,4 @@ class Film {
     void commit(Sample samp, Color color); 
     void writeImage();
 
-}
+};

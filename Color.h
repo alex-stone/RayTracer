@@ -19,5 +19,5 @@ class Color {
 
     float clipValue(float x);
 
-}
+};
 

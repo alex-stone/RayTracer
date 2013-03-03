@@ -25,4 +25,4 @@ class Vector {
     void sub(Vector v);
     float dot(Vector v);
 
-}
+};
