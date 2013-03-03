@@ -1,5 +1,5 @@
-#include <iostream>
-
+#ifndef COLOR_H
+#define COLOR_H
 
 //****************************************************
 // Color Header Definition
@@ -21,3 +21,4 @@ class Color {
 
 };
 
+#endif
