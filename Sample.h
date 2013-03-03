@@ -12,5 +12,5 @@ class Sample {
     int getY() {return y; }
 
     // No Set Functions, because a Sample's don't change coordinates
-}
+};
 
