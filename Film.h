@@ -1,6 +1,11 @@
-#include <iostream>
+#ifndef FILM_H
+#define FILM_H
+
 #include "Color.h"
-#include "Sample.h"
+
+//****************************************************
+// Film Header Definition
+//****************************************************
 
 class Film {
   private:
@@ -18,3 +23,5 @@ class Film {
     void writeImage();
 
 };
+
+#endif
