@@ -1,4 +1,9 @@
-#include <iostream>
+#ifndef SAMPLE_H
+#define SAMPLE_H
+
+//****************************************************
+// Sample Header Definition
+//****************************************************
 
 class Sample {
   private:
@@ -14,3 +19,4 @@ class Sample {
     // No Set Functions, because a Sample's don't change coordinates
 };
 
+#endif
