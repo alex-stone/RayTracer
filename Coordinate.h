@@ -16,4 +16,4 @@ class Coordinate {
 
     // Add any other functions needed
 
-}
+};
