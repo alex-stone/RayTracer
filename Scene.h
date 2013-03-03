@@ -1,5 +1,11 @@
+#ifndef SCENE_H
+#define SCENE_H
 
 #include <iostream>
+#include "Coordinate.h"
+#include "Film.h"
+#include "Sampler.h"
+#include "Sample.h"
 
 //****************************************************
 // Scene Header Definition
@@ -35,12 +41,14 @@ class Scene {
     void setCorners(Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL);
     void setImageSize(int height, int width);
 
-    Coordinate getUL() {return upperLeft; }
-    Coordinate getUR() {return upperRight; }
-    Coordinate getLR() {return lowerRight; }
-    Coordinate getLL() {return lowerLeft; }
+    Coordinate getUL() {return upperLeft; };
+    Coordinate getUR() {return upperRight; };
+    Coordinate getLR() {return lowerRight; };
+    Coordinate getLL() {return lowerLeft; };
 
-    int getHeight {return pixelHeight; }
-    int getWidth {return pixelWidth; }
+    int getHeight() {return pixelHeight; };
+    int getWidth() {return pixelWidth; };
 
-}
+};
+
+#endif
