@@ -1,5 +1,9 @@
+#ifndef COORDINATE_H
+#define COORDINATE_H
 
-#include <iostream>
+//****************************************************
+// Coordinate Header Definition
+//****************************************************
 
 class Coordinate {
   private:
@@ -17,3 +21,5 @@ class Coordinate {
     // Add any other functions needed
 
 };
+
+#endif
