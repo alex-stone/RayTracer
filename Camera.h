@@ -1,4 +1,11 @@
-#include <iostream>
+#ifndef CAMERA_H
+#define CAMERA_H
+
+#include "Coordinate.h"
+#include "Sample.h"
+#include "Vector.h"
+#include "Ray.h"
+
 
 //****************************************************
 // Camera Header Definitions
@@ -20,8 +27,10 @@ class Camera {
     Camera(Coordinate ep, Coordinate UL, Coordinate UR, Coordinate LR, Coordinate LL, int h, int w);
 
 
-    Coordinate pixelToCoordinate(int h, int w);
+    Vector pixelToVector(int x, int y);
 
     Ray generateRay(Sample samp);
 
-}
+};
+
+#endif
