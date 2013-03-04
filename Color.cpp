@@ -17,9 +17,7 @@ Color::Color(float x, float y, float z) {
     r = clipValue(x);
     g = clipValue(y);
     b = clipValue(z);
-
 } 
-
 
 float Color::clipValue(float x) {
     if(x > 1.0f) {
@@ -32,3 +30,30 @@ float Color::clipValue(float x) {
 	}
     }
 }
+
+void Color::add(Color* col) {
+    this->r = clipValue(col->r + this->r);
+    this->g = clipValue(col->g + this->g);
+    this->b = clipValue(col->b + this->b);
+}
+
+//string Color::toString() {
+    //return returnString;
+//}
+
+void Color::print() {
+    cout << "[" << this->r << ", " << this->g << ", " << this->b << "]" << endl;
+}
+
+int main(int argc, char *argv[]) {
+    Color* col1 = new Color(0.5f, 0.3f, 0.2f);
+    Color* col2 = new Color(0.6f, 0.5f, 0.0f);
+   
+    col1->print();
+    col2->print();
+    col2->add(col1);
+    col2->print();
+ 
+    return 1;
+}
+

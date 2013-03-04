@@ -18,7 +18,9 @@ class Color {
     float getB() {return b; };
 
     float clipValue(float x);
-
+    
+    void print();
+    void add(Color* col);
 };
 
 #endif
