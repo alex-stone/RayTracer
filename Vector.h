@@ -27,7 +27,7 @@ class Vector {
     float dot(Vector* v);
 
     void print();
-
+    Vector* getCopy();
 };
 
 #endif

@@ -53,6 +53,11 @@ void Vector::print() {
 
 }
 
+Vector* Vector::getCopy() {
+    Vector* temp = new Vector(this->x, this->y, this->z);
+    return temp;
+}
+/*
 int main(int argc, char* argv[]) {
     Vector* vec1 = new Vector(3.0f, 2.0f, 4.0f);
     Vector* vec2 = new Vector(2.0f, -3.0f, -2.0f);
@@ -87,5 +92,5 @@ int main(int argc, char* argv[]) {
 
 
 }
-
+*/
 
