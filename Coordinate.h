@@ -1,6 +1,8 @@
 #ifndef COORDINATE_H
 #define COORDINATE_H
 
+#include "Vector.h"
+
 //****************************************************
 // Coordinate Header Definition
 //****************************************************
@@ -19,6 +21,8 @@ class Coordinate {
     float getZ() {return z; };
 
     // Add any other functions needed
+
+    Vector* vectorTo(Coordinate* pos);
  
     void print();
     Coordinate* getCopy();

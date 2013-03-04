@@ -35,7 +35,12 @@ Coordinate* Coordinate::getCopy() {
     return temp;
 }
 
-/*
+Vector* Coordinate::vectorTo(Coordinate* pos) {
+    Vector* vec = new Vector(pos->getX() - this->x, pos->getY() - this->y, pos->getZ() - this->z);
+    return vec;
+}
+
+
 int main(int argc, char* argv[]) {
     Coordinate* test = new Coordinate(0.4f, 0.2f, -0.5f);
 
@@ -43,8 +48,19 @@ int main(int argc, char* argv[]) {
 
     // Add more functions to test out
 
+    Coordinate* pos1 = new Coordinate(2.0f, 5.0f, -3.0f);
+    Coordinate* pos2 = new Coordinate(1.0f, 10.0f, 2.0f);
+
+    pos1->print();
+    pos2->print();
+
+    Vector* vec = pos1->vectorTo(pos2);
+
+    vec->print();
+
+
 }
-*/
+
 
 
 
