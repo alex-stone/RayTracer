@@ -1,7 +1,8 @@
-
+#include <iostream>
+//#include "Sample.h"
 #include "Sampler.h"
 
-using namespace std;
+//using namespace std;
 
 //****************************************************
 // Sampler Class
@@ -14,7 +15,7 @@ Sampler::Sampler() {
 
 Sampler::Sampler(int h, int w) {
     setSampleSize(h, w);
-    currentSample = newSample(0, 0);   
+    currentSample = new Sample(0, 0);   
 }
 
 void Sampler::setSampleSize(int h, int w) {
@@ -23,18 +24,18 @@ void Sampler::setSampleSize(int h, int w) {
 
 }
 
-Sample getSample(int x, int y) {
+Sample* Sampler::getSample(int x, int y) {
     return new Sample(x, y);
 }
 
 // Returns next sample in the horizontal line and changes line when
 // it gets to the end
-Sample getNextSample() {
-   int x = currentSample.getX();
-   int y = currentSample.getY(); 
+bool Sampler::getNextSample(Sample* samp) {
+   int x = samp->getX();
+   int y = samp->getY(); 
    if (x >= pixelWidth-1) {
         if(y >= pixelHeight - 1) {
-	    return null;
+	    return false;
         } else {
             x = 0;
 	    y += 1;
@@ -43,5 +44,23 @@ Sample getNextSample() {
         x += 1;
     }
 
-    return getSample(x, y);
+
+    std::cout << "X = " << x << ", Y = " << y << std::endl;
+    samp->setSample(x,y);
+
+    return true;
 }
+
+int main(int argc, char* argv[]) {
+    Sampler* test = new Sampler(4, 5);
+
+    std::cout << "Testing Sampler with a window size of 5 x 4" << std::endl;
+
+    Sample* temp = test->getSample(0,0);
+   
+    while(test->getNextSample(temp)) {
+        temp->print();
+    }
+
+}
+

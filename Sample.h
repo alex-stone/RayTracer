@@ -16,6 +16,9 @@ class Sample {
     int getX() {return x; };
     int getY() {return y; };
 
+    void setSample(int a, int b);
+    void print();
+
     // No Set Functions, because a Sample's don't change coordinates
 };
 
