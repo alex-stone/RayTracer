@@ -21,7 +21,7 @@ class Coordinate {
     // Add any other functions needed
  
     void print();
-    Coordinate getCopy();
+    Coordinate* getCopy();
 };
 
 #endif

@@ -30,6 +30,12 @@ void Coordinate::print() {
     cout << "(" << this->x << "," << this->y << "," << this->z << ")" << endl;
 }
 
+Coordinate* Coordinate::getCopy() {
+    Coordinate* temp = new Coordinate(this->x, this->y, this->z);
+    return temp;
+}
+
+/*
 int main(int argc, char* argv[]) {
     Coordinate* test = new Coordinate(0.4f, 0.2f, -0.5f);
 
@@ -38,7 +44,7 @@ int main(int argc, char* argv[]) {
     // Add more functions to test out
 
 }
-
+*/
 
 
 
