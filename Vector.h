@@ -11,7 +11,6 @@ class Vector {
   private:
     float x, y, z;
 
-
   public:
     Vector();
     Vector(float a, float b, float c);
@@ -23,9 +22,11 @@ class Vector {
     void normalize();
     void scale(float s);
 
-    void add(Vector v);
-    void sub(Vector v);
-    float dot(Vector v);
+    void add(Vector* v);
+    void sub(Vector* v);
+    float dot(Vector* v);
+
+    void print();
 
 };
 
