@@ -23,12 +23,12 @@ class Camera {
     int pixelWidth;
 
   public:
-    Camera();
+    Camera(int h, int w);
     Camera(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
 
-    Vector pixelToVector(int x, int y);
+    Vector* pixelToVector(int x, int y);
 
-    Ray generateRay(Sample samp);
+    Ray* generateRay(Sample& samp);
 
 };
 
