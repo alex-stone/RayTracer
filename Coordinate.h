@@ -19,7 +19,9 @@ class Coordinate {
     float getZ() {return z; };
 
     // Add any other functions needed
-
+ 
+    void print();
+ 
 };
 
 #endif

@@ -4,21 +4,40 @@
 #include <math.h>
 #include "Coordinate.h"
 
+using namespace std;
+
+//****************************************************
+// Coordinate Class
+//****************************************************
 
 Coordinate::Coordinate() {
-  setCoordinate(0.0f, 0.0f, 0.0f);
+    setCoordinate(0.0f, 0.0f, 0.0f);
 }
 
 Coordinate::Coordinate(float a, float b, float c) {
-  setCoordinate(a, b, c);
+    this->x = a;
+    this->y = b;
+    this->z = c;
 }
 
 void Coordinate::setCoordinate(float a, float b, float c) {
-  x = a;
-  y = b;
-  z = c;
+    this->x = a;
+    this->y = b;
+    this->z = c;
 }
 
+void Coordinate::print() {
+    cout << "(" << this->x << "," << this->y << "," << this->z << ")" << endl;
+}
+
+int main(int argc, char* argv[]) {
+    Coordinate* test = new Coordinate(0.4f, 0.2f, -0.5f);
+
+    test->print();
+
+    // Add more functions to test out
+
+}
 
 
 
