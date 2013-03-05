@@ -10,6 +10,6 @@ BRDF::BRDF(Color* diffuse, Color* specular, Color* ambient, Color* reflection) {
     kd = diffuse;
     ks = specular;
     ka = ambient;
-    kr = reflection
+    kr = reflection;
 }
 
