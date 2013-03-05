@@ -26,6 +26,10 @@ void Coordinate::setCoordinate(float a, float b, float c) {
     this->z = c;
 }
 
+float Coordinate::distTo(Coordinate* pos) {
+    return sqrt(pow(pos->getX() - this->x, 2) + pow(pos->getY() - this->y, 2) + pow(pos->getZ() - this->z, 2) ) ;
+}
+
 void Coordinate::print() {
     cout << "(" << this->x << "," << this->y << "," << this->z << ")" << endl;
 }
@@ -40,7 +44,7 @@ Vector* Coordinate::vectorTo(Coordinate* pos) {
     return vec;
 }
 
-
+/*
 int main(int argc, char* argv[]) {
     Coordinate* test = new Coordinate(0.4f, 0.2f, -0.5f);
 
@@ -61,6 +65,6 @@ int main(int argc, char* argv[]) {
 
 }
 
-
+*/
 
 

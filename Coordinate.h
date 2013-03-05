@@ -22,6 +22,7 @@ class Coordinate {
 
     // Add any other functions needed
 
+    float distTo(Coordinate* pos);
     Vector* vectorTo(Coordinate* pos);
  
     void print();
