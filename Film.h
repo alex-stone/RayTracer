@@ -23,6 +23,8 @@ class Film {
     void commit(Sample samp, Color color); 
     void writeImage();
 
+    void circleTest();
+
 };
 
 #endif

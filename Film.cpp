@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include "FreeImage.h"
 #include "Film.h"
 #include "Sample.h"
@@ -48,13 +49,14 @@ void Film::writeImage() {
     Color* bucketColor;
 
     // Iterate through pixelBucket and do FreeImage.SetPixelColor
+    // Note that FreePixel's Blue and Red are switched.
     for(int i = 0; i < pixelWidth; i++) {
         for(int j = 0; j < pixelHeight; j++) {
 	    bucketColor = &pixelBucket[i][pixelHeight - 1 - j];
 
-	    color.rgbRed = bucketColor->getR();
-	    color.rgbGreen = bucketColor->getG();
-	    color.rgbBlue = bucketColor->getB();
+	    color.rgbRed = bucketColor->getRgbBlue();
+	    color.rgbGreen = bucketColor->getRgbGreen();
+	    color.rgbBlue = bucketColor->getRgbRed();
 	    
 	    FreeImage_SetPixelColor(bitmap, i, j, &color);
         }
@@ -68,8 +70,34 @@ void Film::writeImage() {
 
 }
 
+void Film::circleTest() {
+    Color* red = new Color(0.0f, 0.0f, 1.0f);
+
+    float radius = min(pixelHeight, pixelWidth) * 0.4444f;
+
+    for (int i = 0; i < pixelWidth; i++) {
+        for(int j = 0; j < pixelHeight; j++) {
+
+	    float x = (i + 0.5 - (pixelWidth/2));
+	    float y = (j + 0.5 - (pixelHeight/2));
+
+   	    float dist = sqrt(x*x + y*y);
+	    
+  	    if( dist <= radius) {
+		cout << "Dist <= Radius " << endl;
+		pixelBucket[i][j].add(red); 
+	    } 
+ 
+        }
+    }
+	
+    cout << "Circle Test Ran" << endl;
+
+}
+
 int main(int argc, char* argv[]) {
     Film* f = new Film(400, 900);
+    f->circleTest();
 
     f->writeImage();
 
