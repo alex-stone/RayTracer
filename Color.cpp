@@ -37,15 +37,15 @@ void Color::add(Color* col) {
     this->b = clipValue(col->b + this->b);
 }
 
-int Color:getRgbRed() {
+int Color::getRgbRed() {
     return clipValue(this->r) * 255;
 }
 
-int Color:getRgbGreen() {
+int Color::getRgbGreen() {
     return clipValue(this->g) * 255;
 }
 
-int Color:getRgbBlue() {
+int Color::getRgbBlue() {
     return clipValue(this->b) * 255;
 }
 
