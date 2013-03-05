@@ -7,7 +7,7 @@
 
 LocalGeo::LocalGeo(Coordinate* pos, Vector* norm) {
     position = pos;
-    normal = norm.normalize()
+    normal = norm->normalize()
 }
 
 
