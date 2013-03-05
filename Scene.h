@@ -6,6 +6,7 @@
 #include "Film.h"
 #include "Sampler.h"
 #include "Sample.h"
+#include "RayTracer.h"
 
 //****************************************************
 // Scene Header Definition
@@ -23,6 +24,7 @@ class Scene {
     
     Sampler* sceneSampler;
     Film* sceneFilm;
+    RayTracer* sceneTracer;
 
     void initializeSampleFilm(int h, int w);
 
@@ -35,11 +37,16 @@ class Scene {
   public:
     Scene();
     Scene(int h, int w);
+ 
     Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
-  
+    Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Primitive** primitives);
+ 
     void setEyePosition(Coordinate* ep); 
     void setCorners(Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL);
     void setImageSize(int height, int width);
+
+    void setRayTracer(Primitive** primitives);
+    void setDefaultRayTracer();
 
     Coordinate* getUL() {return upperLeft; };
     Coordinate* getUR() {return upperRight; };
