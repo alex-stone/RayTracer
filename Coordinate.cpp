@@ -44,6 +44,11 @@ Vector* Coordinate::vectorTo(Coordinate* pos) {
     return vec;
 }
 
+Vector* Coordinate::vectorFromOrigin() {
+    Vector* vec = new Vector(this->x, this->y, this->z);
+    return vec;
+}
+
 /*
 int main(int argc, char* argv[]) {
     Coordinate* test = new Coordinate(0.4f, 0.2f, -0.5f);
