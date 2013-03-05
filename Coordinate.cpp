@@ -49,6 +49,11 @@ Vector* Coordinate::vectorFromOrigin() {
     return vec;
 }
 
+Coordinate* Coordinate::addVector(Vector* vec) {
+    return new Coordinate(this->x + vec->getX(), this->y + vec->getY(), this->z + vec->getZ());
+}
+
+
 /*
 int main(int argc, char* argv[]) {
     Coordinate* test = new Coordinate(0.4f, 0.2f, -0.5f);
