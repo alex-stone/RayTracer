@@ -17,6 +17,10 @@ class Color {
     float getG() {return g; };
     float getB() {return b; };
 
+    int getRgbRed();
+    int getRgbGreen();
+    int getRgbBlue();
+
     float clipValue(float x);
     
     void print();

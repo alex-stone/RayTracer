@@ -37,6 +37,18 @@ void Color::add(Color* col) {
     this->b = clipValue(col->b + this->b);
 }
 
+int Color:getRgbRed() {
+    return clipValue(this->r) * 255;
+}
+
+int Color:getRgbGreen() {
+    return clipValue(this->g) * 255;
+}
+
+int Color:getRgbBlue() {
+    return clipValue(this->b) * 255;
+}
+
 //string Color::toString() {
     //return returnString;
 //}
@@ -44,7 +56,7 @@ void Color::add(Color* col) {
 void Color::print() {
     cout << "[" << this->r << ", " << this->g << ", " << this->b << "]" << endl;
 }
-
+/*
 int main(int argc, char *argv[]) {
     Color* col1 = new Color(0.5f, 0.3f, 0.2f);
     Color* col2 = new Color(0.6f, 0.5f, 0.0f);
@@ -56,4 +68,4 @@ int main(int argc, char *argv[]) {
  
     return 1;
 }
-
+*/
