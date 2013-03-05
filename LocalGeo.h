@@ -16,6 +16,10 @@ class LocalGeo {
   public:
     LocalGeo(Coordinate* pos, Vector* norm);
 
+    //Getters
+    Coordinate* getPosition() { return position; };
+    Vector* getNormal() { return normal; };
+
 };
 
 #endif
