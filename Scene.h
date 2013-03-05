@@ -4,9 +4,12 @@
 #include <iostream>
 #include "Coordinate.h"
 #include "Film.h"
+#include "Camera.h"
 #include "Sampler.h"
 #include "Sample.h"
 #include "RayTracer.h"
+#include "GeometricPrimitive.h"
+#include "Intersection.h" 
 
 //****************************************************
 // Scene Header Definition
@@ -24,6 +27,8 @@ class Scene {
     
     Sampler* sceneSampler;
     Film* sceneFilm;
+    Camera* sceneCamera;
+
     RayTracer* sceneTracer;
 
     void initializeSampleFilm(int h, int w);
@@ -39,13 +44,18 @@ class Scene {
     Scene(int h, int w);
  
     Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
-    Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Primitive** primitives);
+    Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, GeometricPrimitive** primitives);
  
     void setEyePosition(Coordinate* ep); 
     void setCorners(Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL);
     void setImageSize(int height, int width);
 
-    void setRayTracer(Primitive** primitives);
+    void setCameraSize(int h, int w);
+    void setCameraCoordinates(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL);
+    void setCamera(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
+    void setDefaultCamera();
+
+    void setRayTracer(GeometricPrimitive** primitives);
     void setDefaultRayTracer();
 
     Coordinate* getUL() {return upperLeft; };
@@ -55,6 +65,8 @@ class Scene {
 
     int getHeight() {return pixelHeight; };
     int getWidth() {return pixelWidth; };
+
+    void render();
 
 };
 
