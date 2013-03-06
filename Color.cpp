@@ -49,6 +49,11 @@ int Color::getRgbBlue() {
     return clipValue(this->b) * 255;
 }
 
+Color Color::copy() {
+    Color* temp = new Color(r, g, b);
+    return *temp;
+}
+
 //string Color::toString() {
     //return returnString;
 //}

@@ -1,8 +1,9 @@
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
 
-#include "Shape.h"
+//#include "GeometricPrimitive.h"
 #include "LocalGeo.h"
+class GeometricPrimitive;
 
 //****************************************************
 // Intersection Header Definition
@@ -10,17 +11,17 @@
 
 class Intersection {
   private:
-    Shape* shape;
+    GeometricPrimitive* primitive;
     LocalGeo* localGeo;
     float dist;
 
   public:
-    Intersection(Shape* s, LocalGeo* geo, float tdist);
+    Intersection(GeometricPrimitive* p, LocalGeo* geo, float tdist);
    
     // Getter Functions 
-    Shape* getShape() { return shape; };
+    GeometricPrimitive* getPrimitive() { return primitive; };
     LocalGeo* getLocalGeo() { return localGeo; };
-    float getDist() { return dist };
+    float getDist() { return dist; };
 
 };
 

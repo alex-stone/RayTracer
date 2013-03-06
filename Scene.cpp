@@ -166,14 +166,16 @@ bool Scene::isValidDimensions(int h, int w) {
 //****************************************************
 
 void Scene::render() {
-    Sample* sample = NULL;    
-    Ray* ray = NULL;
-    Color* color = NULL;
+    Sample* sample = sceneSampler->getSample(0,0);    
+    Ray* ray;
+    Color* color;
 
-    while(!sceneSampler->getNextSample(sample)) {
-	ray = sceneCamera->generateRay(sample);
-        color = sceneTracer->trace(ray, 1);
-        sceneFilm->commit(sample, color);	
+    while(sample != NULL) {
+	
+    	ray = sceneCamera->generateRay(sample);
+	color = sceneTracer->trace(ray, 1);
+	sceneFilm->commit(sample, color);	
+	sample = sceneSampler->getNextSample(sample);
     }
 
     sceneFilm->writeImage();
@@ -183,12 +185,11 @@ void Scene::render() {
 
 int main(int argc, char* argv[]) {
 
-    
     Coordinate* eye = new Coordinate(0.0f, 0.0f, 0.0f);
-    Coordinate* UL = new Coordinate(-1.0f, 1.0f, -1.0f);
-    Coordinate* UR = new Coordinate(1.0f, 1.0f, -1.0f);
-    Coordinate* LR = new Coordinate(1.0f, -1.0f, -1.0f);
-    Coordinate* LL = new Coordinate(-1.0f, -1.0f, -1.0f);
+    Coordinate* UL = new Coordinate(-1.0f, 1.0f, 0.0f);
+    Coordinate* UR = new Coordinate(1.0f, 1.0f, -2.0f);
+    Coordinate* LR = new Coordinate(1.0f, -1.0f, -2.0f);
+    Coordinate* LL = new Coordinate(-1.0f, -1.0f, 0.0f);
 
 
     Shape* sphere = new Sphere(new Coordinate(0.0f, 0.0f, -2.0f), 1);
@@ -205,7 +206,7 @@ int main(int argc, char* argv[]) {
     primitives[0] = new GeometricPrimitive(sphere, brdf);
 
 
-    Scene* scene = new Scene(eye, UL, UR, LR, LL, 480, 640, primitives);
+    Scene* scene = new Scene(eye, UL, UR, LR, LL, 640, 640, primitives);
 
     scene->render();
 }

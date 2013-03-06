@@ -10,9 +10,26 @@ RayTracer::RayTracer() {
     recurseDepth = 1;
 }
 
-RayTracer::RayTracer(shape** shapeArray, int depth) {
-    shapes = shapeArray;
+RayTracer::RayTracer(GeometricPrimitive** primitiveArray, int depth) {
+    primitives = primitiveArray;
     recurseDepth = depth;
+
+} 
+
+Intersection* RayTracer::closestIntersection(Ray* ray) {
+    Intersection* closest = NULL;
+    for(int i = 0; i< 1; i++) {
+	Intersection* temp = primitives[i]->intersect(ray);
+	if(temp != NULL && temp->getDist() > 0) {
+	    if(closest == NULL || (temp->getDist() < closest->getDist())) {
+		closest = temp;
+	    }
+	    
+	}
+    }
+
+    // Note if no intersections found, it remains NULL
+    return closest;
 
 } 
 
@@ -40,7 +57,16 @@ Color* RayTracer::trace(Ray* ray, int depth) {
     }
 
     // Detect closest intersection of Ray and Shape:
+    Intersection* closeInter = this->closestIntersection(ray); 
 
+    // First Test: if Intersection:
+
+   if(closeInter != NULL) {
+   // if(primitives[0]->intersectP(ray)) {
+        return new Color(1.0f, .0f, 0.0f);
+    } else {
+   	return new Color(0.0f, 0.0f, 0.0f);
+    }
 
 }
 

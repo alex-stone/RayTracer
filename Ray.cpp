@@ -28,7 +28,7 @@ Ray::Ray(Coordinate* pos, Vector* dir, float min, float max) {
     t_min = min;
     t_max = max;
 }
-
+/*
 int main(int argc, char* argv[]) {
     Coordinate* pos = new Coordinate(0.3f, 0.2f, -0.4f);
     Vector* dir = new Vector(0.9f, 2.0f, 3.0f);
@@ -37,6 +37,6 @@ int main(int argc, char* argv[]) {
     // Add functions for Ray as needed.
  
 }
-
+*/
 
 

@@ -20,7 +20,7 @@ class Film {
     
     void setSize(int h, int w);
   
-    void commit(Sample samp, Color color); 
+    void commit(Sample* samp, Color* color); 
     void writeImage();
 
     void circleTest();

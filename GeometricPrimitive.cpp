@@ -1,10 +1,10 @@
 #include <iostream>
 #include "GeometricPrimitive.h"
-#include "Primitive.h"
 #include "Shape.h"
 #include "Intersection.h"
 #include "Ray.h"
 #include "BRDF.h"
+#include "Coordinate.h"
 
 //****************************************************
 // GeometricPrimitive Class Definition
@@ -29,7 +29,7 @@ Intersection* GeometricPrimitive::intersect(Ray* ray) {
 
     // Distance = distance from origin of ray to localGeo position.
     float dist = ray->getPosition()->distTo(loc->getPosition());   
-    Primitive* self = this;
+    GeometricPrimitive* self = this;
 
     Intersection* in = new Intersection(self, loc, dist); 
 

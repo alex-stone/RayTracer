@@ -19,8 +19,6 @@ Vector::Vector(float a, float b, float c) {
 void Vector::normalize() {
     float length = sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z));    
 
-    cout << "LENGTH = " << length << endl;
-
     this->x = x/length;
     this->y = y/length;
     this->z = z/length; 

@@ -28,7 +28,7 @@ class Camera {
 
     Vector* pixelToVector(int x, int y);
 
-    Ray* generateRay(Sample& samp);
+    Ray* generateRay(Sample* samp);
 
 };
 

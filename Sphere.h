@@ -2,7 +2,9 @@
 #define SPHERE_H
 
 #include "Shape.h"
-#include "BRDF.h"
+#include "Coordinate.h"
+#include "Vector.h"
+#include "Ray.h"
 
 //****************************************************
 // Sphere Header Definition
@@ -16,6 +18,7 @@ class Sphere : public Shape {
     Sphere(Coordinate* cent, float rad);
 
     LocalGeo* intersect(Ray* ray);
+    bool intersectP(Ray* ray);
     Vector* getNormal(Coordinate* pos);
 
 };

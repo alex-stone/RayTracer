@@ -47,14 +47,14 @@ Vector* Camera::pixelToVector(int x, int y) {
     return returnVec;
 }
 
-Ray* Camera::generateRay(Sample& samp) {
+Ray* Camera::generateRay(Sample* samp) {
     // Create a ray with position = eyePosition, and direction = vector from ep to pixel
     
-    Ray* r = new Ray(this->eyePosition, this->pixelToVector(samp.getX(), samp.getY()));
+    Ray* r = new Ray(this->eyePosition, this->pixelToVector(samp->getX(), samp->getY()));
     return r;
 
 }
-
+/*
 int main (int argc, char* argv[]) {
     Camera* cam = new Camera(100, 100);
 
@@ -96,4 +96,4 @@ int main (int argc, char* argv[]) {
 
 }
 
-
+*/

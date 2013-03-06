@@ -1,7 +1,10 @@
 #include <iostream>
+#include <math.h>
 #include "Sphere.h"
-#include "BRDF.h"
 #include "LocalGeo.h"
+#include "Coordinate.h"
+#include "Vector.h"
+#include "Ray.h"
 
 //****************************************************
 // Sphere Class Definition
@@ -28,17 +31,72 @@ LocalGeo* Sphere::intersect(Ray* ray) {
     // B = 2 (dir . ray origin)
     // C = (ray origin . ray origian) - r^2
 
+
+    Vector* rayToCenter = ray->getPosition()->vectorTo(center);
+    rayToCenter->normalize();
+
+    // Test Angle between rayDir and origin to center of sphere
+
     Vector* rayDir = ray->getDirection();
+
+    
+    // Ray = rayOrigin + t * rayDir
+
+
+    // Vector vecToCenter from Origin to Sphere Center
+    Vector* vecToCenter = ray->getPosition()->vectorTo(center);
+
+    // float centerProj  vecToCenter projected onto rayDirection
+    float centerProj = vecToCenter->dot(rayDir);
+    if(centerProj < 0.0f) {
+ 	
+	return NULL;
+    }
+
+    float distToRaySquared = vecToCenter->dot(vecToCenter) - (centerProj * centerProj);
+
+    // float distToRay: Pythagorean Theorem wiht vectProjCenter and vecToCenter
+    if(distToRaySquared < 0) {
+	return NULL;
+    }
+  
+    float distToRay = sqrt(distToRaySquared);
+
+    if(distToRay > this->radius) {
+	return NULL;
+    }
+
+    // float pointToProjCenter: Pythagorean Theorem with Radius and distToRay
+    float pointToProjCenter = sqrt((this->radius * this->radius) - (distToRay * distToRay));
+
+    float t1 = centerProj - pointToProjCenter;
+    float t2 = centerProj + pointToProjCenter;
+
+    Vector* temp = rayDir->getCopy();
+    temp->scale(t1);
+    
+
+    Coordinate* surfacePoint = ray->getPosition()->addVector(temp);
+    Vector* normal = this->center->vectorTo(surfacePoint);
+    LocalGeo* loc = new LocalGeo(surfacePoint, normal);
+  
+    return loc;
+/*
     Vector* rayOrigin = ray->getPosition()->vectorFromOrigin();
 
     float a = rayDir->dot(rayDir);
-    float b = (rayDir->dot(rayOrigin)) * 2;
+    float b = (rayDir->dot(rayOrigin)) * 2.0f;
     float c = rayOrigin->dot(rayOrigin) - pow(this->radius, 2);
 
-    float discriminant = pow(b, 2) - 4*a*c;
+
+    float discriminant = pow(b, 2) - 4.0f*a*c;
     float t;
 
-    if(discriminant < 0) { 
+    std::cout << "A= " << a << " B=" << b << " C=" << c << std::endl;
+
+    std::cout << "Discriminant = " << discriminant << std::endl;
+
+    if(discriminant < 0.0f) { 
 	return NULL;
     }
  
@@ -47,15 +105,15 @@ LocalGeo* Sphere::intersect(Ray* ray) {
     float t1 = 0.0f;
     float t2 = 0.0f;
 
-    if(discriminant == 0) {
-	t1 = (-b) / (2*a);
-        t2 = NULL;
+    if(discriminant == 0.0f) {
+	t1 = (-b) / (2.0f*a);
+        t2 = t1;
     } else {
-	t1 = (-b + sqrt(discriminant)) / (2*a);
-        t2 = (-b - sqrt(discriminant)) / (2*a);
+	t1 = (-b + sqrt(discriminant)) / (2.0f*a);
+        t2 = (-b - sqrt(discriminant)) / (2.0f*a);
     }
 
-    if(t2 == NULL) {
+    if(t2 == t1) {
     	if(t1 > 0) {
 	    t = t1;
 	} else {
@@ -80,29 +138,34 @@ LocalGeo* Sphere::intersect(Ray* ray) {
     } else {
 	t = t1;
     }
- 
-    intersectPoint = rayOrigin->addVector(rayDir->scale(t));
-    Vector* normal = 
+
+    rayDir->scale(t); 
+    intersectPoint = ray->getPosition()->addVector(rayDir);
 
     LocalGeo* loc = new LocalGeo(intersectPoint, this->getNormal(intersectPoint));
 
-    return loc;
+    return loc;*/
+}
+
+bool Sphere::intersectP(Ray* ray) {
+    Vector* rayDir = ray->getDirection();
+    Vector* rayOrigin = ray->getPosition()->vectorFromOrigin();
+
+    float a = rayDir->dot(rayDir);
+    float b = (rayDir->dot(rayOrigin)) * 2.0f;
+    float c = rayOrigin->dot(rayOrigin) - pow(this->radius, 2);
+
+    float discriminant = pow(b, 2) - 4.0f*a*c;
+
+    return (discriminant >= 0.0f);
 }
 
 Vector* Sphere::getNormal(Coordinate* pos) {
-    return center->vectorTo(pos).normalize();
-
+    Vector* vec = center->vectorTo(pos);
+    vec->normalize();
+    return vec;
 }
 
-
-void Sphere::setDefaultBRDF() {
-    Color* kd = new Color(0.3f, 0.3f, 0.3f);
-    Color* ka = new Color(0.2f, 0.5f, 0.0f);
-    Color* ks = new Color(0.6f, 0.6f, 0.6f);
-    Color* kr = new Color(0.3f, 0.3f, 0.3f);
-
-    colorCoefficients = new BRDF(kd, ka, ks, kr);
-}
 
 
 

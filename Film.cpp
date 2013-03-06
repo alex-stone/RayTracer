@@ -33,8 +33,8 @@ void Film::setSize(int h, int w) {
     pixelWidth = w;
 }
 
-void Film::commit(Sample samp, Color color) {
-    pixelBucket[samp.getX()][samp.getY()] = color;
+void Film::commit(Sample* samp, Color* color) {
+    pixelBucket[samp->getX()][samp->getY()] = color->copy();
 }
 
 void Film::writeImage() {
@@ -94,7 +94,7 @@ void Film::circleTest() {
     cout << "Circle Test Ran" << endl;
 
 }
-
+/*
 int main(int argc, char* argv[]) {
     Film* f = new Film(400, 900);
     f->circleTest();
@@ -102,5 +102,5 @@ int main(int argc, char* argv[]) {
     f->writeImage();
 
     cout << "Film Main Function Ran" << endl;
-}
+}*/
 

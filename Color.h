@@ -25,6 +25,9 @@ class Color {
     
     void print();
     void add(Color* col);
+
+    Color copy();
+
 };
 
 #endif

@@ -1,7 +1,6 @@
 #ifndef GEOPRIMITIVE_H
 #define GEOPRIMITIVE_H
 
-#include "Primitive.h"
 #include "Shape.h"
 #include "BRDF.h"
 #include "Ray.h"
@@ -11,7 +10,7 @@
 // GeometricPrimitive Header Definition
 //****************************************************
 
-class GeometricPrimitive : public Primitive {
+class GeometricPrimitive {
   private:
     Shape* shape;
     BRDF* brdfCoefficients;
