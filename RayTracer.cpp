@@ -51,6 +51,8 @@ Vector* reflectedVector(Vector* lightDir, Vector* normal) {
     returnVec->setZ( -(lightDir->getZ()) + angle * (normal->getZ()) );
  
     returnVec->normalize();
+
+    return returnVec;
    
 }
 
