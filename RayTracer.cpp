@@ -39,19 +39,54 @@ bool RayTracer::isLightBlocked(Intersect* inter, Light* light) {
 }
 
 /**
- * 
+ *  Reflected Vector, directed away from the point
+ *  R = -L * 2(L dot N)N
+ */
+Vector* reflectedVector(Vector* lightDir, Vector* normal) {
+    float angle = 2*(lightDir->dot(normal));
+    Vector* returnVec = new Vector(); 
+
+    returnVec->setX( -(lightDir->getX()) + angle * (normal->getX()) );
+    returnVec->setY( -(lightDir->getY()) + angle * (normal->getY()) );
+    returnVec->setZ( -(lightDir->getZ()) + angle * (normal->getZ()) );
+ 
+    returnVec->normalize();
+   
+}
+
+/**
+ *  
+ *    Vector* Normal = inter->getLocalGeo()->getNormal()
+ *    Vector* View   = ? From Reflected Vector need to derive.
+ *    Vector* lightDir = 
  */
 Color* RayTracer::getSingleLightColor(Intersect* inter, Light* light) {
     Color* color = new Color(0.0f, 0.0f, 0.0f);
+    Vector* lightDir;
+    Coordinate* surfacePt = light->getLocalGeo()->getPosition();
+    Vector* normal = light->getLocalGeo()->getNormal();
 
     if(light->isPointLight()) {
-	lightDir 
-
+	lightDir = surfacePt->vectorTo(light->getPoint());
     } else {
-
-
+        lightDir = light->getDirection()->getCopy();
+        lightDir->scale(-1.0f); 
     }
 
+    lightDir->normalize();
+
+    Vector* reflectDir = 
+
+    // Ambient Component
+    color.add(ambientValue(light));
+
+    // Diffuse Component
+    color.add(diffuseValue(light, normal, lightDir));
+
+    // Specular Component
+    color.add(specularValue(light, view, reflectDir));
+
+    return color;
 
 }
 
@@ -60,7 +95,7 @@ Color* RayTracer::getColorFromIntersect(Intersect* inter) {
 
     // Iterate Through all the Lights
 
-
+    
 
 
 }

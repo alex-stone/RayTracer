@@ -22,8 +22,17 @@ class RayTracer {
     //Note: Does the Ray Tracer save the objects or the Scene?
 
     Intersection* closestIntersection(Ray* ray);
+
+    // Phong Shading Functions
+    Vector* reflectedVector(Vector* lightDir, Vector* normal);
+
+    Color* ambientValue(Light* light);
+    Color* diffuseValue(Light* light, Vector* normal, Vector* lightDir);
+    Color* specularValue(Light* light, Vector* view, Vector* reflectDir);
+
     Color* getColorFromIntersect(Intersect* inter);
     Color* getSingleLightColor(Intersect* inter, Light* light);
+
 
     bool isLightBlocked(Intersect* inter, Light* light);
 
