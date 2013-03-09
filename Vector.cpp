@@ -10,9 +10,28 @@ using namespace std;
 //****************************************************
 
 
+Vector::Vector() {
+    x = 1.0f;
+    y = 1.0f;
+    z = 1.0f;
+}
+
 Vector::Vector(float a, float b, float c) {
     x = a;
     y = b;
+    z = c;
+}
+
+
+Vector::setX(float a) {
+    x = a;
+}
+
+Vector::setY(float b) {
+    y = b;
+}
+
+Vector::setZ(float c) {
     z = c;
 }
 
