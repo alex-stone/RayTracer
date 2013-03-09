@@ -13,11 +13,14 @@
 class RayTracer {
   private:
     GeometricPrimitive** primitives;
+    Light** lights;
     int recurseDepth;
+    int lightCount;
+    int shapeCount;
 
   public:
     RayTracer();
-    RayTracer(GeometricPrimitive** primitiveArray, int depth);
+    RayTracer(Light** lightArray, GeometricPrimitive** primitiveArray, int numLights, int numShapes, int depth);
 
     //Note: Does the Ray Tracer save the objects or the Scene?
 

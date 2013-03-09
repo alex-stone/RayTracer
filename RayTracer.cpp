@@ -10,14 +10,18 @@ RayTracer::RayTracer() {
     recurseDepth = 1;
 }
 
-RayTracer::RayTracer(GeometricPrimitive** primitiveArray, int depth) {
+RayTracer::RayTracer(Light** lightArray, GeometricPrimitive** primitiveArray, int numLights, int numShapes, int depth) {
     primitives = primitiveArray;
+    lights = lightArray;
     recurseDepth = depth;
 
+    lightCount = numLights;    
+    shapeCount = numShapes;
 } 
 
 Intersection* RayTracer::closestIntersection(Ray* ray) {
     Intersection* closest = NULL;
+
     for(int i = 0; i< 1; i++) {
 	Intersection* temp = primitives[i]->intersect(ray);
 	if(temp != NULL && temp->getDist() > 0) {
@@ -142,7 +146,7 @@ Color* RayTracer::getColorFromIntersect(Intersect* inter) {
 
     // Iterate Through all the Lights
 
-    
+    for(int i = 0; i  
 
 
 }
