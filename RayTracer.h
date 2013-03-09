@@ -26,9 +26,9 @@ class RayTracer {
     // Phong Shading Functions
     Vector* reflectedVector(Vector* lightDir, Vector* normal);
 
-    Color* ambientValue(Light* light);
-    Color* diffuseValue(Light* light, Vector* normal, Vector* lightDir);
-    Color* specularValue(Light* light, Vector* view, Vector* reflectDir);
+    Color* ambientValue(Light* light, Color* ka);
+    Color* diffuseValue(Light* light, Vector* lightDir, Vector* normal, Color* kd);
+    Color* specularValue(Light* light, Vector* view, Vector* reflectDir, Color* ks);
 
     Color* getColorFromIntersect(Intersect* inter);
     Color* getSingleLightColor(Intersect* inter, Light* light);

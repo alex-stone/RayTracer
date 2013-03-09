@@ -42,7 +42,7 @@ bool RayTracer::isLightBlocked(Intersect* inter, Light* light) {
  *  Reflected Vector, directed away from the point
  *  R = -L * 2(L dot N)N
  */
-Vector* reflectedVector(Vector* lightDir, Vector* normal) {
+Vector* RayTracer::reflectedVector(Vector* lightDir, Vector* normal) {
     float angle = 2*(lightDir->dot(normal));
     Vector* returnVec = new Vector(); 
 
@@ -51,9 +51,52 @@ Vector* reflectedVector(Vector* lightDir, Vector* normal) {
     returnVec->setZ( -(lightDir->getZ()) + angle * (normal->getZ()) );
  
     returnVec->normalize();
-
     return returnVec;
-   
+}
+
+/**
+ *  Calculates Ambient Component:  ka * I
+ */
+Color* RayTracer::ambientValue(Light* light, Color* ka) {
+    Color* returnColor = new Color();
+
+
+    returnColor->setR(light->getR() * ka->getR());
+    returnColor->setG(light->getG() * ka->getG());
+    returnColor->setB(light->getB() * ka->getB());
+
+    return returnColor;
+}
+
+/**
+ *  Calculates the Diffuse Component: kd * I * (lightDir dot normal)
+ */ 
+Color* RayTracer::diffuseValue(Light* light, Vector* lightDir, Vector* normal, Color* kd) {
+    Color* returnColor = new Color();
+
+    float intensity = max(lightDir->dot(normal), 0.0f);
+
+    returnColor->setR(light->getR() * kd->getR() * intensity);
+    returnColor->setG(light->getG() * kd->getG() * intensity);
+    returnColor->setB(light->getB() * kd->getB() * intensity);
+
+    return returnColor; 
+}
+
+/**
+ *  Calculates the Specular Component: ks * I * (reflectDir dot viewDir) ^ sp
+ */ 
+Color* RayTracer::specularValue(Light* light, Vector* view, Vector* reflectDir, Color* ks) {
+    Color* returnColor = new Color();
+    float sp = 1.0f; // FIGURE OUT WHAT VALUE TO SET THIS TO
+ 
+    float intensity = pow( max( reflectDir.dot(view), 0.0f), sp);
+
+    returnColor->setR(light->getR() * ks.getR() * intensity);
+    returnColor->setG(light->getG() * ks.getG() * intensity);
+    returnColor->setB(light->getB() * ks.getB() * intensity);
+ 
+    return returnColor;
 }
 
 /**
@@ -68,6 +111,8 @@ Color* RayTracer::getSingleLightColor(Intersect* inter, Light* light) {
     Coordinate* surfacePt = light->getLocalGeo()->getPosition();
     Vector* normal = light->getLocalGeo()->getNormal();
 
+    BRDF* brdf = inter->getPrimitive()->getBRDF();
+
     if(light->isPointLight()) {
 	lightDir = surfacePt->vectorTo(light->getPoint());
     } else {
@@ -77,16 +122,16 @@ Color* RayTracer::getSingleLightColor(Intersect* inter, Light* light) {
 
     lightDir->normalize();
 
-    Vector* reflectDir = 
+    Vector* reflectDir = reflectedVector(lightDir, normal);
 
     // Ambient Component
-    color.add(ambientValue(light));
+    color.add(ambientValue(light brdf->getKA()));
 
     // Diffuse Component
-    color.add(diffuseValue(light, normal, lightDir));
+    color.add(diffuseValue(light, lightDir, normal, brdf->getKD()));
 
     // Specular Component
-    color.add(specularValue(light, view, reflectDir));
+    color.add(specularValue(light, view, reflectDir, brdf->getKS()));
 
     return color;
 
