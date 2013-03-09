@@ -33,6 +33,38 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
 
 } 
 
+bool RayTracer::isLightBlocked(Intersect* inter, Light* light) {
+
+
+}
+
+/**
+ * 
+ */
+Color* RayTracer::getSingleLightColor(Intersect* inter, Light* light) {
+    Color* color = new Color(0.0f, 0.0f, 0.0f);
+
+    if(light->isPointLight()) {
+	lightDir 
+
+    } else {
+
+
+    }
+
+
+}
+
+Color* RayTracer::getColorFromIntersect(Intersect* inter) {
+    Color* color = new Color(0.0f, 0.0f, 0.0f);
+
+    // Iterate Through all the Lights
+
+
+
+
+}
+
 //****************************************************
 // Trace Function - Determines Color for a given Ray
 //	- Base Case: When depth exceeds recurseDepth
@@ -62,8 +94,7 @@ Color* RayTracer::trace(Ray* ray, int depth) {
     // First Test: if Intersection:
 
    if(closeInter != NULL) {
-   // if(primitives[0]->intersectP(ray)) {
-        return new Color(1.0f, .0f, 0.0f);
+        return colorFromIntersect(closeInter);
     } else {
    	return new Color(0.0f, 0.0f, 0.0f);
     }

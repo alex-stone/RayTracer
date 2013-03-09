@@ -22,10 +22,12 @@ class RayTracer {
     //Note: Does the Ray Tracer save the objects or the Scene?
 
     Intersection* closestIntersection(Ray* ray);
+    Color* getColorFromIntersect(Intersect* inter);
+    Color* getSingleLightColor(Intersect* inter, Light* light);
+
+    bool isLightBlocked(Intersect* inter, Light* light);
 
     Color* trace(Ray* ray, int depth);
-
-
 
 };
 
