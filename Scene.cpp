@@ -207,14 +207,14 @@ int main(int argc, char* argv[]) {
     // Case 1: Diffuse Sphere w/ Directional Light
     Shape* sphere1 = new Sphere(new Coordinate(0.0f, 0.0f, -2.0f), 1);
    
-    Color* kd = new Color(0.0f, 1.0f, 0.5f);
+    Color* kd = new Color(1.0f, 0.0f, 1.0f);
     Color* ka = new Color();
-    Color* ks = new Color();
+    Color* ks = new Color(0.0f, 0.0f, 0.0f);
     Color* kr = new Color();    
  
-    Vector* vec = new Vector(-1.9f, 0.0f, -1.0f);
-    Color* col = new Color(1.0f, 0.5f, 0.5f);
-    DirectionLight* light = new DirectionLight(vec, col);
+    Coordinate* pt = new Coordinate(1.0f, 1.0f, 1.0f);
+    Color* col = new Color(1.0f, 1.0f, 1.0f);
+    PointLight* light = new PointLight(pt, col);
 
     int lightCount = 1;
     int shapeCount = 1;
