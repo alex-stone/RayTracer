@@ -26,7 +26,7 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
 
     for(int i = 0; i< shapeCount; i++) {
 	    Intersection* temp = primitives[i]->intersect(ray);
-	    if(temp != NULL && temp->getDist() > 0) {
+	    if(temp != NULL && temp->getDist() > 0.1f) {
 	        if(closest == NULL || (temp->getDist() < closest->getDist())) {
 		         closest = temp;
 	        }
@@ -175,11 +175,12 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
 
     // Current Ray's Direction
     Vector* reflectDirection = reflectedVector(viewDir, normal);
+    reflectDirection->normalize();
 
     Ray* reflectionRay = new Ray(surfacePt, reflectDirection);
     Color* reflectedValue = trace(reflectionRay, depth+1);
     Color* kr = inter->getPrimitive()->getBRDF()->getKR();
-    //color->add(reflectedValue->coefficientScale(kr));
+    color->add(reflectedValue->coefficientScale(kr));
 
     return color;
 
