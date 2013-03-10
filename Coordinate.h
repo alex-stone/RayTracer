@@ -25,6 +25,7 @@ class Coordinate {
     float distTo(Coordinate* pos);
     Vector* vectorTo(Coordinate* pos);
     Vector* vectorFromOrigin();
+    Vector* toVector();
 
     Coordinate* addVector(Vector* vec);
  

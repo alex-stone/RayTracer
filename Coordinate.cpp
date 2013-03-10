@@ -44,6 +44,10 @@ Vector* Coordinate::vectorTo(Coordinate* pos) {
     return vec;
 }
 
+Vector* Coordinate::toVector() {
+    return new Vector(x, y, z);
+}
+
 Vector* Coordinate::vectorFromOrigin() {
     Vector* vec = new Vector(this->x, this->y, this->z);
     return vec;
