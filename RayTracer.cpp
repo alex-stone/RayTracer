@@ -25,13 +25,12 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
     Intersection* closest = NULL;
 
     for(int i = 0; i< shapeCount; i++) {
-	Intersection* temp = primitives[i]->intersect(ray);
-	if(temp != NULL && temp->getDist() > 0) {
-	    if(closest == NULL || (temp->getDist() < closest->getDist())) {
-		closest = temp;
+	    Intersection* temp = primitives[i]->intersect(ray);
+	    if(temp != NULL && temp->getDist() > 0) {
+	        if(closest == NULL || (temp->getDist() < closest->getDist())) {
+		         closest = temp;
+	        }
 	    }
-	    
-	}
     }
 
     // Note if no intersections found, it remains NULL
@@ -52,10 +51,11 @@ Vector* RayTracer::reflectedVector(Vector* lightDir, Vector* normal) {
     float angle = 2*(lightDir->dot(normal));
     Vector* returnVec = new Vector(); 
 
-    returnVec->setX( -(lightDir->getX()) + angle * (normal->getX()) );
-    returnVec->setY( -(lightDir->getY()) + angle * (normal->getY()) );
-    returnVec->setZ( -(lightDir->getZ()) + angle * (normal->getZ()) );
+    returnVec->setX( -lightDir->getX() + (angle * normal->getX()) );
+    returnVec->setY( -lightDir->getY() + (angle * normal->getY()) );
+    returnVec->setZ( -lightDir->getZ() + (angle * normal->getZ()) );
  
+    returnVec->scale(-1.0f);
     returnVec->normalize();
     return returnVec;
 }
@@ -93,12 +93,14 @@ Color* RayTracer::diffuseValue(Light* light, Vector* lightDir, Vector* normal, C
 /**
  *  Calculates the Specular Component: ks * I * (reflectDir dot viewDir) ^ sp
  */ 
-Color* RayTracer::specularValue(Light* light, Vector* view, Vector* reflectDir, Color* ks) {
+Color* RayTracer::specularValue(Light* light, Vector* viewDir, Vector* reflectDir, Color* ks) {
     Color* returnColor = new Color();
     Color* lightColor = light->getColor();
-    float sp = 30.0f; // FIGURE OUT WHAT VALUE TO SET THIS TO
+    float sp = 50.0f; // FIGURE OUT WHAT VALUE TO SET THIS TO
  
-    float intensity = pow( std::max( reflectDir->dot(view), 0.0f), sp);
+    //iewDir->setZ(-viewDir->getZ());
+
+    float intensity = pow( std::max( reflectDir->dot(viewDir), 0.0f), sp);
 
     returnColor->setR(lightColor->getR() * ks->getR() * intensity);
     returnColor->setG(lightColor->getG() * ks->getG() * intensity);
@@ -113,24 +115,16 @@ Color* RayTracer::specularValue(Light* light, Vector* view, Vector* reflectDir, 
  *    Vector* View   = ? From Reflected Vector need to derive.
  *    Vector* lightDir = 
  */
-Color* RayTracer::getSingleLightColor(Intersection* inter, Light* light) {
+Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Light* light) {
     Color* color = new Color(0.0f, 0.0f, 0.0f);
     Vector* lightDir;
     Coordinate* surfacePt = inter->getLocalGeo()->getPosition();
     Vector* normal = inter->getLocalGeo()->getNormal();
-    
-    // Figure out what VIEW should be
-    Vector* view = new Vector(0.0f, 0.0f, 0.0f);
 
 
     BRDF* brdf = inter->getPrimitive()->getBRDF();
 
-    if(light->isPointLight()) {
-	lightDir = surfacePt->vectorTo(light->getPoint());
-    } else {
-        lightDir = light->getDirection()->getCopy();
-        lightDir->scale(-1.0f); 
-    }
+    lightDir = light->getLightDirection(surfacePt)->getCopy();
 
     lightDir->normalize();
 
@@ -143,20 +137,20 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Light* light) {
     color->add(diffuseValue(light, lightDir, normal, brdf->getKD()));
 
     // Specular Component
-    color->add(specularValue(light, view, reflectDir, brdf->getKS()));
+    color->add(specularValue(light, viewDir, reflectDir, brdf->getKS()));
 
     return color;
 
 }
 
-Color* RayTracer::getColorFromIntersect(Intersection* inter) {
+Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir) {
     Color* color = new Color(0.0f, 0.0f, 0.0f);
 
     // Iterate Through all the Lights
 
     // Check if Adding makes the value over 1.0f
     for(int i = 0; i < lightCount; i++) {
-	color->add(getSingleLightColor(inter, lights[i]));
+        color->add(getSingleLightColor(inter, viewDir, lights[i]));
     }
 
     return color;
@@ -182,18 +176,20 @@ Color* RayTracer::trace(Ray* ray, int depth) {
     
     // Base Case
     if(depth > recurseDepth) {
-	return new Color(0.0f, 0.0f, 0.0f);
+        return new Color(0.0f, 0.0f, 0.0f);
     }
 
     // Detect closest intersection of Ray and Shape:
     Intersection* closeInter = this->closestIntersection(ray); 
 
     // First Test: if Intersection:
+ 
+    Vector* viewDir = ray->getDirection();
 
    if(closeInter != NULL) {
-        return getColorFromIntersect(closeInter);
+        return getColorFromIntersect(closeInter, viewDir);
     } else {
-   	return new Color(0.0f, 0.0f, 0.0f);
+   	    return new Color(0.0f, 0.0f, 0.0f);
     }
 
 }

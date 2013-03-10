@@ -1,9 +1,13 @@
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
 
 #include "Scene.h"
 #include "Shape.h"
 #include "Sphere.h"
+#include "Triangle.h"
 #include "Sampler.h"
 #include "Camera.h"
 #include "Coordinate.h"
@@ -196,14 +200,77 @@ void Scene::render() {
 }
 
 
+
+
+
+
 int main(int argc, char* argv[]) {
 
     Coordinate* eye = new Coordinate(0.0f, 0.0f, 0.0f);
-    Coordinate* UL = new Coordinate(-1.0f, 1.0f, -1.0f);
-    Coordinate* UR = new Coordinate(1.0f, 1.0f, -1.0f);
-    Coordinate* LR = new Coordinate(1.0f, -1.0f, -1.0f);
-    Coordinate* LL = new Coordinate(-1.0f, -1.0f, -1.0f);
+    Coordinate* UL = new Coordinate(-1.0f, 1.0f, -3.0f);
+    Coordinate* UR = new Coordinate(1.0f, 1.0f, -3.0f);
+    Coordinate* LR = new Coordinate(1.0f, -1.0f, -3.0f);
+    Coordinate* LL = new Coordinate(-1.0f, -1.0f, -3.0f);
 
+    int width = 680;
+    int height = 680;
+
+
+    Shape* sphere1 = new Sphere(new Coordinate(0.0f, 0.0f, -20.0f), 3.0f);
+    Color* ka1 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd1 = new Color(1.0f, 0.0f, 1.0f);
+    Color* ks1 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr1 = new Color();
+    BRDF* brdf1 = new BRDF(kd1, ks1, ka1, kr1);
+
+    Shape* sphere2 = new Sphere(new Coordinate(-2.0f, 2.0f, -15.0f), 1.0f);
+    Color* ka2 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd2 = new Color(1.0f, 1.0f, 0.0f);
+    Color* ks2 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr2 = new Color();
+    BRDF* brdf2 = new BRDF(kd2, ks2, ka2, kr2);
+
+    Shape* sphere3 = new Sphere(new Coordinate(-2.0f, -2.0f, -15.0f), 1.0f); 
+    Color* ka3 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd3 = new Color(0.0f, 1.0f, 1.0f);
+    Color* ks3 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr3 = new Color();
+    BRDF* brdf3 = new BRDF(kd3, ks3, ka3, kr3);
+
+    // Triangle 1
+    Coordinate* v1 = new Coordinate(5.0f, 5.0f, -17.0f);
+    Coordinate* v2 = new Coordinate(1.0f, 4.0f, -20.0f);
+    Coordinate* v3 = new Coordinate(6.0f, -1.0f, -20.0f);
+    Shape* triangle1 = new Triangle(v1, v2, v3);
+    Color* ka4 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd4 = new Color(0.1f, 0.1f, 0.1f);
+    Color* ks4 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr4 = new Color(1.0f, 1.0f, 1.0f);
+    BRDF* brdf4 = new BRDF(kd4, ks4, ka4, kr4);
+
+    Vector* dir1 = new Vector(0.57735027f, -0.57735027f, -0.57735027f);
+    Color* col1 = new Color(1.0f, 1.0f, 1.0f);
+    DirectionLight* light1 = new DirectionLight(dir1, col1);
+    
+    Vector* dir2 = new Vector(0.57735027f, 0.57735027f, -0.57735027f);
+    Color* col2 = new Color(0.0f, 0.0f, 1.0f);
+    DirectionLight* light2 = new DirectionLight(dir2, col2);
+
+    int shapeCount = 4;
+    GeometricPrimitive** primitives = new GeometricPrimitive*[3]; 
+    primitives[0] = new GeometricPrimitive(sphere1, brdf1);
+    primitives[1] = new GeometricPrimitive(sphere2, brdf2);
+    primitives[2] = new GeometricPrimitive(sphere3, brdf3);
+    primitives[3] = new GeometricPrimitive(triangle1, brdf4);
+
+    int lightCount = 2;
+    Light** lights = new Light*[2];
+    lights[0] = light1;
+    lights[1] = light2; 
+
+
+
+/*
     // Case 1: Diffuse Sphere w/ Directional Light
     Shape* sphere1 = new Sphere(new Coordinate(0.0f, 0.0f, -2.0f), 1);
    
@@ -227,7 +294,7 @@ int main(int argc, char* argv[]) {
     GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount];
     primitives[0] = new GeometricPrimitive(sphere1, brdf);
 
-/*
+
     // Case 3 Shading:
     //	Two Lights - Directional and Point
     Shape* sphere = new Sphere(new Coordinate(0.0f, 0.0f, -2.0f), 1);
@@ -261,7 +328,7 @@ int main(int argc, char* argv[]) {
     Light** lights = new Light*[1];
     lights[0] = light1;
 */
-    Scene* scene = new Scene(eye, UL, UR, LR, LL, 640, 640, lights, primitives, lightCount, shapeCount);
+    Scene* scene = new Scene(eye, UL, UR, LR, LL, height, width, lights, primitives, lightCount, shapeCount);
 
     scene->render();
 }
