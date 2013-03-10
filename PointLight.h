@@ -5,6 +5,12 @@
 // PointLight Header Definition
 //****************************************************
 
+#include "Coordinate.h"
+#include "Color.h"
+#include "Ray.h"
+#include "Vector.h"
+#include "LocalGeo.h"
+
 class PointLight : public Light {
   private:
     Coordinate* point;
@@ -14,7 +20,8 @@ class PointLight : public Light {
     PointLight(Coordinate* pos, Color* col);
     Ray* generateLightRay(LocalGeo* loc);
     Color* getColor() { return color; };
-
+    bool isPointLight() { return true; };
+    Vector* getLightDirection(Coordinate* pt);
 };
 
 #endif

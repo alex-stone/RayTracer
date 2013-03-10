@@ -1,9 +1,12 @@
 #ifndef DIRECTIONLIGHT_H
 #define DIRECTIONLIGHT_H
 
-#include "Vector.h"
+#include "Light.h"
 #include "Color.h"
 #include "Ray.h"
+#include "Vector.h"
+#include "Coordinate.h"
+#include "LocalGeo.h"
 
 //****************************************************
 // DirectionLight Header Definition
@@ -16,10 +19,12 @@ class DirectionLight : public Light {
 
   public:
     DirectionLight(Vector* dir, Color* col);
-
-    Ray* generateLightRay(localGeo* loc);
     Color* getColor() { return color; };
+    bool isPointLight() { return false; };
 
+    Ray* generateLightRay(LocalGeo* loc);
+    Vector* getDirection() { return direction; };
+    Vector* getLightDirection(Coordinate* pt);
 };
 
 #endif
