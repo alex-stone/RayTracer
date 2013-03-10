@@ -28,6 +28,14 @@ Ray::Ray(Coordinate* pos, Vector* dir, float min, float max) {
     t_min = min;
     t_max = max;
 }
+
+Coordinate* Ray::getPointFromDist(float dist) {
+    Vector* dir = direction->getCopy();
+    dir->scale(dist);
+    
+    return position->addVector(dir);
+}
+
 /*
 int main(int argc, char* argv[]) {
     Coordinate* pos = new Coordinate(0.3f, 0.2f, -0.4f);

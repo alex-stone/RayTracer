@@ -23,6 +23,8 @@ class Ray {
     
     Coordinate* getPosition() { return position; };
     Vector* getDirection() { return direction; }; 
+    Coordinate* getPointtFromDist(float dist);
+
 };
 
 #endif
