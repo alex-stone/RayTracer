@@ -15,8 +15,10 @@ class Sphere : public Shape {
     Coordinate* center;
     float radius;
   public:
+    // Sphere Constructor
     Sphere(Coordinate* cent, float rad);
 
+    // Shape - Abstract Functions
     LocalGeo* intersect(Ray* ray);
     bool intersectP(Ray* ray);
     Vector* getNormal(Coordinate* pos);

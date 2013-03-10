@@ -39,31 +39,26 @@ LocalGeo* Sphere::intersect(Ray* ray) {
 
     Vector* rayDir = ray->getDirection();
 
-    
-    // Ray = rayOrigin + t * rayDir
-
-
     // Vector vecToCenter from Origin to Sphere Center
     Vector* vecToCenter = ray->getPosition()->vectorTo(center);
 
     // float centerProj  vecToCenter projected onto rayDirection
     float centerProj = vecToCenter->dot(rayDir);
     if(centerProj < 0.0f) {
- 	
-	return NULL;
+        return NULL;
     }
 
     float distToRaySquared = vecToCenter->dot(vecToCenter) - (centerProj * centerProj);
 
     // float distToRay: Pythagorean Theorem wiht vectProjCenter and vecToCenter
     if(distToRaySquared < 0) {
-	return NULL;
+        return NULL;
     }
   
     float distToRay = sqrt(distToRaySquared);
 
     if(distToRay > this->radius) {
-	return NULL;
+        return NULL;
     }
 
     // float pointToProjCenter: Pythagorean Theorem with Radius and distToRay
@@ -79,72 +74,9 @@ LocalGeo* Sphere::intersect(Ray* ray) {
     Coordinate* surfacePoint = ray->getPosition()->addVector(temp);
     Vector* normal = this->center->vectorTo(surfacePoint);
     LocalGeo* loc = new LocalGeo(surfacePoint, normal);
-  
+
     return loc;
-/*
-    Vector* rayOrigin = ray->getPosition()->vectorFromOrigin();
 
-    float a = rayDir->dot(rayDir);
-    float b = (rayDir->dot(rayOrigin)) * 2.0f;
-    float c = rayOrigin->dot(rayOrigin) - pow(this->radius, 2);
-
-
-    float discriminant = pow(b, 2) - 4.0f*a*c;
-    float t;
-
-    std::cout << "A= " << a << " B=" << b << " C=" << c << std::endl;
-
-    std::cout << "Discriminant = " << discriminant << std::endl;
-
-    if(discriminant < 0.0f) { 
-	return NULL;
-    }
- 
-    Coordinate* intersectPoint;
-
-    float t1 = 0.0f;
-    float t2 = 0.0f;
-
-    if(discriminant == 0.0f) {
-	t1 = (-b) / (2.0f*a);
-        t2 = t1;
-    } else {
-	t1 = (-b + sqrt(discriminant)) / (2.0f*a);
-        t2 = (-b - sqrt(discriminant)) / (2.0f*a);
-    }
-
-    if(t2 == t1) {
-    	if(t1 > 0) {
-	    t = t1;
-	} else {
-	    return NULL;
-	}
-    }
-
-    // First determine which float is smaller, then check if they're positive
-    if(t1 > t2) {
-        float temp = t2;
-        t2 = t1;
-        t1 = temp; 
-    } 
-
-    // We know t2 > t1, so if t2 < 0, then they both are
-    if (t2 < 0) {
-	return NULL;
-    }
- 
-    if (t1 < 0) {
-	t = t2;
-    } else {
-	t = t1;
-    }
-
-    rayDir->scale(t); 
-    intersectPoint = ray->getPosition()->addVector(rayDir);
-
-    LocalGeo* loc = new LocalGeo(intersectPoint, this->getNormal(intersectPoint));
-
-    return loc;*/
 }
 
 bool Sphere::intersectP(Ray* ray) {

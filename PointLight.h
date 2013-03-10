@@ -9,7 +9,6 @@
 #include "Color.h"
 #include "Ray.h"
 #include "Vector.h"
-#include "LocalGeo.h"
 
 class PointLight : public Light {
   private:
@@ -18,10 +17,12 @@ class PointLight : public Light {
 
   public:
     PointLight(Coordinate* pos, Color* col);
-    Ray* generateLightRay(LocalGeo* loc);
+    Ray* generateLightRay(Coordinate* pt);
     Color* getColor() { return color; };
     bool isPointLight() { return true; };
     Vector* getLightDirection(Coordinate* pt);
+    
+    Coordinate* getPosition() { return point; };
 };
 
 #endif

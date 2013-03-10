@@ -8,15 +8,15 @@
 #include "Ray.h"
 #include "Color.h"
 #include "Coordinate.h"
-#include "LocalGeo.h"
 #include "Vector.h"
 
 class Light {
 
   public:
-    virtual Ray* generateLightRay(LocalGeo* loc)=0;
+    virtual Ray* generateLightRay(Coordinate* pt)=0;
     virtual Color* getColor() = 0;
     virtual bool isPointLight() = 0;
     virtual Vector* getLightDirection(Coordinate* pt) = 0;
+    virtual Coordinate* getPosition() = 0;
 };
 #endif

@@ -6,7 +6,6 @@
 #include "Ray.h"
 #include "Vector.h"
 #include "Coordinate.h"
-#include "LocalGeo.h"
 
 //****************************************************
 // DirectionLight Header Definition
@@ -22,9 +21,11 @@ class DirectionLight : public Light {
     Color* getColor() { return color; };
     bool isPointLight() { return false; };
 
-    Ray* generateLightRay(LocalGeo* loc);
+    Ray* generateLightRay(Coordinate* pt);
     Vector* getDirection() { return direction; };
     Vector* getLightDirection(Coordinate* pt);
+    Coordinate* getPosition() { return NULL; };
 };
+
 
 #endif

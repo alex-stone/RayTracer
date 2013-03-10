@@ -16,17 +16,17 @@ DirectionLight::DirectionLight(Vector* dir, Color* col) {
     color = col;
 }
 
-Ray* DirectionLight::generateLightRay(LocalGeo* loc) {
+Ray* DirectionLight::generateLightRay(Coordinate* pt) {
     Vector* vec = direction->getCopy();
     vec->scale(-1);
-    Ray* ray = new Ray(loc->getPosition(), vec);
+    Ray* ray = new Ray(pt, vec);
 
     return ray;
 }
 
 Vector* DirectionLight::getLightDirection(Coordinate* pt) {
     Vector* returnVec = direction->getCopy();
-    returnVec->scale(-1);
+    returnVec->scale(-1.0f);
     returnVec->normalize(); 
     return returnVec;
 }

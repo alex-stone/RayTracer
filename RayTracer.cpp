@@ -37,10 +37,42 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
     return closest;
 
 } 
-
+//****************************************************
+// Check's if there is an object, between the light
+// and the point
+//****************************************************
 bool RayTracer::isLightBlocked(Intersection* inter, Light* light) {
+    float distToLight;
+    if(light->isPointLight()) {
+        distToLight = inter->getLocalGeo()->getPosition()->distTo(light->getPosition());
+    } else {
+        distToLight = -1.0f;
+    }
 
+    Ray* lightRay = light->generateLightRay(inter->getLocalGeo()->getPosition());
 
+    // Iterate thru shapes to check if Shape is blocking
+    for(int i = 0; i < shapeCount; i++) {
+        // If The Shadow Ray intersects with a Primitive
+
+        // Test that primitive is not blocking itself.
+        Intersection* shadowObject = primitives[i]->intersect(lightRay);
+
+        if(shadowObject != NULL && shadowObject->getPrimitive() != inter->getPrimitive()) {
+            
+            if(!light->isPointLight()) {
+                return true;
+            } else {
+                Intersection* shadowObject = primitives[i]->intersect(light->generateLightRay(inter->getLocalGeo()->getPosition()));
+                if(inter->getLocalGeo()->getPosition()->distTo(shadowObject->getLocalGeo()->getPosition()) < distToLight ) {
+                    return true;
+                }
+            }
+        }
+
+    }
+
+    return false;
 }
 
 /**
@@ -130,14 +162,18 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
 
     Vector* reflectDir = reflectedVector(lightDir, normal);
 
-    // Ambient Component
-    color->add(ambientValue(light, brdf->getKA()));
+    // Check if Light Is Blocked
+    if(!isLightBlocked(inter, light)) {
 
-    // Diffuse Component
-    color->add(diffuseValue(light, lightDir, normal, brdf->getKD()));
+        // Ambient Component
+        color->add(ambientValue(light, brdf->getKA()));
 
-    // Specular Component
-    color->add(specularValue(light, viewDir, reflectDir, brdf->getKS()));
+        // Diffuse Component
+        color->add(diffuseValue(light, lightDir, normal, brdf->getKD()));
+
+        // Specular Component
+        color->add(specularValue(light, viewDir, reflectDir, brdf->getKS()));
+    }
 
     return color;
 

@@ -17,9 +17,9 @@ PointLight::PointLight(Coordinate* pos, Color* col) {
     color = col;
 }
 
-Ray* PointLight::generateLightRay(LocalGeo* loc) {
-    Vector* vec = loc->getPosition()->vectorTo(point);
-    Ray* ray = new Ray(loc->getPosition(),vec);
+Ray* PointLight::generateLightRay(Coordinate* pt) {
+    Vector* vec = pt->vectorTo(point);
+    Ray* ray = new Ray(pt, vec);
 
     // Ray from intersection position to light
     return ray;

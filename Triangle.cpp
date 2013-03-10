@@ -91,14 +91,12 @@ LocalGeo* Triangle::intersect(Ray* ray) {
     // When the Denominator is 0 / extremely close to 0, then its parallel to plane
     
     if(denominator < 0.000001  && denominator > -0.000001) {
-	   std::cout << "Denominator Test Failed" << std::endl;
 	   return NULL;	// On Plane or parallel to Plane
     } 
 
     float distance = numerator / denominator;  
     // Then Triangle is behind the Ray
     if (distance < 0.0f) {
-        std::cout << "Distance Test Failed w/ dist = " << distance << std::endl;
 	    return NULL;
     }
 

@@ -23,15 +23,15 @@ Vector::Vector(float a, float b, float c) {
 }
 
 
-Vector::setX(float a) {
+void Vector::setX(float a) {
     x = a;
 }
 
-Vector::setY(float b) {
+void Vector::setY(float b) {
     y = b;
 }
 
-Vector::setZ(float c) {
+void Vector::setZ(float c) {
     z = c;
 }
 
@@ -65,6 +65,10 @@ float Vector::dot(Vector* v) {
     return ((this->x * v->getX()) + (this->y * v->getY()) + (this->z * v->getZ()));
 }
 
+Vector* Vector::cross(Vector* v) {
+    return new Vector(y * v->getZ() - z * v->getY(), z*v->getX() - x*v->getZ() , x*v->getY() + y*v->getX());
+}
+
 void Vector::print() {
     cout << "[" << this->x << ", " << this->y << ", " << this->z << "]" << endl;
 
@@ -74,6 +78,8 @@ Vector* Vector::getCopy() {
     Vector* temp = new Vector(this->x, this->y, this->z);
     return temp;
 }
+
+
 /*
 int main(int argc, char* argv[]) {
     Vector* vec1 = new Vector(3.0f, 2.0f, 4.0f);
