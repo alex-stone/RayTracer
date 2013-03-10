@@ -53,8 +53,6 @@ bool RayTracer::isLightBlocked(Intersection* inter, Light* light) {
 
     // Iterate thru shapes to check if Shape is blocking
     for(int i = 0; i < shapeCount; i++) {
-        // If The Shadow Ray intersects with a Primitive
-
         // Test that primitive is not blocking itself.
         Intersection* shadowObject = primitives[i]->intersect(lightRay);
 
@@ -69,16 +67,15 @@ bool RayTracer::isLightBlocked(Intersection* inter, Light* light) {
                 }
             }
         }
-
     }
-
     return false;
 }
 
-/**
- *  Reflected Vector, directed away from the point
- *  R = -L * 2(L dot N)N
- */
+//****************************************************
+//  Reflected Vector, directed away from the point
+//      R = -L * 2(L dot N)N
+//  Note: ONLY USE VECTORS POINTING AWAY FROM SAME PT.    
+//****************************************************
 Vector* RayTracer::reflectedVector(Vector* lightDir, Vector* normal) {
     float angle = 2*(lightDir->dot(normal));
     Vector* returnVec = new Vector(); 
@@ -147,20 +144,21 @@ Color* RayTracer::specularValue(Light* light, Vector* viewDir, Vector* reflectDi
  *    Vector* View   = ? From Reflected Vector need to derive.
  *    Vector* lightDir = 
  */
-Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Light* light) {
+Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Light* light, int depth) {
     Color* color = new Color(0.0f, 0.0f, 0.0f);
     Vector* lightDir;
     Coordinate* surfacePt = inter->getLocalGeo()->getPosition();
     Vector* normal = inter->getLocalGeo()->getNormal();
-
-
     BRDF* brdf = inter->getPrimitive()->getBRDF();
 
+    // Vector Direction - From Light to Surface
     lightDir = light->getLightDirection(surfacePt)->getCopy();
-
     lightDir->normalize();
 
-    Vector* reflectDir = reflectedVector(lightDir, normal);
+    // Vector Direction - From Surface to Light
+    Vector* objToLightDir = lightDir->getOpposite();
+
+    Vector* reflectDir = reflectedVector(objToLightDir, normal);
 
     // Check if Light Is Blocked
     if(!isLightBlocked(inter, light)) {
@@ -175,18 +173,26 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
         color->add(specularValue(light, viewDir, reflectDir, brdf->getKS()));
     }
 
+    // Current Ray's Direction
+    Vector* reflectDirection = reflectedVector(viewDir, normal);
+
+    Ray* reflectionRay = new Ray(surfacePt, reflectDirection);
+    Color* reflectedValue = trace(reflectionRay, depth+1);
+    Color* kr = inter->getPrimitive()->getBRDF()->getKR();
+    //color->add(reflectedValue->coefficientScale(kr));
+
     return color;
 
 }
 
-Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir) {
+Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir, int depth) {
     Color* color = new Color(0.0f, 0.0f, 0.0f);
 
     // Iterate Through all the Lights
 
     // Check if Adding makes the value over 1.0f
     for(int i = 0; i < lightCount; i++) {
-        color->add(getSingleLightColor(inter, viewDir, lights[i]));
+        color->add(getSingleLightColor(inter, viewDir, lights[i], depth));
     }
 
     return color;
@@ -220,10 +226,11 @@ Color* RayTracer::trace(Ray* ray, int depth) {
 
     // First Test: if Intersection:
  
-    Vector* viewDir = ray->getDirection();
+    // Vector Direction from surface Pt to Ray Origin
+    Vector* viewDir = ray->getDirection()->getOpposite();
 
    if(closeInter != NULL) {
-        return getColorFromIntersect(closeInter, viewDir);
+        return getColorFromIntersect(closeInter, viewDir, depth);
     } else {
    	    return new Color(0.0f, 0.0f, 0.0f);
     }

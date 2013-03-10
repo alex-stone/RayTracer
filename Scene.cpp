@@ -60,7 +60,7 @@ Scene::Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coo
     }
 }
 
-Scene::Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount) {
+Scene::Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth) {
     setEyePosition(ep);
     setCorners(UL, UR, LR, LL);
     if (isValidDimensions(h, w)) {
@@ -72,7 +72,7 @@ Scene::Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coo
 	setDefaultSampleFilm();
 	setCameraCoordinates(ep, UL, UR, LR, LL);
     }
-    setRayTracer(lights, primitives, lightCount, shapeCount);
+    setRayTracer(lights, primitives, lightCount, shapeCount, depth);
     
 }
 
@@ -116,8 +116,8 @@ void Scene::setDefaultCamera() {
     setCameraSize(480, 640);
 }
 
-void Scene::setRayTracer(Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount) {
-    sceneTracer = new RayTracer(lights, primitives, lightCount, shapeCount, 1);
+void Scene::setRayTracer(Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth) {
+    sceneTracer = new RayTracer(lights, primitives, lightCount, shapeCount, depth);
 }
 
 void Scene::setDefaultRayTracer() {
@@ -190,9 +190,9 @@ void Scene::render() {
     while(sample != NULL) {
 	
     	ray = sceneCamera->generateRay(sample);
-	color = sceneTracer->trace(ray, 1);
-	sceneFilm->commit(sample, color);	
-	sample = sceneSampler->getNextSample(sample);
+	    color = sceneTracer->trace(ray, 1);
+	    sceneFilm->commit(sample, color);	
+	    sample = sceneSampler->getNextSample(sample);
     }
 
     sceneFilm->writeImage();
@@ -328,7 +328,7 @@ int main(int argc, char* argv[]) {
     Light** lights = new Light*[1];
     lights[0] = light1;
 */
-    Scene* scene = new Scene(eye, UL, UR, LR, LL, height, width, lights, primitives, lightCount, shapeCount);
+    Scene* scene = new Scene(eye, UL, UR, LR, LL, height, width, lights, primitives, lightCount, shapeCount, 2);
 
     scene->render();
 }

@@ -45,7 +45,7 @@ class Scene {
     Scene(int h, int w);
  
     Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
-    Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount);
+    Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth);
  
     void setEyePosition(Coordinate* ep); 
     void setCorners(Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL);
@@ -56,7 +56,7 @@ class Scene {
     void setCamera(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
     void setDefaultCamera();
 
-    void setRayTracer(Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount);
+    void setRayTracer(Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth);
     void setDefaultRayTracer();
 
     Coordinate* getUL() {return upperLeft; };

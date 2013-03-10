@@ -35,8 +35,8 @@ class RayTracer {
     Color* diffuseValue(Light* light, Vector* lightDir, Vector* normal, Color* kd);
     Color* specularValue(Light* light, Vector* viewDir, Vector* reflectDir, Color* ks);
 
-    Color* getColorFromIntersect(Intersection* inter, Vector* viewDir);
-    Color* getSingleLightColor(Intersection* inter, Vector* viewDir, Light* light);
+    Color* getColorFromIntersect(Intersection* inter, Vector* viewDir, int depth);
+    Color* getSingleLightColor(Intersection* inter, Vector* viewDir, Light* light, int depth);
 
 
     bool isLightBlocked(Intersection* inter, Light* light);
