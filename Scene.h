@@ -10,6 +10,7 @@
 #include "RayTracer.h"
 #include "GeometricPrimitive.h"
 #include "Intersection.h" 
+#include "Light.h"
 
 //****************************************************
 // Scene Header Definition
@@ -44,7 +45,7 @@ class Scene {
     Scene(int h, int w);
  
     Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
-    Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, GeometricPrimitive** primitives);
+    Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount);
  
     void setEyePosition(Coordinate* ep); 
     void setCorners(Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL);
@@ -55,7 +56,7 @@ class Scene {
     void setCamera(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
     void setDefaultCamera();
 
-    void setRayTracer(GeometricPrimitive** primitives);
+    void setRayTracer(Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount);
     void setDefaultRayTracer();
 
     Coordinate* getUL() {return upperLeft; };

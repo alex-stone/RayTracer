@@ -1,4 +1,6 @@
 #include <iostream>
+#include <math.h>
+#include <cmath>
 #include "RayTracer.h"
 
 //****************************************************
@@ -22,7 +24,7 @@ RayTracer::RayTracer(Light** lightArray, GeometricPrimitive** primitiveArray, in
 Intersection* RayTracer::closestIntersection(Ray* ray) {
     Intersection* closest = NULL;
 
-    for(int i = 0; i< 1; i++) {
+    for(int i = 0; i< shapeCount; i++) {
 	Intersection* temp = primitives[i]->intersect(ray);
 	if(temp != NULL && temp->getDist() > 0) {
 	    if(closest == NULL || (temp->getDist() < closest->getDist())) {
@@ -37,7 +39,7 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
 
 } 
 
-bool RayTracer::isLightBlocked(Intersect* inter, Light* light) {
+bool RayTracer::isLightBlocked(Intersection* inter, Light* light) {
 
 
 }
@@ -63,11 +65,11 @@ Vector* RayTracer::reflectedVector(Vector* lightDir, Vector* normal) {
  */
 Color* RayTracer::ambientValue(Light* light, Color* ka) {
     Color* returnColor = new Color();
+    Color* lightColor = light->getColor();
 
-
-    returnColor->setR(light->getR() * ka->getR());
-    returnColor->setG(light->getG() * ka->getG());
-    returnColor->setB(light->getB() * ka->getB());
+    returnColor->setR(lightColor->getR() * ka->getR());
+    returnColor->setG(lightColor->getG() * ka->getG());
+    returnColor->setB(lightColor->getB() * ka->getB());
 
     return returnColor;
 }
@@ -77,12 +79,13 @@ Color* RayTracer::ambientValue(Light* light, Color* ka) {
  */ 
 Color* RayTracer::diffuseValue(Light* light, Vector* lightDir, Vector* normal, Color* kd) {
     Color* returnColor = new Color();
+    Color* lightColor = light->getColor();
 
-    float intensity = max(lightDir->dot(normal), 0.0f);
+    float intensity = std::max(lightDir->dot(normal), 0.0f);
 
-    returnColor->setR(light->getR() * kd->getR() * intensity);
-    returnColor->setG(light->getG() * kd->getG() * intensity);
-    returnColor->setB(light->getB() * kd->getB() * intensity);
+    returnColor->setR(lightColor->getR() * kd->getR() * intensity);
+    returnColor->setG(lightColor->getG() * kd->getG() * intensity);
+    returnColor->setB(lightColor->getB() * kd->getB() * intensity);
 
     return returnColor; 
 }
@@ -92,13 +95,14 @@ Color* RayTracer::diffuseValue(Light* light, Vector* lightDir, Vector* normal, C
  */ 
 Color* RayTracer::specularValue(Light* light, Vector* view, Vector* reflectDir, Color* ks) {
     Color* returnColor = new Color();
-    float sp = 1.0f; // FIGURE OUT WHAT VALUE TO SET THIS TO
+    Color* lightColor = light->getColor();
+    float sp = 30.0f; // FIGURE OUT WHAT VALUE TO SET THIS TO
  
-    float intensity = pow( max( reflectDir.dot(view), 0.0f), sp);
+    float intensity = pow( std::max( reflectDir->dot(view), 0.0f), sp);
 
-    returnColor->setR(light->getR() * ks.getR() * intensity);
-    returnColor->setG(light->getG() * ks.getG() * intensity);
-    returnColor->setB(light->getB() * ks.getB() * intensity);
+    returnColor->setR(lightColor->getR() * ks->getR() * intensity);
+    returnColor->setG(lightColor->getG() * ks->getG() * intensity);
+    returnColor->setB(lightColor->getB() * ks->getB() * intensity);
  
     return returnColor;
 }
@@ -109,11 +113,15 @@ Color* RayTracer::specularValue(Light* light, Vector* view, Vector* reflectDir, 
  *    Vector* View   = ? From Reflected Vector need to derive.
  *    Vector* lightDir = 
  */
-Color* RayTracer::getSingleLightColor(Intersect* inter, Light* light) {
+Color* RayTracer::getSingleLightColor(Intersection* inter, Light* light) {
     Color* color = new Color(0.0f, 0.0f, 0.0f);
     Vector* lightDir;
-    Coordinate* surfacePt = light->getLocalGeo()->getPosition();
-    Vector* normal = light->getLocalGeo()->getNormal();
+    Coordinate* surfacePt = inter->getLocalGeo()->getPosition();
+    Vector* normal = inter->getLocalGeo()->getNormal();
+    
+    // Figure out what VIEW should be
+    Vector* view = new Vector(0.0f, 0.0f, 0.0f);
+
 
     BRDF* brdf = inter->getPrimitive()->getBRDF();
 
@@ -129,26 +137,29 @@ Color* RayTracer::getSingleLightColor(Intersect* inter, Light* light) {
     Vector* reflectDir = reflectedVector(lightDir, normal);
 
     // Ambient Component
-    color.add(ambientValue(light brdf->getKA()));
+    color->add(ambientValue(light, brdf->getKA()));
 
     // Diffuse Component
-    color.add(diffuseValue(light, lightDir, normal, brdf->getKD()));
+    color->add(diffuseValue(light, lightDir, normal, brdf->getKD()));
 
     // Specular Component
-    color.add(specularValue(light, view, reflectDir, brdf->getKS()));
+    color->add(specularValue(light, view, reflectDir, brdf->getKS()));
 
     return color;
 
 }
 
-Color* RayTracer::getColorFromIntersect(Intersect* inter) {
+Color* RayTracer::getColorFromIntersect(Intersection* inter) {
     Color* color = new Color(0.0f, 0.0f, 0.0f);
 
     // Iterate Through all the Lights
 
-    for(int i = 0; i  
+    // Check if Adding makes the value over 1.0f
+    for(int i = 0; i < lightCount; i++) {
+	color->add(getSingleLightColor(inter, lights[i]));
+    }
 
-
+    return color;
 }
 
 //****************************************************
@@ -180,7 +191,7 @@ Color* RayTracer::trace(Ray* ray, int depth) {
     // First Test: if Intersection:
 
    if(closeInter != NULL) {
-        return colorFromIntersect(closeInter);
+        return getColorFromIntersect(closeInter);
     } else {
    	return new Color(0.0f, 0.0f, 0.0f);
     }
