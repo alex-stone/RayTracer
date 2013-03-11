@@ -1,8 +1,8 @@
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <iostream>
 
 #include "Scene.h"
 #include "Shape.h"
@@ -24,28 +24,26 @@
 //****************************************************
 
 Scene::Scene() {
-    setDefaultCoordinates();
     setDefaultImageSize(); 
     setDefaultSampleFilm(); 
     setDefaultRayTracer();
     setDefaultCamera();
 }
 
-Scene::Scene(std::filename file) {
+Scene::Scene(std::string file) {
     loadScene(file);
 }
 
 Scene::Scene(int h, int w) {
-    setDefaultCoordinates();
     setDefaultRayTracer();
     if (isValidDimensions(h, w)) {
         setImageSize(h, w);
-	initializeSampleFilm(h, w);
+	    initializeSampleFilm(h, w);
         setCameraSize(h, w);
     } else {
         setDefaultImageSize();
-	setDefaultSampleFilm();
-   	setDefaultCamera();
+	    setDefaultSampleFilm();
+        setDefaultCamera();
     }
 }
 
@@ -142,14 +140,6 @@ void Scene::initializeSampleFilm(int h, int w) {
 void Scene::setDefaultSampleFilm() {
     sceneSampler = new Sampler(480, 640);
     sceneFilm = new Film(480, 640);
-}
-
-void Scene::setDefaultCoordinates() {
-    eyePosition = new Coordinate(0.0f, 0.0f, 0.0f);
-    upperLeft = new Coordinate(-1.0f, 1.0f, -1.0f);
-    upperRight = new Coordinate(1.0f, 1.0f, -1.0f);
-    lowerRight = new Coordinate(1.0f, -1.0f, -1.0f);
-    lowerLeft= new Coordinate(-1.0f, -1.0f, -1.0f);
 }
 
 void Scene::setDefaultImageSize() {
@@ -376,6 +366,13 @@ void Scene::loadScene(std::string file) {
             //sphere x y z radius
             //  Deﬁnes a sphere with a given position and radius.
             else if(!splitline[0].compare("sphere")) {
+                Coordinate* position = new Coordinate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+                float radius = atof(splitline[4].c_str());
+
+                // Temporarily just Add it, ignoring Transformations
+                shapeCount += 1;
+                Shape* sphere = new Sphere(position, radius);
+
                 // x: atof(splitline[1].c_str())
                 // y: atof(splitline[1].c_str())
                 // z: atof(splitline[1].c_str())
@@ -571,17 +568,19 @@ void Scene::loadScene(std::string file) {
 
 
     std::cout << "Width = " << pixelWidth << " ; Height = " << pixelHeight << std::endl;
-    sceneCamera = new Camera(lookfrom, lookat, up, fovVert, aspectRatio, pixelHeight, pixelWidth);
-    
-    setCamera(lookfrom, lookat, up, fovVert)
 
-    // Initializes sceneSampler, and sceneFilm with dimensions
+    // Initializes the sceneCamera:
+    setCamera(lookfrom, lookat, up, fovVert);
+
+    // Initializes the sceneSampler and sceneFilm;
     initializeSampleFilm(pixelHeight, pixelWidth);
+
+    // Initializes the sceneTracer;
     setRayTracer(lights, primitives, lightCount, shapeCount, recurseDepth);
 
 
     Vector* vec = sceneCamera->pixelToVector(0,0);
-    std::cout << "Vector at pixel (0,0) = (" << vec->getX() << ", " << vec->getY() << ", " << vec->getZ() << ", " << std::endl;
+    std::cout << "Vector at pixel (0,0) = (" << vec->getX() << ", " << vec->getY() << ", " << vec->getZ() << ") " << std::endl;
 }
 
 
@@ -592,10 +591,10 @@ int main(int argc, char* argv[]) {
  	      std::cout << "Test File = " << argv[1] << std::endl;
     }
 
-    Scene* scene = new Scene();
-    scene->loadScene(argv[1]);
+   // Scene* scene = new Scene();
+   // scene->loadScene(argv[1]);
 
-   // Scene* scene = loadTestFromDiary();
+    Scene* scene = loadTestFromDiary();
 
     scene->render();
 }

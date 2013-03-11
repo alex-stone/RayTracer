@@ -30,7 +30,6 @@ class Scene {
     void initializeSampleFilm(int h, int w);
 
     void setDefaultSampleFilm();
-    void setDefaultCoordinates();
     void setDefaultImageSize();
 
     bool isValidDimensions(int h, int w);
