@@ -21,6 +21,23 @@ RayTracer::RayTracer(Light** lightArray, GeometricPrimitive** primitiveArray, in
     shapeCount = numShapes;
 } 
 
+RayTracer::RayTracer(std::vector<Light*> lightVec, std::vector<GeometricPrimitive*> primitiveVect, int numLights, int numShapes, int depth) {	
+    lights = new Light*[numLights];
+    primitives = new GeometricPrimitive*[numShapes];
+
+    for(int i = 0; i < numLights; i++) {
+        lights[i] = lightVec.at(i);
+    }
+
+    for(int i = 0; i < numShapes; i++) {
+        primitives[i] = primitiveVec.at(i);
+    }
+     
+    recurseDepth = depth;
+    lightCount = numLights;
+    shapeCount = numShapes;
+
+}
 Intersection* RayTracer::closestIntersection(Ray* ray) {
     Intersection* closest = NULL;
 

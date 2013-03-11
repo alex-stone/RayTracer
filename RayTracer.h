@@ -23,8 +23,7 @@ class RayTracer {
   public:
     RayTracer();
     RayTracer(Light** lightArray, GeometricPrimitive** primitiveArray, int numLights, int numShapes, int depth);
-
-    //Note: Does the Ray Tracer save the objects or the Scene?
+    RayTracer(std::vector<Light*> lightVec, std::vector<GeometricPrimitive*> primitiveVec, int numLights, int numShapes, int depth);
 
     Intersection* closestIntersection(Ray* ray);
 

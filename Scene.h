@@ -18,11 +18,6 @@
 
 class Scene {
   private:
-    Coordinate* eyePosition;
-    Coordinate* upperLeft;
-    Coordinate* upperRight;
-    Coordinate* lowerRight;
-    Coordinate* lowerLeft;
     int pixelHeight;
     int pixelWidth;
     
@@ -44,11 +39,8 @@ class Scene {
     Scene();
     Scene(int h, int w);
  
-    Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
     Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth);
  
-    void setEyePosition(Coordinate* ep); 
-    void setCorners(Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL);
     void setImageSize(int height, int width);
 
     void setCameraSize(int h, int w);
@@ -57,12 +49,9 @@ class Scene {
     void setDefaultCamera();
 
     void setRayTracer(Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth);
-    void setDefaultRayTracer();
+    void setRayTracer(std::vector<Light*> lights, std::vector<GeometricPrimitive*> primitives, int lightCount, int shapeCount, int depth);
 
-    Coordinate* getUL() {return upperLeft; };
-    Coordinate* getUR() {return upperRight; };
-    Coordinate* getLR() {return lowerRight; };
-    Coordinate* getLL() {return lowerLeft; };
+    void setDefaultRayTracer();
 
     int getHeight() {return pixelHeight; };
     int getWidth() {return pixelWidth; };
