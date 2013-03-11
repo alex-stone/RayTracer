@@ -22,6 +22,11 @@ class Triangle : public Shape {
     // Triangle Constructor
     Triangle(Coordinate* vec1, Coordinate* vec2, Coordinate* vec3);
 
+
+    Coordinate* getv1() { return v1; };
+    Coordinate* getv2() { return v2; };
+    Coordinate* getv3() { return v3; };
+
     // Shape - Abstract functions
     LocalGeo* intersect(Ray* ray);
     bool intersectP(Ray* ray);
