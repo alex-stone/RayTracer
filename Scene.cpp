@@ -276,7 +276,7 @@ void Scene::loadScene(std::string file) {
 
   //store variables and set stuff at the end
   
-    int width, height;
+    //int width, height;
  
     float aspectRatio = 1.0f;
     Coordinate* lookfrom = new Coordinate();
@@ -284,7 +284,7 @@ void Scene::loadScene(std::string file) {
     Vector* up = new Vector();
     float fovVert = 90;
 
-  
+ //   bool sizeSet, cameraSet  
 
     std::string fname = "output.bmp";
 
@@ -319,8 +319,17 @@ void Scene::loadScene(std::string file) {
             //size width height
             //  must be first command of file, controls image size
             else if(!splitline[0].compare("size")) {
-                width = atoi(splitline[1].c_str());
-                height = atoi(splitline[2].c_str());
+                int width = atoi(splitline[1].c_str());
+                int height = atoi(splitline[2].c_str());
+
+                if(isValidDimensions(height, width)) {
+                    pixelWidth = width;
+                    pixelHeight = height;
+                } else {
+                    std::cout << "File Read Error: Size Dimensions Invalid" << std::endl;
+                    std::exit(1);
+                }
+
                 aspectRatio = (float)width / (float) height;
             }
             //maxdepth depth
@@ -345,6 +354,9 @@ void Scene::loadScene(std::string file) {
                 up->setY(atof(splitline[8].c_str()));
                 up->setZ(atof(splitline[9].c_str()));
                 fovVert = atof(splitline[10].c_str());
+
+                // Maybe Just add Camera in here
+
                 // lookfrom:
                 //    atof(splitline[1].c_str())
                 //    atof(splitline[2].c_str())
@@ -551,17 +563,18 @@ void Scene::loadScene(std::string file) {
             } else {
                 std::cerr << "Unknown command: " << splitline[0] << std::endl;
             }
+        }
+
+        inpfile.close();
     }
 
-    inpfile.close();
-  }
 
+    std::cout << "Width = " << pixelWidth << " ; Height = " << pixelHeight << std::endl;
+    sceneCamera = new Camera(lookfrom, lookat, up, fovVert, aspectRatio, pixelHeight, pixelWidth);
+    sceneSampler = new Sampler(pixelHeight, pixelWidth);
 
-  std::cout << "Width = " << width << " ; Height = " << height << std::endl;
-  Camera* cam = new Camera(lookfrom, lookat, up, fovVert, aspectRatio, height, width);
-
-  Vector* vec = cam->pixelToVector(0,0);
-  std::cout << "Vector at pixel (0,0) = (" << vec->getX() << ", " << vec->getY() << ", " << vec->getZ() << ", " << std::endl;
+    Vector* vec = sceneCamera->pixelToVector(0,0);
+    std::cout << "Vector at pixel (0,0) = (" << vec->getX() << ", " << vec->getY() << ", " << vec->getZ() << ", " << std::endl;
 }
 
 
@@ -575,7 +588,7 @@ int main(int argc, char* argv[]) {
     Scene* scene = new Scene();
     scene->loadScene(argv[1]);
 
-//    Scene* scene = loadTestFromDiary();
+   // Scene* scene = loadTestFromDiary();
 
     scene->render();
 }
