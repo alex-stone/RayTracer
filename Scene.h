@@ -37,6 +37,7 @@ class Scene {
 
   public:
     Scene();
+    Scene(std::string file);
     Scene(int h, int w);
  
     Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth);
