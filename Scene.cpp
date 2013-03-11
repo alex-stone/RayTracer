@@ -48,8 +48,7 @@ Scene::Scene(int h, int w) {
 }
 
 Scene::Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth) {
-    setEyePosition(ep);
-    setCorners(UL, UR, LR, LL);
+    
     if (isValidDimensions(h, w)) {
         setImageSize(h,w);
         initializeSampleFilm(h,w);
@@ -90,7 +89,7 @@ void Scene::setCamera(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate
 }
 
 void Scene::setCamera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVert) {
-    sceneCamera = new Camera(lookfrom, lookat, up, fovVert, pixelHeight, pixelWidth)
+    sceneCamera = new Camera(lookfrom, lookat, up, fovVert, pixelHeight, pixelWidth);
 }
 
 void Scene::setDefaultCamera() {
