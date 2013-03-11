@@ -48,7 +48,6 @@ Scene::Scene(int h, int w) {
 }
 
 Scene::Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth) {
-    
     if (isValidDimensions(h, w)) {
         setImageSize(h,w);
         initializeSampleFilm(h,w);
@@ -70,11 +69,11 @@ void Scene::setImageSize(int h, int w) {
 }
 
 void Scene::setCameraSize(int h, int w) {
-    Coordinate* eyePosition = new Coordinate(0.0f, 0.0f, 0.0f);
-    Coordinate* upperLeft = new Coordinate(-1.0f, 1.0f, -1.0f);
-    Coordinate* upperRight = new Coordinate(1.0f, 1.0f, -1.0f);
-    Coordinate* lowerRight = new Coordinate(1.0f, -1.0f, -1.0f);
-    Coordinate* lowerLeft= new Coordinate(-1.0f, -1.0f, -1.0f);
+    Coordinate* eyePosition = new Coordinate(0.0f, 0.0f, 4.0f);
+    Coordinate* upperLeft = new Coordinate(-1.0f, 1.0f, 1.0f);
+    Coordinate* upperRight = new Coordinate(1.0f, 1.0f, 1.0f);
+    Coordinate* lowerRight = new Coordinate(1.0f, -1.0f, 1.0f);
+    Coordinate* lowerLeft= new Coordinate(-1.0f, -1.0f, 1.0f);
 
     sceneCamera = new Camera(eyePosition, upperLeft, upperRight, lowerRight, lowerLeft, h, w);
 }
@@ -177,6 +176,137 @@ void Scene::render() {
 }
 
 
+Scene* loadSceneTest1() {
+
+
+    Coordinate* eye = new Coordinate(0.0f, 0.0f, 0.0f);
+    Coordinate* UL = new Coordinate(-1.0f, 1.0f, -3.0f);
+    Coordinate* UR = new Coordinate(1.0f, 1.0f, -3.0f);
+    Coordinate* LR = new Coordinate(1.0f, -1.0f, -3.0f);
+    Coordinate* LL = new Coordinate(-1.0f, -1.0f, -3.0f);
+
+    Color* ambient = new Color(0.1f, 0.1f, 0.1f);
+    Color* diffuse = new Color(1.0f, 0.0f, 0.0f);
+    Color* specular = new Color();
+    Color* reflective = new Color();
+    float spec = 0.0f;
+
+    BRDF* brdf = new BRDF(diffuse, specular, ambient, reflective, spec);
+
+    int width = 640;
+    int height = 480;
+
+    Coordinate* p1 = new Coordinate(-1.0f, -1.0f, -5.0f);
+    Coordinate* p2 = new Coordinate(1.0f, -1.0f, -5.0f);
+    Coordinate* p3 = new Coordinate(1.0f, 1.0f, -5.0f);
+    Coordinate* p4 = new Coordinate(-1.0f, 1.0f, -5.0f);
+
+    Shape* tri1 = new Triangle (p1, p2, p3);
+    Shape* tri2 = new Triangle (p1, p3, p4);
+
+    GeometricPrimitive* shape1 = new GeometricPrimitive(tri1, brdf);
+    GeometricPrimitive* shape2 = new GeometricPrimitive(tri2, brdf);
+
+
+    int shapeCount = 2;
+    GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount];
+    primitives[0]=shape1;
+    primitives[1]=shape2;
+
+    
+
+    Coordinate* pos = new Coordinate(4.0f, 0.0f, 4.0f);
+    Color* col = new Color(0.5f, 0.5f, 0.5f);
+    Light* ptLight = new PointLight(pos, col);
+    Vector* vec = new Vector(0.0f, 0.0f, 1.0f);
+    Color* col2 = new Color(0.5f, 0.5f, 0.5f);
+    Light* dirLight = new DirectionLight(vec, col2);
+
+    int lightCount = 2;
+    Light** lights = new Light*[lightCount];
+    lights[0] = ptLight;
+    lights[1] = dirLight;
+
+    Scene* scene = new Scene(eye, UL, UR, LR, LL, height, width, lights, primitives, lightCount, shapeCount, 1);
+    return scene;
+}
+
+Scene* loadTestFromDiary2() {
+    Coordinate* eye = new Coordinate(0.0f, 0.0f, 0.0f);
+    Coordinate* UL = new Coordinate(-1.0f, 1.0f, -3.0f);
+    Coordinate* UR = new Coordinate(1.0f, 1.0f, -3.0f);
+    Coordinate* LR = new Coordinate(1.0f, -1.0f, -3.0f);
+    Coordinate* LL = new Coordinate(-1.0f, -1.0f, -3.0f);
+
+    int width = 1000;
+    int height = 1000;
+
+    Vector* dir1 = new Vector(0.57735027f, -0.57735027f, -0.57735027f);
+    Color* col1 = new Color(1.0f, 1.0f, 1.0f);
+    DirectionLight* light1 = new DirectionLight(dir1, col1);
+    
+    Vector* dir2 = new Vector(-0.57735027f, 0.57735027f, 0.57735027f);
+    Color* col2 = new Color(1.0f, 1.0f, 1.0f);
+    DirectionLight* light2 = new DirectionLight(dir2, col2);
+
+    int lightCount = 2;
+
+    Light** lights = new Light*[2];
+    lights[0] = light1;
+    lights[1] = light2; 
+
+    Shape* sphere1 = new Sphere(new Coordinate(0.0f, 0.0f, -17.0f), 2.0f);
+    Color* ka1 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd1 = new Color(1.0f, 0.0f, 0.0f);
+    Color* ks1 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr1 = new Color(0.9f, 0.9f, 0.9f);
+    float sp1 = 50.0f;
+    BRDF* brdf1 = new BRDF(kd1, ks1, ka1, kr1, sp1);
+
+    Shape* sphere2 = new Sphere(new Coordinate(0.0f, 4.0f, -17.0f), 1.5f);
+    Color* ka2 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd2 = new Color(0.0f, 1.0f, 0.0f);
+    Color* ks2 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr2 = new Color(0.9f, 0.9f, 0.9f);
+    float sp2 = 50.0f;
+    BRDF* brdf2 = new BRDF(kd2, ks2, ka2, kr2, sp2);
+
+    Shape* sphere3 = new Sphere(new Coordinate(0.0f, -4.0f, -17.0f), 1.5f);
+    Color* ka3 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd3 = new Color(0.0f, 0.0f, 1.0f);
+    Color* ks3 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr3 = new Color(0.9f, 0.9f, 0.9f);
+    float sp3 = 50.0f;
+    BRDF* brdf3 = new BRDF(kd3, ks3, ka3, kr3, sp3);
+
+    Shape* sphere4 = new Sphere(new Coordinate(4.0f, 0.0f, -17.0f), 1.5f);
+    Color* ka4 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd4 = new Color(1.0f, 1.0f, 0.0f);
+    Color* ks4 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr4 = new Color(0.9f, 0.9f, 0.9f);
+    float sp4 = 50.0f;
+    BRDF* brdf4 = new BRDF(kd4, ks4, ka4, kr4, sp4);
+
+    Shape* sphere5 = new Sphere(new Coordinate(-4.0f, 0.0f, -17.0f), 1.5f);
+    Color* ka5 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd5 = new Color(0.0f, 1.0f, 1.0f);
+    Color* ks5 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr5 = new Color(0.9f, 0.9f, 0.9f);
+    float sp5 = 50.0f;
+    BRDF* brdf5 = new BRDF(kd5, ks5, ka5, kr5, sp5);
+
+    int shapeCount = 5;
+    GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount]; 
+    primitives[0] = new GeometricPrimitive(sphere1, brdf1);
+    primitives[1] = new GeometricPrimitive(sphere2, brdf2);
+    primitives[2] = new GeometricPrimitive(sphere3, brdf3);
+    primitives[3] = new GeometricPrimitive(sphere4, brdf4);
+    primitives[4] = new GeometricPrimitive(sphere5, brdf5);
+
+    Scene* scene = new Scene(eye, UL, UR, LR, LL, height, width, lights, primitives, lightCount, shapeCount, 5);
+    return scene;
+
+}
 
 Scene* loadTestFromDiary() {
     Coordinate* eye = new Coordinate(0.0f, 0.0f, 0.0f);
@@ -233,7 +363,7 @@ Scene* loadTestFromDiary() {
     DirectionLight* light2 = new DirectionLight(dir2, col2);
 
     int shapeCount = 4;
-    GeometricPrimitive** primitives = new GeometricPrimitive*[3]; 
+    GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount]; 
     primitives[0] = new GeometricPrimitive(sphere1, brdf1);
     primitives[1] = new GeometricPrimitive(sphere2, brdf2);
     primitives[2] = new GeometricPrimitive(sphere3, brdf3);
@@ -264,11 +394,20 @@ void Scene::loadScene(std::string file) {
     std::vector<GeometricPrimitive*> primitives;
     std::vector<Light*> lights;
 
+    std::vector<Coordinate*> vertices;
+
     int shapeCount = 0;
     int lightCount = 0;
-    int recurseDepth = 1;
+    int recurseDepth = 5;
  
-    float aspectRatio = 1.0f;
+    // Ambient Coefficient with default (0.2, 0.2, 0.2)
+    Color* ambient = new Color(0.2f, 0.2f, 0.2f);
+    Color* diffuse = new Color(0.0f, 0.0f, 0.0f);
+    Color* specular = new Color(0.0f, 0.0f, 0.0f);  
+    Color* reflective = new Color(0.0f, 0.0f, 0.0f);
+    float shininess = 0.0f;
+    Color* emission = new Color(0.0f, 0.0f, 0.0f);
+
     Coordinate* lookfrom = new Coordinate();
     Coordinate* lookat = new Coordinate();
     Vector* up = new Vector();
@@ -299,7 +438,6 @@ void Scene::loadScene(std::string file) {
             if(splitline.size() == 0) {
                 continue;
             }
-
             //Ignore comments
             if(splitline[0][0] == '#') {
                 continue;
@@ -316,11 +454,10 @@ void Scene::loadScene(std::string file) {
                     pixelWidth = width;
                     pixelHeight = height;
                 } else {
-                    std::cout << "File Read Error: Size Dimensions Invalid" << std::endl;
+                    std::cout << "File Input Error: Size Dimensions Invalid" << std::endl;
                     std::exit(1);
                 }
 
-                aspectRatio = (float)width / (float) height;
             }
             //maxdepth depth
             //  max # of bounces for ray (default 5)
@@ -336,7 +473,6 @@ void Scene::loadScene(std::string file) {
             //camera lookfromx lookfromy lookfromz lookatx lookaty lookatz upx upy upz fov
             //  speciﬁes the camera in the standard way, as in homework 2.
             else if(!splitline[0].compare("camera")) {
-                std::cout << "TEST reached camera" << std::endl;
                 std::cout << "(  " << atof(splitline[1].c_str()) << ", " << atof(splitline[2].c_str()) << ", " << atof(splitline[3].c_str()) << ") " << std::endl;
                 lookfrom->setCoordinate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 lookat->setCoordinate(atof(splitline[4].c_str()), atof(splitline[5].c_str()), atof(splitline[6].c_str()));
@@ -368,9 +504,18 @@ void Scene::loadScene(std::string file) {
                 Coordinate* position = new Coordinate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 float radius = atof(splitline[4].c_str());
 
+                if(radius < 0.0f) {
+                    std::cout << "File Input Error: Negative Radius of a Sphere" << std::endl;
+                    std::exit(1);
+                }
                 // Temporarily just Add it, ignoring Transformations
-                shapeCount += 1;
                 Shape* sphere = new Sphere(position, radius);
+                BRDF* brdf = new BRDF(diffuse, specular, ambient, reflective, shininess);
+
+                GeometricPrimitive* prim = new GeometricPrimitive(sphere, brdf);
+
+                shapeCount += 1;
+                primitives.push_back(prim);
 
                 // x: atof(splitline[1].c_str())
                 // y: atof(splitline[1].c_str())
@@ -385,6 +530,7 @@ void Scene::loadScene(std::string file) {
             //  Deﬁnes a maximum number of vertices for later triangle speciﬁcations. 
             //  It must be set before vertices are deﬁned.
             else if(!splitline[0].compare("maxverts")) {
+
                 // Care if you want
                 // Here, either declare array size
                 // Or you can just use a STL vector, in which case you can ignore this
@@ -399,6 +545,8 @@ void Scene::loadScene(std::string file) {
             //  Deﬁnes a vertex at the given location.
             //  The vertex is put into a pile, starting to be numbered at 0.
             else if(!splitline[0].compare("vertex")) {
+                Coordinate* vert = new Coordinate(atof(splitline[1].c_str()),atof(splitline[2].c_str()),atof(splitline[3].c_str()));
+                vertices.push_back(vert);
                 // x: atof(splitline[1].c_str()),
                 // y: atof(splitline[2].c_str()),
                 // z: atof(splitline[3].c_str()));
@@ -422,6 +570,31 @@ void Scene::loadScene(std::string file) {
             //  the vertex command). The vertices are assumed to be speciﬁed in counter-clockwise order. Your code
             //  should internally compute a face normal for this triangle.
             else if(!splitline[0].compare("tri")) {
+                Coordinate* pt1 = vertices.at(atof(splitline[1].c_str()));
+                Coordinate* pt2 = vertices.at(atof(splitline[2].c_str()));
+                Coordinate* pt3 = vertices.at(atof(splitline[3].c_str()));
+                Shape* triangle = new Triangle(pt1, pt2, pt3);
+                BRDF* brdf = new BRDF(diffuse, specular, ambient, reflective, shininess);
+
+                std::cout << "using Diffuse: " << std::endl;
+                brdf->getKD()->print();
+
+                std::cout << "using Color: " << std::endl;
+                ambient->print();
+
+                std::cout << "Adding a Triangle with vertices:" << std::endl;
+                pt1->print();
+                pt2->print();
+                pt3->print();
+            //    std::cout << "pt1 = (" << triangle->getv1()->getX() << ", " << triangle->getv1()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
+          //      std::cout << "pt2 = (" << triangle->getv2()->getX() << ", " << triangle->getv2()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
+              //  std::cout << "pt3 = (" << triangle->getv3()->getX() << ", " << triangle->getv3()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
+
+
+                shapeCount += 1;
+                primitives.push_back(new GeometricPrimitive(triangle, brdf));
+
+
                 // v1: atof(splitline[1].c_str())
                 // v2: atof(splitline[2].c_str())
                 // v3: atof(splitline[3].c_str())
@@ -492,6 +665,18 @@ void Scene::loadScene(std::string file) {
             //directional x y z r g b
             //  The direction to the light source, and the color, as in OpenGL.
             else if(!splitline[0].compare("directional")) {
+                Vector* vec = new Vector(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+                Color* col = new Color(atof(splitline[4].c_str()),atof(splitline[5].c_str()),atof(splitline[6].c_str()));
+                Light* dirLight = new DirectionLight(vec, col);
+
+                std::cout << "Directional Lighting Color= " << std::endl;
+                col->print();
+                std::cout << "Directional Lighting Direction= " << std::endl;
+                vec->print();
+
+                lightCount += 1; 
+                lights.push_back(dirLight);
+
                 // x: atof(splitline[1].c_str()),
                 // y: atof(splitline[2].c_str()),
                 // z: atof(splitline[3].c_str()));
@@ -503,6 +688,17 @@ void Scene::loadScene(std::string file) {
             //point x y z r g b
             //  The location of a point source and the color, as in OpenGL.
             else if(!splitline[0].compare("point")) {
+                Coordinate* pt = new Coordinate(atof(splitline[1].c_str()),  atof(splitline[2].c_str()),  atof(splitline[3].c_str()));
+                Color* col = new Color(atof(splitline[4].c_str()),atof(splitline[5].c_str()),atof(splitline[6].c_str()));
+                Light* ptLight = new PointLight(pt, col);
+
+                std::cout << "PointLighting Color= " << std::endl;
+                col->print();
+                std::cout << "Point Lighting Direction= " << std::endl;
+                pt->print();
+
+                lightCount += 1;
+                lights.push_back(ptLight);
                 // x: atof(splitline[1].c_str()),
                 // y: atof(splitline[2].c_str()),
                 // z: atof(splitline[3].c_str()));
@@ -523,6 +719,8 @@ void Scene::loadScene(std::string file) {
             //  The global ambient color to be added for each object 
             //  (default is .2,.2,.2)
             else if(!splitline[0].compare("ambient")) {
+                ambient = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+
                 // r: atof(splitline[1].c_str())
                 // g: atof(splitline[2].c_str())
                 // b: atof(splitline[3].c_str())
@@ -531,6 +729,7 @@ void Scene::loadScene(std::string file) {
             //diﬀuse r g b
             //  speciﬁes the diﬀuse color of the surface.
             else if(!splitline[0].compare("diffuse")) {
+                diffuse = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 // r: atof(splitline[1].c_str())
                 // g: atof(splitline[2].c_str())
                 // b: atof(splitline[3].c_str())
@@ -539,6 +738,7 @@ void Scene::loadScene(std::string file) {
             //specular r g b 
             //  speciﬁes the specular color of the surface.
             else if(!splitline[0].compare("specular")) {
+                specular = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 // r: atof(splitline[1].c_str())
                 // g: atof(splitline[2].c_str())
                 // b: atof(splitline[3].c_str())
@@ -547,12 +747,19 @@ void Scene::loadScene(std::string file) {
             //shininess s
             //  speciﬁes the shininess of the surface.
             else if(!splitline[0].compare("shininess")) {
+                shininess = atof(splitline[1].c_str());
+                if(shininess < 0.0f) {
+                    std::cout << "File Input Error: Negative Shininess Value" << std::endl;
+                    std::exit(1);
+                }
                 // shininess: atof(splitline[1].c_str())
                 // Update current properties
             }
             //emission r g b
             //  gives the emissive color of the surface.
             else if(!splitline[0].compare("emission")) {
+                emission = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+            
                 // r: atof(splitline[1].c_str())
                 // g: atof(splitline[2].c_str())
                 // b: atof(splitline[3].c_str())
@@ -569,31 +776,29 @@ void Scene::loadScene(std::string file) {
     std::cout << "Width = " << pixelWidth << " ; Height = " << pixelHeight << std::endl;
 
     // Initializes the sceneCamera:
-    setCamera(lookfrom, lookat, up, fovVert);
-
-    // Initializes the sceneSampler and sceneFilm;
+   setCamera(lookfrom, lookat, up, fovVert);
+//setDefaultCamera();
+    //Initializes the sceneSampler and sceneFilm;
     initializeSampleFilm(pixelHeight, pixelWidth);
 
     // Initializes the sceneTracer;
     setRayTracer(lights, primitives, lightCount, shapeCount, recurseDepth);
 
-
-    Vector* vec = sceneCamera->pixelToVector(0,0);
-    std::cout << "Vector at pixel (0,0) = (" << vec->getX() << ", " << vec->getY() << ", " << vec->getZ() << ") " << std::endl;
 }
 
 
 
 int main(int argc, char* argv[]) {
-  
+    Scene* scene;
+
     if(argc > 1) {
  	      std::cout << "Test File = " << argv[1] << std::endl;
+          scene = new Scene(argv[1]);
+    } else {
+        scene = loadTestFromDiary2();
     }
 
-   // Scene* scene = new Scene();
-   // scene->loadScene(argv[1]);
-
-    Scene* scene = loadTestFromDiary();
+  //  Scene* scene = loadTestFromDiary();
 
     scene->render();
 }

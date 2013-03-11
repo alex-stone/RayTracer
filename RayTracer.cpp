@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <math.h>
 #include <cmath>
 #include "RayTracer.h"
@@ -8,8 +9,12 @@
 //****************************************************
 
 RayTracer::RayTracer() {
-    // Generate a generic sphere
-    recurseDepth = 1;
+    lights = NULL;
+    primitives = NULL;
+    lightCount = 0;
+    shapeCount = 0;
+ 
+    recurseDepth = 5;
 }
 
 RayTracer::RayTracer(Light** lightArray, GeometricPrimitive** primitiveArray, int numLights, int numShapes, int depth) {
@@ -21,16 +26,20 @@ RayTracer::RayTracer(Light** lightArray, GeometricPrimitive** primitiveArray, in
     shapeCount = numShapes;
 } 
 
-RayTracer::RayTracer(std::vector<Light*> lightVec, std::vector<GeometricPrimitive*> primitiveVect, int numLights, int numShapes, int depth) {	
+RayTracer::RayTracer(std::vector<Light*> lightVec, std::vector<GeometricPrimitive*> primitiveVec, int numLights, int numShapes, int depth) {	
     lights = new Light*[numLights];
     primitives = new GeometricPrimitive*[numShapes];
 
     for(int i = 0; i < numLights; i++) {
         lights[i] = lightVec.at(i);
+        std::cout << "Lights Color" << std::endl;
+        lights[i]->getColor()->print();
     }
 
     for(int i = 0; i < numShapes; i++) {
         primitives[i] = primitiveVec.at(i);
+        std::cout << "Primitives Color" << std::endl;
+        primitives[i]->getBRDF()->getKA()->print();
     }
      
     recurseDepth = depth;
@@ -179,8 +188,7 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
     // Check if Light Is Blocked
     if(!isLightBlocked(inter, light)) {
 
-        // Ambient Component
-        color->add(ambientValue(light, brdf->getKA()));
+        //color->add(ambientValue(light, brdf->getKA()));
 
         // Diffuse Component
         color->add(diffuseValue(light, lightDir, normal, brdf->getKD()));
@@ -188,16 +196,6 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
         // Specular Component
         color->add(specularValue(light, viewDir, reflectDir, brdf->getKS(), brdf->getSP()));
     }
-
-    // Current Ray's Direction
-    Vector* reflectDirection = reflectedVector(viewDir, normal);
-    reflectDirection->normalize();
-
-    Ray* reflectionRay = new Ray(surfacePt, reflectDirection);
-    Color* reflectedValue = trace(reflectionRay, depth+1);
-    Color* kr = inter->getPrimitive()->getBRDF()->getKR();
-    Color* temp = new Color(reflectedValue->getR()*kr->getR(), reflectedValue->getG()*kr->getG(), reflectedValue->getB()*kr->getB());
-    color->add(temp);
 
     return color;
 
@@ -212,6 +210,26 @@ Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir, in
     for(int i = 0; i < lightCount; i++) {
         color->add(getSingleLightColor(inter, viewDir, lights[i], depth));
     }
+
+    if (depth == 1) {
+    // Ambient Component
+  //  color->add(inter->getPrimitive()->getBRDF()->getKA());
+}
+    color->add(inter->getPrimitive()->getBRDF()->getKA());    
+
+    Coordinate* surfacePt = inter->getLocalGeo()->getPosition();
+    Vector* normal = inter->getLocalGeo()->getNormal();
+
+    // Current Ray's Direction
+    Vector* reflectDirection = reflectedVector(viewDir, normal);
+    reflectDirection->normalize();
+
+    Ray* reflectionRay = new Ray(surfacePt, reflectDirection);
+    Color* reflectedValue = trace(reflectionRay, depth+1);
+
+    Color* kr = inter->getPrimitive()->getBRDF()->getKR();
+    Color* temp = new Color(reflectedValue->getR()*kr->getR(), reflectedValue->getG()*kr->getG(), reflectedValue->getB()*kr->getB());
+    color->add(temp);
 
     return color;
 }
@@ -245,10 +263,10 @@ Color* RayTracer::trace(Ray* ray, int depth) {
     // Vector Direction from surface Pt to Ray Origin
     Vector* viewDir = ray->getDirection()->getOpposite();
 
-   if(closeInter != NULL) {
-	return getColorFromIntersect(closeInter, viewDir, depth);
+    if(closeInter != NULL) {
+	    return getColorFromIntersect(closeInter, viewDir, depth);
     } else {
-	return new Color(0.0f, 0.0f, 0.0f);
+	    return new Color(0.0f, 0.0f, 0.0f);
     }
 
 }
