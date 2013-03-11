@@ -3,6 +3,8 @@
 CPP = g++
 CPPFLAGS = -g -Wall
 
+# Link Libraries including Eigen
+CPPOPTS = -c -I ./
 
 LDFLAGS = -L./ -lfreeimage
 
@@ -17,7 +19,7 @@ scene: $(OBJECTS)
 	$(CPP) $(CPPFLAGS) $(LDFLAGS) $(OBJECTS) -o $(TARGET)
 
 scene.o :
-	$(CPP) $(CPPFLAGS) -c $(SOURCES)
+	$(CPP) $(CPPFLAGS) $(CPPOPTS) $(SOURCES)
 
 
 default : $(TARGET)
