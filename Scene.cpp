@@ -178,13 +178,28 @@ void Scene::render() {
 
 Scene* loadSceneTest1() {
 
+    // Given Dist = 1
+    float fov = 30.0f;
+    float aspectRatio = (float)4/float(3);
 
-    Coordinate* eye = new Coordinate(0.0f, 0.0f, 0.0f);
-    Coordinate* UL = new Coordinate(-1.0f, 1.0f, -3.0f);
-    Coordinate* UR = new Coordinate(1.0f, 1.0f, -3.0f);
-    Coordinate* LR = new Coordinate(1.0f, -1.0f, -3.0f);
-    Coordinate* LL = new Coordinate(-1.0f, -1.0f, -3.0f);
+    float imageHeight = 2 * tan((fov*3.141592654/180)/2);
+    float imageWidth = imageHeight*aspectRatio;
 
+    std::cout << "Img Height = " << imageHeight << "  and Width = " << imageWidth << std::endl;
+
+    Coordinate* eye = new Coordinate(0.0f, 0.0f, 1.0f);
+    Coordinate* UL = new Coordinate(-imageWidth/2, imageHeight/2, 0.0f);
+    Coordinate* UR = new Coordinate(imageWidth/2, imageHeight/2,  0.0f);
+    Coordinate* LR = new Coordinate(imageWidth/2, -imageHeight/2, 0.0f);
+    Coordinate* LL = new Coordinate(-imageWidth/2, -imageHeight/2, 0.0f);
+
+/*
+    Coordinate* eye = new Coordinate(0.0f, 0.0f, 1.0f);
+    Coordinate* UL = new Coordinate(-1.0f, 1.0f, -1.0f);
+    Coordinate* UR = new Coordinate(1.0f, 1.0f, -1.0f);
+    Coordinate* LR = new Coordinate(1.0f, -1.0f, -1.0f);
+    Coordinate* LL = new Coordinate(-1.0f, -1.0f, -1.0f);
+*/
     Color* ambient = new Color(0.1f, 0.1f, 0.1f);
     Color* diffuse = new Color(1.0f, 0.0f, 0.0f);
     Color* specular = new Color();
@@ -202,16 +217,16 @@ Scene* loadSceneTest1() {
     Coordinate* p4 = new Coordinate(-1.0f, 1.0f, -5.0f);
 
     Shape* tri1 = new Triangle (p1, p2, p3);
-    Shape* tri2 = new Triangle (p1, p3, p4);
+  //  Shape* tri2 = new Triangle (p1, p3, p4);
 
     GeometricPrimitive* shape1 = new GeometricPrimitive(tri1, brdf);
-    GeometricPrimitive* shape2 = new GeometricPrimitive(tri2, brdf);
+    //GeometricPrimitive* shape2 = new GeometricPrimitive(tri2, brdf);
 
 
-    int shapeCount = 2;
+    int shapeCount = 1;
     GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount];
     primitives[0]=shape1;
-    primitives[1]=shape2;
+    //primitives[1]=shape2;
 
     
 
@@ -309,7 +324,7 @@ Scene* loadTestFromDiary2() {
 }
 
 Scene* loadTestFromDiary() {
-    Coordinate* eye = new Coordinate(0.0f, 0.0f, 0.0f);
+    Coordinate* eye = new Coordinate(0.0f, 0.0f, 2.0f);
     Coordinate* UL = new Coordinate(-1.0f, 1.0f, -3.0f);
     Coordinate* UR = new Coordinate(1.0f, 1.0f, -3.0f);
     Coordinate* LR = new Coordinate(1.0f, -1.0f, -3.0f);
@@ -795,7 +810,7 @@ int main(int argc, char* argv[]) {
  	      std::cout << "Test File = " << argv[1] << std::endl;
           scene = new Scene(argv[1]);
     } else {
-        scene = loadTestFromDiary2();
+        scene = loadSceneTest1();
     }
 
   //  Scene* scene = loadTestFromDiary();

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <math.h>
 #include "Camera.h"
 
@@ -29,42 +30,75 @@ Camera::Camera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVe
     // tan (fovVert / 2) = (ImageHeight/2) / d   and d = 1
     // ImageHeight = 2 * tan (fovVert / 2)
 
+    Vector* view = lookfrom->vectorTo(lookat);
+    view->normalize();
+
     eyePosition = lookfrom;
-    Coordinate* center = lookat;
 
     // aspectRatio = tan(fovHoriz/2) / tan(fovVert/2)
     // tan(fovHoriz/2) = ImageHeight / 2
 
-    aspectRatio = (float) w / (float) h;
+//    float distance = lookfrom->distTo(lookat);
+    float aspectRatio = (float) w / (float) h;
 
-    float imageHeight = 2 * tan(fovVert / 2);
-    float fovHoriz = 2 * atan(aspectRatio * imageHeight / 2);
-    float imageWidth = 2 * tan(fovHoriz / 2);
-    // float imageWidth = aspectRatio * imageHeight;
+    std::cout << "aspectRatio = " << aspectRatio << std::endl;
 
-    Vector* view = lookfrom->vectorTo(lookat);
+    float fovVertRad = (fovVert * 3.141592654) / 180; 
+
+    std::cout << "fovVertRad = " << fovVertRad<< std::endl;    
+
+    float imageHeight = 2 *  tan(fovVertRad / 2);
+    float imageWidth = imageHeight*aspectRatio;
+
+
     Vector* upVec = up->getCopy();
+
+
+    std::cout << "Image Height = " << imageHeight << std::endl;
+    std::cout << "Image Width  = " << imageWidth << std::endl;
+ 
+    upVec->print();
+   
+
     upVec->normalize();
     upVec->scale(imageHeight/2);
 
-    Vector* rightVec = up->cross(view);
+    Vector* rightVec = view->cross(up);
     rightVec->normalize();
     rightVec->scale(imageWidth/2);
-   
+  
+    std::cout << "Right Vector = " << std::endl;
+    rightVec->print();
+
+    upperLeft = eyePosition->addVector(view)->addVector(upVec)->addVector(rightVec->getOpposite());
+    upperRight = eyePosition->addVector(view)->addVector(upVec)->addVector(rightVec);
+    lowerLeft = eyePosition->addVector(view)->addVector(upVec->getOpposite())->addVector(rightVec->getOpposite());
+    lowerRight = eyePosition->addVector(view)->addVector(upVec->getOpposite())->addVector(rightVec);
+/*
+
     Coordinate* upperMid = center->addVector(upVec);
     Coordinate* lowerMid = center->addVector(upVec->getOpposite());
-    
+ 
     upperLeft  = upperMid->addVector(rightVec->getOpposite());
     upperRight = upperMid->addVector(rightVec);
     lowerLeft  = lowerMid->addVector(rightVec->getOpposite());
     lowerRight = lowerMid->addVector(rightVec);
+
+*/
+    std::cout << "Upper Left Coordinates: = " << std::endl;
+    upperLeft->print();
+
+    std::cout << "Upper Right Coordinates: = " << std::endl;
+    upperRight->print();
+
+    std::cout << "Lower Left Coordinates: = " << std::endl;
+    lowerLeft->print();
+
+    std::cout << "Lower Right Coordinates: = " << std::endl;
+    lowerRight->print();
+
     pixelHeight = h;
     pixelWidth = w;
-
-    upperLeft->print();
-    upperRight->print();
-    lowerRight->print();
-    lowerLeft->print();
 
 }
 
@@ -89,7 +123,11 @@ Vector* Camera::pixelToVector(int x, int y) {
     horiz->scale(scaleHoriz);
     vert->scale(scaleVert);
     
-    Vector* returnVec = new Vector(upperLeft->getX(), upperLeft->getY(), upperLeft->getZ());
+    Vector* returnVec = eyePosition->vectorTo(upperLeft);
+
+    //Vector* returnVec = new Vector(upperLeft->getX(), upperLeft->getY(), upperLeft->getZ());
+
+    // Problem if z-axis = 0;
 
     returnVec->add(horiz);
     returnVec->add(vert);
