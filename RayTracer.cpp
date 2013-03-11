@@ -84,7 +84,6 @@ Vector* RayTracer::reflectedVector(Vector* lightDir, Vector* normal) {
     returnVec->setY( -lightDir->getY() + (angle * normal->getY()) );
     returnVec->setZ( -lightDir->getZ() + (angle * normal->getZ()) );
  
-    //returnVec->scale(-1.0f);
     returnVec->normalize();
     return returnVec;
 }
@@ -122,10 +121,9 @@ Color* RayTracer::diffuseValue(Light* light, Vector* lightDir, Vector* normal, C
 /**
  *  Calculates the Specular Component: ks * I * (reflectDir dot viewDir) ^ sp
  */ 
-Color* RayTracer::specularValue(Light* light, Vector* viewDir, Vector* reflectDir, Color* ks) {
+Color* RayTracer::specularValue(Light* light, Vector* viewDir, Vector* reflectDir, Color* ks, float sp) {
     Color* returnColor = new Color();
     Color* lightColor = light->getColor();
-    float sp = 50.0f; // FIGURE OUT WHAT VALUE TO SET THIS TO
  
     //iewDir->setZ(-viewDir->getZ());
 
@@ -171,7 +169,7 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
         color->add(diffuseValue(light, lightDir, normal, brdf->getKD()));
 
         // Specular Component
-        color->add(specularValue(light, viewDir, reflectDir, brdf->getKS()));
+        color->add(specularValue(light, viewDir, reflectDir, brdf->getKS(), brdf->getSP()));
     }
 
     // Current Ray's Direction
@@ -227,15 +225,13 @@ Color* RayTracer::trace(Ray* ray, int depth) {
     // Detect closest intersection of Ray and Shape:
     Intersection* closeInter = this->closestIntersection(ray); 
 
-    // First Test: if Intersection:
- 
     // Vector Direction from surface Pt to Ray Origin
     Vector* viewDir = ray->getDirection()->getOpposite();
 
    if(closeInter != NULL) {
-        return getColorFromIntersect(closeInter, viewDir, depth);
+	return getColorFromIntersect(closeInter, viewDir, depth);
     } else {
-   	    return new Color(0.0f, 0.0f, 0.0f);
+	return new Color(0.0f, 0.0f, 0.0f);
     }
 
 }

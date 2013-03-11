@@ -21,7 +21,7 @@ class BRDF {
     Color* getKS(){ return ks; };
     Color* getKA(){ return ka; };
     Color* getKR(){ return kr; };
-    float getSp() { return sp; };
+    float getSP() { return sp; };
 };
 
 #endif
