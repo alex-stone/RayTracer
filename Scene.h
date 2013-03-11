@@ -67,6 +67,9 @@ class Scene {
     int getHeight() {return pixelHeight; };
     int getWidth() {return pixelWidth; };
 
+    Scene* loadTestFromDiary();
+    void loadScene(std::string file);
+
     void render();
 
 };
