@@ -46,6 +46,9 @@ class Scene {
     void setCameraSize(int h, int w);
     void setCameraCoordinates(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL);
     void setCamera(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
+
+    void setCamera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVert);
+
     void setDefaultCamera();
 
     void setRayTracer(Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth);

@@ -25,6 +25,7 @@ class Camera {
   public:
     Camera(int h, int w);
     Camera(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w);
+    Camera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVert, int h, int w);
 
     Vector* pixelToVector(int x, int y);
 

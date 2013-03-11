@@ -90,6 +90,11 @@ void Scene::setCameraCoordinates(Coordinate* ep, Coordinate* UL, Coordinate* UR,
 void Scene::setCamera(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w) {
     sceneCamera = new Camera(ep, UL, UR, LR, LL, h, w);
 }
+
+void Scene::setCamera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVert) {
+    sceneCamera = new Camera(lookfrom, lookat, up, fovVert, pixelHeight, pixelWidth)
+}
+
 void Scene::setDefaultCamera() {
     setCameraSize(480, 640);
 }
@@ -101,7 +106,6 @@ void Scene::setRayTracer(Light** lights, GeometricPrimitive** primitives, int li
 void Scene::setRayTracer(std::vector<Light*> lights, std::vector<GeometricPrimitive*> primitives, int lightCount, int shapeCount, int depth) {
     sceneTracer = new RayTracer(lights, primitives, lightCount, shapeCount, depth);
 }
-
 
 void Scene::setDefaultRayTracer() {
     Shape* sphere = new Sphere(new Coordinate(0, 0, -2), 1);    
@@ -273,6 +277,7 @@ void Scene::loadScene(std::string file) {
 
     int shapeCount = 0;
     int lightCount = 0;
+    int recurseDepth = 1;
  
     float aspectRatio = 1.0f;
     Coordinate* lookfrom = new Coordinate();
@@ -568,9 +573,11 @@ void Scene::loadScene(std::string file) {
     std::cout << "Width = " << pixelWidth << " ; Height = " << pixelHeight << std::endl;
     sceneCamera = new Camera(lookfrom, lookat, up, fovVert, aspectRatio, pixelHeight, pixelWidth);
     
+    setCamera(lookfrom, lookat, up, fovVert)
+
     // Initializes sceneSampler, and sceneFilm with dimensions
     initializeSampleFilm(pixelHeight, pixelWidth);
-    setRayTracer = new RayTracer()
+    setRayTracer(lights, primitives, lightCount, shapeCount, recurseDepth);
 
 
     Vector* vec = sceneCamera->pixelToVector(0,0);
