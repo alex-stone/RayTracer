@@ -12,15 +12,16 @@ class BRDF {
     Color* ks;
     Color* ka;
     Color* kr;
+    float sp;
 
   public:
-    BRDF(Color* diffuse, Color* specular, Color* ambient, Color* reflection);
+    BRDF(Color* diffuse, Color* specular, Color* ambient, Color* reflection, float spec);
 
     Color* getKD(){ return kd; };
     Color* getKS(){ return ks; };
     Color* getKA(){ return ka; };
     Color* getKR(){ return kr; };
-
+    float getSp() { return sp; };
 };
 
 #endif
