@@ -26,7 +26,7 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
 
     for(int i = 0; i< shapeCount; i++) {
 	    Intersection* temp = primitives[i]->intersect(ray);
-	    if(temp != NULL && temp->getDist() > 0.1f) {
+	    if(temp != NULL && temp->getDist() > 0.001f) {
 	        if(closest == NULL || (temp->getDist() < closest->getDist())) {
 		         closest = temp;
 	        }
@@ -84,7 +84,7 @@ Vector* RayTracer::reflectedVector(Vector* lightDir, Vector* normal) {
     returnVec->setY( -lightDir->getY() + (angle * normal->getY()) );
     returnVec->setZ( -lightDir->getZ() + (angle * normal->getZ()) );
  
-    returnVec->scale(-1.0f);
+    //returnVec->scale(-1.0f);
     returnVec->normalize();
     return returnVec;
 }
@@ -158,8 +158,9 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
     // Vector Direction - From Surface to Light
     Vector* objToLightDir = lightDir->getOpposite();
 
-    Vector* reflectDir = reflectedVector(objToLightDir, normal);
-
+    // Vector Direction - From Surface to Reflect direction then Get Opposite
+    Vector* reflectDir = reflectedVector(objToLightDir, normal)->getOpposite();
+    
     // Check if Light Is Blocked
     if(!isLightBlocked(inter, light)) {
 
@@ -180,7 +181,8 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
     Ray* reflectionRay = new Ray(surfacePt, reflectDirection);
     Color* reflectedValue = trace(reflectionRay, depth+1);
     Color* kr = inter->getPrimitive()->getBRDF()->getKR();
-    color->add(reflectedValue->coefficientScale(kr));
+    Color* temp = new Color(reflectedValue->getR()*kr->getR(), reflectedValue->getG()*kr->getG(), reflectedValue->getB()*kr->getB());
+    color->add(temp);
 
     return color;
 
