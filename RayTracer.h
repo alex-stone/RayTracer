@@ -33,7 +33,7 @@ class RayTracer {
 
     Color* ambientValue(Light* light, Color* ka);
     Color* diffuseValue(Light* light, Vector* lightDir, Vector* normal, Color* kd);
-    Color* specularValue(Light* light, Vector* viewDir, Vector* reflectDir, Color* ks);
+    Color* specularValue(Light* light, Vector* viewDir, Vector* reflectDir, Color* ks, float sp);
 
     Color* getColorFromIntersect(Intersection* inter, Vector* viewDir, int depth);
     Color* getSingleLightColor(Intersection* inter, Vector* viewDir, Light* light, int depth);
