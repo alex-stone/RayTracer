@@ -49,6 +49,10 @@ void Vector::scale(float scale) {
     this->z *= scale;
 }
 
+Vector* Vector::getOpposite() {
+    return new Vector(-x, -y, -z);
+}
+
 void Vector::add(Vector* v) {
     this->x += v->getX();
     this->y += v->getY();
@@ -66,7 +70,7 @@ float Vector::dot(Vector* v) {
 }
 
 Vector* Vector::cross(Vector* v) {
-    return new Vector(y * v->getZ() - z * v->getY(), z*v->getX() - x*v->getZ() , x*v->getY() + y*v->getX());
+    return new Vector(y * v->getZ() - z * v->getY(), z*v->getX() - x*v->getZ() , x*v->getY() - y*v->getX());
 }
 
 void Vector::print() {
