@@ -5,6 +5,7 @@
 #include "BRDF.h"
 #include "Ray.h"
 #include "Intersection.h"
+#include "Transformation.h"
 
 //****************************************************
 // GeometricPrimitive Header Definition
