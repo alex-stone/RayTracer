@@ -17,7 +17,8 @@ Film::Film() {
     for(int i = 0; i < pixelWidth; i++) {
         pixelBucket[i] = new Color[640];
     }
- 
+
+    fileName = "output.png"; 
 }
 
 Film::Film(int h, int w) {
@@ -63,7 +64,7 @@ void Film::writeImage() {
 
     } 
 
-    if (FreeImage_Save(FIF_PNG, bitmap, "test.png", 0))
+    if (FreeImage_Save(FIF_PNG, bitmap, fileName, 0))
 	cout << "Image Successfuly Saved!" << endl;
 
     FreeImage_DeInitialise();
