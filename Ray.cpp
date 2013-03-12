@@ -2,7 +2,7 @@
 #include <math.h>
 #include <float.h>
 #include "Ray.h"
-
+#include "Transformation.h"
 
 //****************************************************
 // Ray Class - Note, may want to use one Ray, and keep
@@ -34,6 +34,15 @@ Coordinate* Ray::getPointFromDist(float dist) {
     dir->scale(dist);
     
     return position->addVector(dir);
+}
+
+Ray* Ray::applyTransformation(Transformation* transform) {
+    Coordinate* pos = transform->transformPt(position);
+    Vector* dir = transform->transformVec(direction);
+
+
+    Ray* ray = new Ray(pos, dir);
+    return ray;
 }
 
 /*
