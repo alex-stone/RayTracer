@@ -1,9 +1,10 @@
 #include <iostream>
+
 #include "BRDF.h"
 #include "Color.h"
 
 //****************************************************
-// BRDF  Definition
+// BRDF Class Definition
 //****************************************************
 
 BRDF::BRDF(Color* diffuse, Color* specular, Color* ambient, Color* reflection, float spec) {
@@ -13,4 +14,7 @@ BRDF::BRDF(Color* diffuse, Color* specular, Color* ambient, Color* reflection, f
     kr = reflection;
     sp = spec;
 }
+
+
+
 
