@@ -5,15 +5,17 @@
 #include "Ray.h"
 #include "BRDF.h"
 #include "Coordinate.h"
+#include "Transformation.h"
 
 //****************************************************
 // GeometricPrimitive Class Definition
 //****************************************************
 
 
-GeometricPrimitive::GeometricPrimitive(Shape* shap, BRDF* colorCoefficients) {
+GeometricPrimitive::GeometricPrimitive(Shape* shap, BRDF* colorCoefficients, Transformation* trans) {
     shape = shap;
     brdfCoefficients = colorCoefficients;
+    Transformation* worldToObj = trans;
 
 }
 

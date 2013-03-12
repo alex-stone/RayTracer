@@ -15,6 +15,7 @@
 #include "Light.h"
 #include "DirectionLight.h"
 #include "PointLight.h"
+#include "Transformation.h"
 
 #include <time.h>
 #include <math.h>
@@ -219,8 +220,10 @@ Scene* loadSceneTest1() {
     Shape* tri1 = new Triangle (p1, p2, p3);
     Shape* tri2 = new Triangle (p1, p3, p4);
 
-    GeometricPrimitive* shape1 = new GeometricPrimitive(tri1, brdf);
-    GeometricPrimitive* shape2 = new GeometricPrimitive(tri2, brdf);
+    Transformation* transform1 = new Transformation();
+
+    GeometricPrimitive* shape1 = new GeometricPrimitive(tri1, brdf, transform1);
+    GeometricPrimitive* shape2 = new GeometricPrimitive(tri2, brdf, transform1);
 
 
     int shapeCount = 2;
@@ -275,6 +278,8 @@ Scene* loadTestFromDiary2() {
     Color* kr1 = new Color(0.9f, 0.9f, 0.9f);
     float sp1 = 50.0f;
     BRDF* brdf1 = new BRDF(kd1, ks1, ka1, kr1, sp1);
+    Transformation* transform1 = new Transformation();
+    transform1->scale(4.0f, 2.0f, 2.0f);
 
     Shape* sphere2 = new Sphere(new Coordinate(0.0f, 4.0f, -17.0f), 1.5f);
     Color* ka2 = new Color(0.1f, 0.1f, 0.1f);
@@ -283,6 +288,8 @@ Scene* loadTestFromDiary2() {
     Color* kr2 = new Color(0.9f, 0.9f, 0.9f);
     float sp2 = 50.0f;
     BRDF* brdf2 = new BRDF(kd2, ks2, ka2, kr2, sp2);
+    Transformation* transform2 = new Transformation();
+    transform2->scale(0.5f, 1.5f, 1.0f);
 
     Shape* sphere3 = new Sphere(new Coordinate(0.0f, -4.0f, -17.0f), 1.5f);
     Color* ka3 = new Color(0.1f, 0.1f, 0.1f);
@@ -291,6 +298,8 @@ Scene* loadTestFromDiary2() {
     Color* kr3 = new Color(0.9f, 0.9f, 0.9f);
     float sp3 = 50.0f;
     BRDF* brdf3 = new BRDF(kd3, ks3, ka3, kr3, sp3);
+    Transformation* transform3 = new Transformation();
+    transform3->scale(0.5f, 1.5f, 1.0f);
 
     Shape* sphere4 = new Sphere(new Coordinate(4.0f, 0.0f, -17.0f), 1.5f);
     Color* ka4 = new Color(0.1f, 0.1f, 0.1f);
@@ -299,6 +308,8 @@ Scene* loadTestFromDiary2() {
     Color* kr4 = new Color(0.9f, 0.9f, 0.9f);
     float sp4 = 50.0f;
     BRDF* brdf4 = new BRDF(kd4, ks4, ka4, kr4, sp4);
+    Transformation* transform4 = new Transformation();
+    transform4->scale(0.5f, 1.5f, 1.0f);
 
     Shape* sphere5 = new Sphere(new Coordinate(-4.0f, 0.0f, -17.0f), 1.5f);
     Color* ka5 = new Color(0.1f, 0.1f, 0.1f);
@@ -307,14 +318,16 @@ Scene* loadTestFromDiary2() {
     Color* kr5 = new Color(0.9f, 0.9f, 0.9f);
     float sp5 = 50.0f;
     BRDF* brdf5 = new BRDF(kd5, ks5, ka5, kr5, sp5);
+    Transformation* transform5 = new Transformation();
+    transform5->scale(0.5f, 1.5f, 1.0f);
 
     int shapeCount = 5;
     GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount]; 
-    primitives[0] = new GeometricPrimitive(sphere1, brdf1);
-    primitives[1] = new GeometricPrimitive(sphere2, brdf2);
-    primitives[2] = new GeometricPrimitive(sphere3, brdf3);
-    primitives[3] = new GeometricPrimitive(sphere4, brdf4);
-    primitives[4] = new GeometricPrimitive(sphere5, brdf5);
+    primitives[0] = new GeometricPrimitive(sphere1, brdf1, transform1);
+    primitives[1] = new GeometricPrimitive(sphere2, brdf2, transform2);
+    primitives[2] = new GeometricPrimitive(sphere3, brdf3, transform3);
+    primitives[3] = new GeometricPrimitive(sphere4, brdf4, transform4);
+    primitives[4] = new GeometricPrimitive(sphere5, brdf5, transform5);
 
     Scene* scene = new Scene(eye, UL, UR, LR, LL, height, width, lights, primitives, lightCount, shapeCount, 5);
     return scene;
@@ -375,12 +388,14 @@ Scene* loadTestFromDiary() {
     Color* col2 = new Color(0.0f, 0.0f, 1.0f);
     DirectionLight* light2 = new DirectionLight(dir2, col2);
 
+    Transformation* transform1 = new Transformation();
+
     int shapeCount = 4;
     GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount]; 
-    primitives[0] = new GeometricPrimitive(sphere1, brdf1);
-    primitives[1] = new GeometricPrimitive(sphere2, brdf2);
-    primitives[2] = new GeometricPrimitive(sphere3, brdf3);
-    primitives[3] = new GeometricPrimitive(triangle1, brdf4);
+    primitives[0] = new GeometricPrimitive(sphere1, brdf1, transform1);
+    primitives[1] = new GeometricPrimitive(sphere2, brdf2, transform1);
+    primitives[2] = new GeometricPrimitive(sphere3, brdf3, transform1);
+    primitives[3] = new GeometricPrimitive(triangle1, brdf4, transform1);
 
     int lightCount = 2;
     Light** lights = new Light*[2];
@@ -427,6 +442,10 @@ void Scene::loadScene(std::string file) {
     float fovVert = 90;
 
  //   bool sizeSet, cameraSet  
+
+    std::stack<Transformation*> transformations;
+    Transformation* identity = new Transformation(); // Make sure this is correct Identity
+    transformations.push(identity);
 
     std::string fname = "output.bmp";
 
@@ -524,8 +543,11 @@ void Scene::loadScene(std::string file) {
                 // Temporarily just Add it, ignoring Transformations
                 Shape* sphere = new Sphere(position, radius);
                 BRDF* brdf = new BRDF(diffuse, specular, ambient, reflective, shininess);
+       
 
-                GeometricPrimitive* prim = new GeometricPrimitive(sphere, brdf);
+                Transformation* transform = transformations.top()->getCopy();
+
+                GeometricPrimitive* prim = new GeometricPrimitive(sphere, brdf, transform);
 
                 shapeCount += 1;
                 primitives.push_back(prim);
@@ -604,9 +626,11 @@ void Scene::loadScene(std::string file) {
           //      std::cout << "pt2 = (" << triangle->getv2()->getX() << ", " << triangle->getv2()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
               //  std::cout << "pt3 = (" << triangle->getv3()->getX() << ", " << triangle->getv3()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
 
+                Transformation* transform = transformations.top()->getCopy();
+
 
                 shapeCount += 1;
-                primitives.push_back(new GeometricPrimitive(triangle, brdf));
+                primitives.push_back(new GeometricPrimitive(triangle, brdf, transform));
 
 
                 // v1: atof(splitline[1].c_str())
@@ -637,6 +661,8 @@ void Scene::loadScene(std::string file) {
             //translate x y z
             //  A translation 3-vector
             else if(!splitline[0].compare("translate")) {
+                transformations.top()->translate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()))
+              
                 // x: atof(splitline[1].c_str())
                 // y: atof(splitline[2].c_str())
                 // z: atof(splitline[3].c_str())
@@ -645,6 +671,8 @@ void Scene::loadScene(std::string file) {
             //rotate x y z angle
             //  Rotate by angle (in degrees) about the given axis as in OpenGL.
             else if(!splitline[0].compare("rotate")) {
+                transformations.top()->rotate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()))
+              
                 // x: atof(splitline[1].c_str())
                 // y: atof(splitline[2].c_str())
                 // z: atof(splitline[3].c_str())
@@ -654,6 +682,7 @@ void Scene::loadScene(std::string file) {
             //scale x y z
             //  Scale by the corresponding amount in each axis (a non-uniform scaling).
             else if(!splitline[0].compare("scale")) {
+                transformations.top()->scale(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()))
                 // x: atof(splitline[1].c_str())
                 // y: atof(splitline[2].c_str())
                 // z: atof(splitline[3].c_str())
@@ -664,6 +693,8 @@ void Scene::loadScene(std::string file) {
             //  You might want to do pushTransform immediately after setting 
             //   the camera to preserve the “identity” transformation.
             else if(!splitline[0].compare("pushTransform")) {
+                Transformation* newTransform = transformations.top()->getCopy();
+                transformations.push(newTransform);
                 //mst.push();
             }
             //popTransform
@@ -674,6 +705,12 @@ void Scene::loadScene(std::string file) {
             //  discussed above).
             else if(!splitline[0].compare("popTransform")) {
                 //mst.pop();
+                if(transformations.size <= 1) {
+                    std::cout << "File Input Error: PopTransform called without corresponding pushTransform" << std::endl;
+                    std::exit(1);
+                } else {
+                    transformations.pop();
+                }
             }
 
             //directional x y z r g b
@@ -810,7 +847,7 @@ int main(int argc, char* argv[]) {
  	      std::cout << "Test File = " << argv[1] << std::endl;
           scene = new Scene(argv[1]);
     } else {
-        scene = loadSceneTest1();
+        scene = loadTestFromDiary2();
     }
 
   //  Scene* scene = loadTestFromDiary();
