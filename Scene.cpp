@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <stack>
 #include <iostream>
 
 #include "Scene.h"
@@ -123,7 +124,7 @@ void Scene::setDefaultRayTracer() {
     int lightCount = 1;
 
     GeometricPrimitive** primitives = new GeometricPrimitive*[1];
-    primitives[0] = new GeometricPrimitive(sphere, brdf);
+    primitives[0] = new GeometricPrimitive(sphere, brdf, new Transformation());
     int shapeCount = 1;
 
     int depth = 1;
@@ -150,6 +151,14 @@ bool Scene::isValidDimensions(int h, int w) {
     return (h >= 480 && h <= 2000) && (w >= 640 && w<= 2000);
 }
 
+void Scene::printProgressBar(Sample* sample) {
+    if (sample != NULL) {
+	     
+	    float percent = ((float) sample->getY() /( float) (pixelHeight-1)) * 100;
+        int intPercent = (int) percent; 
+        std::cout << "Progress: " << intPercent << "%\r";	    
+    }
+}
 
 //****************************************************
 // Main Render Loop
@@ -163,14 +172,20 @@ void Scene::render() {
     Sample* sample = sceneSampler->getSample(0,0);    
     Ray* ray;
     Color* color;
+    int count = 0;
 
     while(sample != NULL) {
-	
+		
     	ray = sceneCamera->generateRay(sample);
 	    color = sceneTracer->trace(ray, 1);
 	    sceneFilm->commit(sample, color);	
 	    sample = sceneSampler->getNextSample(sample);
+        if(count % 20  == 0) {
+            printProgressBar(sample);
+        }
+        count++;
     }
+    std::cout << std::endl;
 
     sceneFilm->writeImage();
 
@@ -185,8 +200,6 @@ Scene* loadSceneTest1() {
 
     float imageHeight = 2 * tan((fov*3.141592654/180)/2);
     float imageWidth = imageHeight*aspectRatio;
-
-    std::cout << "Img Height = " << imageHeight << "  and Width = " << imageWidth << std::endl;
 
     Coordinate* eye = new Coordinate(0.0f, 0.0f, 1.0f);
     Coordinate* UL = new Coordinate(-imageWidth/2, imageHeight/2, 0.0f);
@@ -309,7 +322,7 @@ Scene* loadTestFromDiary2() {
     float sp4 = 50.0f;
     BRDF* brdf4 = new BRDF(kd4, ks4, ka4, kr4, sp4);
     Transformation* transform4 = new Transformation();
-    transform4->scale(0.5f, 1.5f, 1.0f);
+    transform4->scale(0.0f, 1.5f, 1.0f);
 
     Shape* sphere5 = new Sphere(new Coordinate(-4.0f, 0.0f, -17.0f), 1.5f);
     Color* ka5 = new Color(0.1f, 0.1f, 0.1f);
@@ -505,7 +518,7 @@ void Scene::loadScene(std::string file) {
             //camera lookfromx lookfromy lookfromz lookatx lookaty lookatz upx upy upz fov
             //  speciﬁes the camera in the standard way, as in homework 2.
             else if(!splitline[0].compare("camera")) {
-                std::cout << "(  " << atof(splitline[1].c_str()) << ", " << atof(splitline[2].c_str()) << ", " << atof(splitline[3].c_str()) << ") " << std::endl;
+               
                 lookfrom->setCoordinate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 lookat->setCoordinate(atof(splitline[4].c_str()), atof(splitline[5].c_str()), atof(splitline[6].c_str()));
                 up->setX(atof(splitline[7].c_str()));
@@ -661,7 +674,7 @@ void Scene::loadScene(std::string file) {
             //translate x y z
             //  A translation 3-vector
             else if(!splitline[0].compare("translate")) {
-                transformations.top()->translate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()))
+                transformations.top()->translate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
               
                 // x: atof(splitline[1].c_str())
                 // y: atof(splitline[2].c_str())
@@ -671,7 +684,7 @@ void Scene::loadScene(std::string file) {
             //rotate x y z angle
             //  Rotate by angle (in degrees) about the given axis as in OpenGL.
             else if(!splitline[0].compare("rotate")) {
-                transformations.top()->rotate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()))
+                transformations.top()->rotate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()), atof(splitline[3].c_str()));
               
                 // x: atof(splitline[1].c_str())
                 // y: atof(splitline[2].c_str())
@@ -682,7 +695,7 @@ void Scene::loadScene(std::string file) {
             //scale x y z
             //  Scale by the corresponding amount in each axis (a non-uniform scaling).
             else if(!splitline[0].compare("scale")) {
-                transformations.top()->scale(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()))
+                transformations.top()->scale(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 // x: atof(splitline[1].c_str())
                 // y: atof(splitline[2].c_str())
                 // z: atof(splitline[3].c_str())
@@ -705,7 +718,7 @@ void Scene::loadScene(std::string file) {
             //  discussed above).
             else if(!splitline[0].compare("popTransform")) {
                 //mst.pop();
-                if(transformations.size <= 1) {
+                if(transformations.size() <= 1) {
                     std::cout << "File Input Error: PopTransform called without corresponding pushTransform" << std::endl;
                     std::exit(1);
                 } else {
@@ -720,11 +733,6 @@ void Scene::loadScene(std::string file) {
                 Vector* vec = new Vector(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 Color* col = new Color(atof(splitline[4].c_str()),atof(splitline[5].c_str()),atof(splitline[6].c_str()));
                 Light* dirLight = new DirectionLight(vec->getOpposite(), col);
-
-                std::cout << "Directional Lighting Color= " << std::endl;
-                col->print();
-                std::cout << "Directional Lighting Direction= " << std::endl;
-                vec->print();
 
                 lightCount += 1; 
                 lights.push_back(dirLight);
@@ -743,11 +751,6 @@ void Scene::loadScene(std::string file) {
                 Coordinate* pt = new Coordinate(atof(splitline[1].c_str()),  atof(splitline[2].c_str()),  atof(splitline[3].c_str()));
                 Color* col = new Color(atof(splitline[4].c_str()),atof(splitline[5].c_str()),atof(splitline[6].c_str()));
                 Light* ptLight = new PointLight(pt, col);
-
-                std::cout << "PointLighting Color= " << std::endl;
-                col->print();
-                std::cout << "Point Lighting Direction= " << std::endl;
-                pt->print();
 
                 lightCount += 1;
                 lights.push_back(ptLight);
@@ -824,9 +827,6 @@ void Scene::loadScene(std::string file) {
         inpfile.close();
     }
 
-
-    std::cout << "Width = " << pixelWidth << " ; Height = " << pixelHeight << std::endl;
-
     // Initializes the sceneCamera:
    setCamera(lookfrom, lookat, up, fovVert);
 //setDefaultCamera();
@@ -838,16 +838,60 @@ void Scene::loadScene(std::string file) {
 
 }
 
+Scene* testSphere() {
+       Coordinate* eye = new Coordinate(0.0f, 0.0f, 2.0f);
+    Coordinate* UL = new Coordinate(-1.0f, 1.0f, -3.0f);
+    Coordinate* UR = new Coordinate(1.0f, 1.0f, -3.0f);
+    Coordinate* LR = new Coordinate(1.0f, -1.0f, -3.0f);
+    Coordinate* LL = new Coordinate(-1.0f, -1.0f, -3.0f);
+
+    int width = 680;
+    int height = 680;
+
+    Shape* sphere1 = new Sphere(new Coordinate(0.0f, 0.0f, -20.0f), 3.0f);
+    Color* ka1 = new Color(0.1f, 0.1f, 0.1f);
+    Color* kd1 = new Color(1.0f, 0.0f, 1.0f);
+    Color* ks1 = new Color(1.0f, 1.0f, 1.0f);
+    Color* kr1 = new Color();
+    float sp1 = 50.0f;
+    BRDF* brdf1 = new BRDF(kd1, ks1, ka1, kr1, sp1);
+
+    Vector* dir1 = new Vector(0.57735027f, -0.57735027f, -0.57735027f);
+    Color* col1 = new Color(1.0f, 1.0f, 1.0f);
+    DirectionLight* light1 = new DirectionLight(dir1, col1);
+    
+    Vector* dir2 = new Vector(0.57735027f, 0.57735027f, -0.57735027f);
+    Color* col2 = new Color(0.0f, 0.0f, 1.0f);
+    DirectionLight* light2 = new DirectionLight(dir2, col2);
+
+    Transformation* transform1 = new Transformation();
+    transform1->scale(3.0f, 1.0f, 1.0f);
+
+    int shapeCount = 1;
+    GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount]; 
+    primitives[0] = new GeometricPrimitive(sphere1, brdf1, transform1);
+
+
+    int lightCount = 2;
+    Light** lights = new Light*[2];
+    lights[0] = light1;
+    lights[1] = light2; 
+
+    Scene* scene = new Scene(eye, UL, UR, LR, LL, height, width, lights, primitives, lightCount, shapeCount, 2);
+    return scene;
+
+}
 
 
 int main(int argc, char* argv[]) {
     Scene* scene;
 
     if(argc > 1) {
- 	      std::cout << "Test File = " << argv[1] << std::endl;
+ 	      //std::cout << "Test File = " << argv[1] << std::endl;
           scene = new Scene(argv[1]);
     } else {
         scene = loadTestFromDiary2();
+       //scene = testSphere();
     }
 
   //  Scene* scene = loadTestFromDiary();
