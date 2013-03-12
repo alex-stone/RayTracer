@@ -33,6 +33,7 @@ class Scene {
     void setDefaultImageSize();
 
     bool isValidDimensions(int h, int w);
+    void printProgressBar(Sample* sample);
 
   public:
     Scene();

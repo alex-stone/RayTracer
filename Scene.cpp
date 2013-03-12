@@ -828,8 +828,8 @@ void Scene::loadScene(std::string file) {
     }
 
     // Initializes the sceneCamera:
-   setCamera(lookfrom, lookat, up, fovVert);
-//setDefaultCamera();
+    setCamera(lookfrom, lookat, up, fovVert);
+    //setDefaultCamera();
     //Initializes the sceneSampler and sceneFilm;
     initializeSampleFilm(pixelHeight, pixelWidth);
 
@@ -890,8 +890,8 @@ int main(int argc, char* argv[]) {
  	      //std::cout << "Test File = " << argv[1] << std::endl;
           scene = new Scene(argv[1]);
     } else {
-        scene = loadTestFromDiary2();
-       //scene = testSphere();
+        //scene = loadTestFromDiary2();
+       scene = testSphere();
     }
 
   //  Scene* scene = loadTestFromDiary();
