@@ -21,12 +21,14 @@ Film::Film() {
     fileName = "output.png"; 
 }
 
-Film::Film(int h, int w) {
+Film::Film(int h, int w, std::string file) {
     setSize(h, w);
     pixelBucket = new Color*[w];	// Note Color 2D array is [width][height]
     for(int i = 0; i < pixelWidth; i++) {
        	pixelBucket[i] = new Color[h];
     }
+
+    fileName = file.c_str();
 }
 
 void Film::setSize(int h, int w) {
