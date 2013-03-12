@@ -66,8 +66,8 @@ TransformMatrix* TransformMatrix::scaleMatrix(float x, float y, float z) {
     TransformMatrix* matrix = new TransformMatrix();
 
     matrix->setValue(0, 0, x);
-    matrix->setValue(1, 1, x);
-    matrix->setValue(2, 2, x);
+    matrix->setValue(1, 1, y);
+    matrix->setValue(2, 2, z);
     
     return matrix;
 }
