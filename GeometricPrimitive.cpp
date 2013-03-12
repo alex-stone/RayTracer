@@ -15,34 +15,40 @@
 GeometricPrimitive::GeometricPrimitive(Shape* shap, BRDF* colorCoefficients, Transformation* trans) {
     shape = shap;
     brdfCoefficients = colorCoefficients;
-    Transformation* worldToObj = trans;
-
+    worldToObj = trans->getCopy();
 }
 
 Intersection* GeometricPrimitive::intersect(Ray* ray) {
-    //Ray objRay = worldToObj(ray);
-    LocalGeo* loc = this->shape->intersect(ray); //switch with objRay;
+
+
+    Ray* objRay = ray->applyInverseTransformation(worldToObj);
     
-    if(loc == NULL) {
+    // Local object
+    LocalGeo* objLoc = this->shape->intersect(objRay); //switch with objRay;
+    
+    if(objLoc == NULL) {
         return NULL;
     }
+
+    //LocalGeo* loc = objLoc->applyTransformation(worldToObj);
 
     //Transform objLoc to worldLoc
 
     // Distance = distance from origin of ray to localGeo position.
-    float dist = ray->getPosition()->distTo(loc->getPosition());   
+    float dist = ray->getPosition()->distTo(objLoc->getPosition());   
     GeometricPrimitive* self = this;
 
-    Intersection* in = new Intersection(self, loc, dist); 
+
+    Intersection* in = new Intersection(self, objLoc, dist); 
 
     return in; 
 
 } 
 
 bool GeometricPrimitive::intersectP(Ray* ray) {
-    //Ray* objRay = worldToObj(ray);
+    Ray* objRay = ray->applyTransformation(worldToObj);
 
-    return shape->intersectP(ray);  // Change to objRay
+    return shape->intersectP(objRay);  // Change to objRay
 
 }
 
