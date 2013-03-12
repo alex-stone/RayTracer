@@ -25,5 +25,5 @@ scene.o :
 default : $(TARGET)
 
 clean : 
-
+	rm scene Vector.o Coordinate.o Sample.o Sampler.o Color.o BRDF.o Ray.o Intersection.o PointLight.o DirectionLight.o GeometricPrimitive.o LocalGeo.o Sphere.o Triangle.o Camera.o Film.o RayTracer.o Scene.o
 

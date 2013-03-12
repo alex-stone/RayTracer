@@ -65,7 +65,7 @@ LocalGeo* Sphere::intersect(Ray* ray) {
     float pointToProjCenter = sqrt((this->radius * this->radius) - (distToRay * distToRay));
 
     float t1 = centerProj - pointToProjCenter;
-    float t2 = centerProj + pointToProjCenter;
+    // float t2 = centerProj - pointToProjCenter;
 
     Vector* temp = rayDir->getCopy();
     temp->scale(t1);

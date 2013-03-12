@@ -53,7 +53,6 @@ bool Triangle::isPointInTriangle(Coordinate* pointInPlane) {
     float dot13 = vector1->dot(vector3);
     float dot22 = vector2->dot(vector2);
     float dot23 = vector2->dot(vector3);
-    float dot33 = vector3->dot(vector3);
     float denom = dot11*dot22 - dot12*dot12;
 
     float x = (dot22 * dot13 - dot12 * dot23) / denom;

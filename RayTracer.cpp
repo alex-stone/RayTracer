@@ -38,7 +38,7 @@ RayTracer::RayTracer(std::vector<Light*> lightVec, std::vector<GeometricPrimitiv
 
     for(int i = 0; i < numShapes; i++) {
         primitives[i] = primitiveVec.at(i);
-        std::cout << "Primitives Color" << std::endl;
+        //std::cout << "Primitives Color" << std::endl;
         primitives[i]->getBRDF()->getKA()->print();
     }
      
@@ -213,9 +213,9 @@ Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir, in
 
     if (depth == 1) {
     // Ambient Component
-  //  color->add(inter->getPrimitive()->getBRDF()->getKA());
+    color->add(inter->getPrimitive()->getBRDF()->getKA());
 }
-    color->add(inter->getPrimitive()->getBRDF()->getKA());    
+  //  color->add(inter->getPrimitive()->getBRDF()->getKA());    
 
     Coordinate* surfacePt = inter->getLocalGeo()->getPosition();
     Vector* normal = inter->getLocalGeo()->getNormal();

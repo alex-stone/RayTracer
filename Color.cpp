@@ -19,6 +19,26 @@ Color::Color(float x, float y, float z) {
     b = clipValue(z);
 } 
 
+
+void Color::setR(float x) { 
+    r = x; 
+}
+void Color::setG(float y) { 
+    g = y;
+}
+void Color::setB(float z) {
+    b = z; };
+
+
+Color* Color::coefficientScale(Color* col) {
+    Color* returnCol = new Color();
+    returnCol->setR(r*col->getR());
+    returnCol->setG(r*col->getG());
+    returnCol->setB(r*col->getB());
+
+    return returnCol;
+}
+
 float Color::clipValue(float x) {
     if(x > 1.0f) {
         return 1.0f;

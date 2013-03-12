@@ -217,18 +217,16 @@ Scene* loadSceneTest1() {
     Coordinate* p4 = new Coordinate(-1.0f, 1.0f, -5.0f);
 
     Shape* tri1 = new Triangle (p1, p2, p3);
-  //  Shape* tri2 = new Triangle (p1, p3, p4);
+    Shape* tri2 = new Triangle (p1, p3, p4);
 
     GeometricPrimitive* shape1 = new GeometricPrimitive(tri1, brdf);
-    //GeometricPrimitive* shape2 = new GeometricPrimitive(tri2, brdf);
+    GeometricPrimitive* shape2 = new GeometricPrimitive(tri2, brdf);
 
 
-    int shapeCount = 1;
+    int shapeCount = 2;
     GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount];
     primitives[0]=shape1;
-    //primitives[1]=shape2;
-
-    
+    primitives[1]=shape2;
 
     Coordinate* pos = new Coordinate(4.0f, 0.0f, 4.0f);
     Color* col = new Color(0.5f, 0.5f, 0.5f);
@@ -591,6 +589,7 @@ void Scene::loadScene(std::string file) {
                 Shape* triangle = new Triangle(pt1, pt2, pt3);
                 BRDF* brdf = new BRDF(diffuse, specular, ambient, reflective, shininess);
 
+/*
                 std::cout << "using Diffuse: " << std::endl;
                 brdf->getKD()->print();
 
@@ -600,7 +599,7 @@ void Scene::loadScene(std::string file) {
                 std::cout << "Adding a Triangle with vertices:" << std::endl;
                 pt1->print();
                 pt2->print();
-                pt3->print();
+                pt3->print();*/
             //    std::cout << "pt1 = (" << triangle->getv1()->getX() << ", " << triangle->getv1()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
           //      std::cout << "pt2 = (" << triangle->getv2()->getX() << ", " << triangle->getv2()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
               //  std::cout << "pt3 = (" << triangle->getv3()->getX() << ", " << triangle->getv3()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
@@ -680,9 +679,10 @@ void Scene::loadScene(std::string file) {
             //directional x y z r g b
             //  The direction to the light source, and the color, as in OpenGL.
             else if(!splitline[0].compare("directional")) {
+                // Note this is a vector TOWARDS the directional light
                 Vector* vec = new Vector(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 Color* col = new Color(atof(splitline[4].c_str()),atof(splitline[5].c_str()),atof(splitline[6].c_str()));
-                Light* dirLight = new DirectionLight(vec, col);
+                Light* dirLight = new DirectionLight(vec->getOpposite(), col);
 
                 std::cout << "Directional Lighting Color= " << std::endl;
                 col->print();

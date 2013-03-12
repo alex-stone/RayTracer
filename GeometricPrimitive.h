@@ -14,9 +14,10 @@ class GeometricPrimitive {
   private:
     Shape* shape;
     BRDF* brdfCoefficients;
+    Transformation* worldToObj;
 
   public:
-    GeometricPrimitive(Shape* shap, BRDF* colorCoefficients);
+    GeometricPrimitive(Shape* shap, BRDF* colorCoefficients, Transformation* trans);
 
     Intersection* intersect(Ray* ray);
     bool intersectP(Ray* ray);

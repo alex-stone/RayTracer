@@ -23,8 +23,10 @@ class Vector {
     void setY(float b);
     void setZ(float c);
 
+    float getDist();
     void normalize();
     void scale(float s);
+    Vector* getOpposite();
 
     void add(Vector* v);
     void sub(Vector* v);

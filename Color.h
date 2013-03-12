@@ -17,6 +17,12 @@ class Color {
     float getG() {return g; };
     float getB() {return b; };
 
+    void setR(float x);
+    void setG(float y);
+    void setB(float z);
+
+    Color* coefficientScale(Color* col);
+
     int getRgbRed();
     int getRgbGreen();
     int getRgbBlue();

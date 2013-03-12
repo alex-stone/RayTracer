@@ -35,6 +35,10 @@ void Vector::setZ(float c) {
     z = c;
 }
 
+float Vector::getDist() {
+    return  sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z));
+}
+
 void Vector::normalize() {
     float length = sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z));    
 
