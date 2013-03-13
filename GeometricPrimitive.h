@@ -24,7 +24,7 @@ class GeometricPrimitive {
     bool intersectP(Ray* ray);
 
     BRDF* getBRDF();
-
+    Transformation* getTransformation() {return worldToObj; };
 };
 
 
