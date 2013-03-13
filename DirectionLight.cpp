@@ -28,10 +28,4 @@ Vector* DirectionLight::getLightDirection(Coordinate* pt) {
     return returnVec;
 }
 
-Light* DirectionLight::applyTransform(Transformation* transform) {
-    DirectionLight* returnLight = new DirectionLight(transform->transformVec(direction), color);
-
-    return returnLight;
-}
-
 

@@ -25,8 +25,6 @@ class Ray {
     Vector* getDirection() { return direction; }; 
     Coordinate* getPointFromDist(float dist);
 
-//    Ray* applyTransformation(Transformation* transform);
-//    Ray* applyInverseTransformation(Transformation* transform);
 };
 
 #endif

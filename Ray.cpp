@@ -36,22 +36,6 @@ Coordinate* Ray::getPointFromDist(float dist) {
     return position->addVector(dir);
 }
 
-Ray* Ray::applyTransformation(Transformation* transform) {
-    Coordinate* pos = transform->getMatrix()->transformPt(position);
-    Vector* dir = transform->getMatrix()->transformVec(direction);
-
-    Ray* ray = new Ray(pos, dir);
-    return ray;
-}
-
-Ray* Ray::applyInverseTransformation(Transformation* transform) {
-    Coordinate* pos = transform->getInverseTransformation()->transformPt(position);
-    Vector* dir = transform->getInverseTransformation()->transformVec(direction);
-
-    Ray* ray = new Ray(pos, dir);
-    return ray;
-}
-
 
 /*
 int main(int argc, char* argv[]) {

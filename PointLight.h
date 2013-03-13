@@ -25,9 +25,6 @@ class PointLight : public Light {
     
     Coordinate* getPosition() { return point; };
 
-    Light* applyTransform(Transformation* transform); 
-
-
 };
 
 #endif

@@ -675,9 +675,6 @@ void Scene::loadScene(std::string file) {
                 float z = atof(splitline[3].c_str());
                 transformations.top()->translate(x,y,z);
 
-                std::cout << "Added Translation: " << "( "<< x << ", " << y << ", " << z << ")" << std::endl;
-                transformations.top()->print();
-
             }
             //rotate x y z angle
             //  Rotate by angle (in degrees) about the given axis as in OpenGL.
@@ -691,9 +688,6 @@ void Scene::loadScene(std::string file) {
                 float z = atof(splitline[3].c_str());
                 float angle = atof(splitline[4].c_str());
                 transformations.top()->rotate(x,y,z,angle);
-
-                std::cout << "Added Rotation on axis: " << "( "<< x << ", " << y << ", " << z << ") by " << angle << " degrees" << std::endl;
-                transformations.top()->print();
 
             }
             //scale x y z
@@ -709,10 +703,6 @@ void Scene::loadScene(std::string file) {
                 float z = atof(splitline[3].c_str());
 
                 transformations.top()->scale(x,y,z);
-
-                std::cout << "Added Scale: " << "( "<< x << ", " << y << ", " << z << ")" << std::endl;
-                transformations.top()->print();
-
             }
             //pushTransform
             //  Push the current modeling transform on the stack as in OpenGL. 
