@@ -7,10 +7,15 @@
 // Intersection Class Definition
 //****************************************************
 
-Intersection::Intersection(GeometricPrimitive* p, LocalGeo* geo, float tdist) {
+Intersection::Intersection(GeometricPrimitive* p, LocalGeo* geo, float distWorld, float distObj) {
     this->primitive = p;
     this->localGeo = geo;
-    this->dist = tdist;
+    this->worldDist = distWorld;
+    this->objDist = distObj;
 }
+/*
+LocalGeo* Intersection::getWorldGeo() {
+    LocalGeo* worldLoc = localGeo->applyInverseTransformation(primitive->getTransformation());
 
-
+    return worldLoc;
+}*/

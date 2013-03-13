@@ -31,8 +31,8 @@ Vector* PointLight::getLightDirection(Coordinate* pt) {
     return returnVec;
 }
 
-PointLight* PointLight::applyTransform(Transformation* transform) {
-    PointLight* returnLight = new PointLight(transform->transformPt(point), col);
+Light* PointLight::applyTransform(Transformation* transform) {
+    PointLight* returnLight = new PointLight(transform->transformPt(point), color);
 
     return returnLight;
 }

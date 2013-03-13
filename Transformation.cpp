@@ -46,7 +46,7 @@ void Transformation::rotate(float x, float y, float z, float angle) {
 }
 
 // 4th Position = 1, because we want translations on 
-Coordinate* Transformation::pointTransformToObject(Coordinate* pt) {
+Coordinate* Transformation::pointToObject(Coordinate* pt) {
     Eigen::Matrix4f matrix = mat->getMatrix();
     Eigen::Vector4f temp(pt->getX(), pt->getY(), pt->getZ(), 1.0f);
 
@@ -55,7 +55,7 @@ Coordinate* Transformation::pointTransformToObject(Coordinate* pt) {
     return new Coordinate(temp(0), temp(1), temp(2));
 }
    
-Coordinate* Transformation::pointTransformToWorld(Coordinate* pt) {
+Coordinate* Transformation::pointToWorld(Coordinate* pt) {
     Eigen::Matrix4f matrix = inverseMatrix->getMatrix();
     Eigen::Vector4f temp(pt->getX(), pt->getY(), pt->getZ(), 1.0f);
 
@@ -65,7 +65,7 @@ Coordinate* Transformation::pointTransformToWorld(Coordinate* pt) {
 }
 
 // For Ray's and Vectors, 4th Position = 0, no translation
-Ray* Transformation::rayTransformToObject(Ray* ray) {
+Ray* Transformation::rayToObject(Ray* ray) {
     Coordinate* rayPt = ray->getPosition();
     Vector* rayDir = ray->getDirection();
 
@@ -83,7 +83,7 @@ Ray* Transformation::rayTransformToObject(Ray* ray) {
     return new Ray(newPt, newDir);
 }
 
-Ray* Transformation::rayTransformToWorld(Ray* ray) {
+Ray* Transformation::rayToWorld(Ray* ray) {
     Coordinate* rayPt = ray->getPosition();
     Vector* rayDir = ray->getDirection();
 
@@ -101,7 +101,7 @@ Ray* Transformation::rayTransformToWorld(Ray* ray) {
     return new Ray(newPt, newDir);
 }
 
-Light* Transformation::lightTransformToObject(Light* light) {
+Light* Transformation::lightToObject(Light* light) {
     Light* returnLight;
     Eigen::Matrix<float,4,4> matrix = mat->getMatrix();
 
@@ -124,7 +124,7 @@ Light* Transformation::lightTransformToObject(Light* light) {
     return returnLight;
 }
 
-Light* Transformation::lightTransformToWorld(Light* light) {
+Light* Transformation::lightToWorld(Light* light) {
     Light* returnLight;
     Eigen::Matrix<float,4,4> invMatrix = inverseMatrix->getMatrix();
 
@@ -158,7 +158,7 @@ Light* Transformation::lightTransformToWorld(Light* light) {
     return returnLight;
 }
 
-Vector* Transformation::vectorTransformToObject(Vector* vec) {
+Vector* Transformation::vectorToObject(Vector* vec) {
   
     Eigen::Vector4f returnDir(vec->getX(), vec->getY(), vec->getZ(), 0.0f);
     Eigen::Matrix<float,4,4> matrix = mat->getMatrix();
@@ -170,7 +170,7 @@ Vector* Transformation::vectorTransformToObject(Vector* vec) {
     return result;
 }
 
-Vector* Transformation::vectorTransformToWorld(Vector* vec) {
+Vector* Transformation::vectorToWorld(Vector* vec) {
     Eigen::Vector4f returnDir(vec->getX(), vec->getY(), vec->getZ(), 0.0f);
     Eigen::Matrix<float,4,4> invMatrix = inverseMatrix->getMatrix();
 
@@ -181,13 +181,13 @@ Vector* Transformation::vectorTransformToWorld(Vector* vec) {
     return result;
 }
 
-Vector* Transformation::normalTransformToObject(Vector* vec) {
+Vector* Transformation::normalToObject(Vector* vec) {
     std::cout << "This case should not be needed" << std::endl;
     return new Vector();
 }
 
 // Uses the inverse transpose matrix
-Vector* Transformation::normalTransformToWorld(Vector* vec) {
+Vector* Transformation::normalToWorld(Vector* vec) {
     Eigen::Vector4f normal(vec->getX(), vec->getY(), vec->getZ(), 0.0f);
 
     Eigen::Matrix<float,4,4> minv = inverseMatrix->getMatrix();

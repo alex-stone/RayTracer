@@ -53,8 +53,8 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
       //  Ray* objRay = ray->applyInverseTransformation(temp->getTransformation());
 	    Intersection* temp = primitives[i]->intersect(ray);
 
-	    if(temp != NULL && temp->getDist() > 0.001f) {
-	        if(closest == NULL || (temp->getDist() < closest->getDist())) {
+	    if(temp != NULL && temp->getWorldDist() > 0.0001f) {
+	        if(closest == NULL || (temp->getWorldDist() < closest->getWorldDist())) {
 		         closest = temp;
 	        }
 	    }
@@ -64,52 +64,93 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
     return closest;
 
 } 
+
 //****************************************************
-// Check's if there is an object, between the light
-// and the point
+// Iterate through all the objects to check if there 
+//      is an object, between the light and the point 
+//      of intersection.
+//
+// Inputs:
+//      Intersection* inter     OBJ reference frame 
+//      Light* light            WORLD reference frame
 //****************************************************
 bool RayTracer::isLightBlocked(Intersection* inter, Light* light) {
-    float distToLight;
 
-//    LocalGeo* worldLoc = inter->getWorldGeo();
-//    Ray* worldLightRay = light->generateLightRay(worldLoc->getPosition());
+    Transformation* transform = inter->getPrimitive()->getTransformation();
+  
+    Coordinate* objSurfacePoint = inter->getLocalGeo()->getPosition();
+    Coordinate* worldSurfacePoint = transform->pointToWorld(objSurfacePoint);
+
+    Light* worldLight = light;
+
+    float distToLight; 
 
     if(light->isPointLight()) {
-       // distToLight = worldLoc->getPosition()->distTo(light->getPosition());
-        distToLight = inter->getLocalGeo()->getPosition()->distTo(light->getPosition());
+        distToLight = worldSurfacePoint->distTo(worldLight->getPosition());
     } else {
         distToLight = -1.0f;
     }
 
-    // Light Ray generated from position that is NOT in Object Coordinates
 
-    // Perhaps use WorldGeo
+    Ray* worldLightRay = light->generateLightRay(worldSurfacePoint);
 
-    Ray* lightRay = light->generateLightRay(inter->getLocalGeo()->getPosition());
+    for(int i = 0; i < shapeCount; i++) {
 
+        Intersection* lightBlock = primitives[i]->intersect(worldLightRay);
+
+        // Making sure it isn't accidentally detecting intersection with itself
+        if(lightBlock != NULL && lightBlock->getPrimitive() != inter->getPrimitive()) {
+            if(light->isPointLight()) {
+                if(lightBlock->getWorldDist() < distToLight) {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        }
+
+
+    }
+
+    return false;
+
+    /*
+
+    // Distance From Object to Light in WORLD frame
+    LocalGeo* worldLocGeo = inter->getWorldGeo();
+    Coordinate* worldSurfacePoint = worldLocGeo->getPosition();
+
+    float distToLight; 
+
+    if(light->isPointLight()) {
+       // distToLight = worldLoc->getPosition()->distTo(light->getPosition());
+        distToLight = worldSurfacePoint->distTo(light->getPosition());
+    } else {
+        distToLight = -1.0f;
+    }
+
+    Ray* worldLightRay = light->generateLightRay(worldSurfacePoint);
 
     // Iterate thru shapes to check if Shape is blocking
     for(int i = 0; i < shapeCount; i++) {
         // Test that primitive is not blocking itself.
-        Intersection* shadowObject = primitives[i]->intersect(lightRay);
 
-        if(shadowObject != NULL && shadowObject->getPrimitive() != inter->getPrimitive()) {
+        // Intersection will be in ShadowObject's Reference Frame
+        Intersection* shadowObject = primitives[i]->intersect(worldLightRay);
+
+        if(shadowObject != NULL  && shadowObject->getPrimitive() != inter->getPrimitive()) {
             
             if(!light->isPointLight()) {
                 return true;
             } else {
+                // Intersection's getDist function returns distancei in WORLD frame
                 if(shadowObject->getDist() < distToLight ) {
                     return true;
                 }
-
-               // Intersection* shadowObject = primitives[i]->intersect(light->generateLightRay(inter->getLocalGeo()->getPosition()));
-          //      if(inter->getLocalGeo()->getPosition()->distTo(shadowObject->getLocalGeo()->getPosition()) < distToLight ) {
-          //          return true;
-            //    }
             }
         }
     }
-    return false;
+    return false;*/
 }
 
 //****************************************************
@@ -134,11 +175,13 @@ Vector* RayTracer::reflectedVector(Vector* lightDir, Vector* normal) {
  */
 Color* RayTracer::ambientValue(Light* light, Color* ka) {
     Color* returnColor = new Color();
-    Color* lightColor = light->getColor();
+   // Color* lightColor = light->getColor();
 
-    returnColor->setR(lightColor->getR() * ka->getR());
-    returnColor->setG(lightColor->getG() * ka->getG());
-    returnColor->setB(lightColor->getB() * ka->getB());
+    // Changing Ambient 
+
+    returnColor->setR(ka->getR());
+    returnColor->setG(ka->getG());
+    returnColor->setB(ka->getB());
 
     return returnColor;
 }
@@ -177,48 +220,121 @@ Color* RayTracer::specularValue(Light* light, Vector* viewDir, Vector* reflectDi
     return returnColor;
 }
 
-/**
- *  
- *    Vector* Normal = inter->getLocalGeo()->getNormal()
- *    Vector* View   = ? From Reflected Vector need to derive.
- *    Vector* lightDir = 
- */
+
+//****************************************************
+// Gets the Color contribution from a single light on 
+//      a given Intersection. Pass Values to Diffuse
+//      and Specular in terms of OBJ frame.
+//
+// Inputs:
+//      Intersection* inter     OBJ reference frame 
+//      Vector* viewDir         WORLD reference frame
+//      Light* light            WORLD reference frame
+//      int depth               Current recursive call
+// Variables:
+//      worldLight
+//      worldViewDir
+//      worldNormal
+//      worldSurfacePoint
+//      worldLightDir
+//      worldReflectDir
+//****************************************************
 Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Light* light, int depth) {
+    // Color Variables
     Color* color = new Color(0.0f, 0.0f, 0.0f);
-    Vector* lightDir;
-    Coordinate* surfacePt = inter->getLocalGeo()->getPosition();
-    Vector* normal = inter->getLocalGeo()->getNormal();
     BRDF* brdf = inter->getPrimitive()->getBRDF();
 
-    Light* objLight = light->applyTransform(inter->getPrimitive()->getTransformation());
+    Transformation* transform = inter->getPrimitive()->getTransformation();
 
-    // Replace light with objLight
+    Light* worldLight = light;
+    Vector* worldViewDir = viewDir;
+    worldViewDir->normalize();
 
-    // Vector Direction - From Light to Surface
-    lightDir = objLight->getLightDirection(surfacePt)->getCopy();
-    lightDir->normalize();
+    Coordinate* objSurfacePoint = inter->getLocalGeo()->getPosition();
+    Coordinate* worldSurfacePoint = transform->pointToWorld(objSurfacePoint);
 
-    // Vector Direction - From Surface to Light
-    Vector* objToLightDir = lightDir->getOpposite();
+    Vector* objNormal = inter->getLocalGeo()->getNormal();
+    objNormal->normalize();
 
-    // Vector Direction - From Surface to Reflect direction then Get Opposite
-    Vector* reflectDir = reflectedVector(objToLightDir, normal)->getOpposite();
-    
+    Vector* worldNormal = transform->normalToWorld(objNormal);
+    worldNormal->normalize();
+
+    Vector* worldLightDir = worldLight->getLightDirection(worldSurfacePoint);
+    worldLightDir->normalize();
+
+    Vector* worldVecToLightDir = worldLightDir->getOpposite();
+
+    Vector* worldReflectDir = reflectedVector(worldLightDir, worldNormal)->getOpposite();
+/*
+    TransformMatrix* worldToObj = inter->getPrimitive()->getTransformation()->getMatrix();
+    TransformMatrix* objToWorld = inter->getPrimitive()->getTransformation()->getInverseTransformation();
+
+    // Given: WORLD Reference Fram Variables
+    Light* worldLight = light;
+    Vector* worldViewDir = viewDir;
+    worldViewDir->normalize();
+
+    // Given: OBJ Reference Frame Variables:
+    Coordinate* objSurfacePoint = inter->getLocalGeo()->getPosition();
+    Vector* objNormal = inter->getLocalGeo()->getNormal();
+    objNormal->normalize();
+
+    // Derived: WORLD Reference Frame Variables
+    Coordinate* worldSurfacePoint = objToWorld->transformPt(objSurfacePoint);
+    Vector* worldNormal = objToWorld->transformVec(objNormal);
+    worldNormal->normalize();
+
+    Vector* worldLightDir = worldLight->getLightDirection(worldSurfacePoint);
+    worldLightDir->normalize();
+
+    Vector* worldVecToLightDir = worldLightDir->getOpposite();
+    worldVecToLightDir->normalize();
+
+    Vector* worldReflectDir = reflectedVector(worldLightDir, worldNormal)->getOpposite();
+
+
+    // Derived: OBJ Reference Frame Variables
+    Light* objLight = worldLight->applyTransform(inter->getPrimitive()->getTransformation());
+    Vector* objViewDir = objToWorld->transformVec(worldViewDir);
+    objViewDir->normalize();
+
+    Vector* objLightDir = objLight->getLightDirection(objSurfacePoint);
+    objLightDir->normalize();
+
+    Vector* objVecToLightDir = objLightDir->getOpposite();
+    objVecToLightDir->normalize();
+
+    Vector* objReflectDir = reflectedVector(objLightDir, objNormal)->getOpposite();
+    objReflectDir->normalize();
+*/
     // Check if Light Is Blocked
     if(!isLightBlocked(inter, light)) {
 
-        //color->add(ambientValue(light, brdf->getKA()));
+        // Diffuse Component in WORLD
+        color->add(diffuseValue(worldLight, worldVecToLightDir, worldNormal, brdf->getKD()));
 
-        // Diffuse Component
-        color->add(diffuseValue(light, lightDir, normal, brdf->getKD()));
+        // Specular Component in WORLD
+        color->add(specularValue(worldLight, worldViewDir, worldReflectDir, brdf->getKS(), brdf->getSP()));
 
-        // Specular Component
-        color->add(specularValue(light, viewDir, reflectDir, brdf->getKS(), brdf->getSP()));
+        // Diffuse Component in OBJ
+ //       color->add(diffuseValue(objLight, objVecToLightDir, objNormal, brdf->getKD()));
+
+        // Specular Component in OBJ
+//        color->add(specularValue(objLight, objViewDir, objReflectDir, brdf->getKS(), brdf->getSP()));
     }
 
     return color;
 
 }
+
+//****************************************************
+// Gets the Color from a given Intersection, and calls
+//      a recursive trace call for reflective rays
+// Inputs:
+//      Intersection* inter     OBJ reference frame 
+//      Vector* viewDir         WORLD reference frame
+//      int depth               Current recursive call
+//****************************************************
 
 Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir, int depth) {
     Color* color = new Color(0.0f, 0.0f, 0.0f);
@@ -230,28 +346,54 @@ Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir, in
         color->add(getSingleLightColor(inter, viewDir, lights[i], depth));
     }
 
-    if (depth == 1) {
+    Transformation* transform = inter->getPrimitive()->getTransformation();
+
     // Ambient Component
-    color->add(inter->getPrimitive()->getBRDF()->getKA());
-}
-  //  color->add(inter->getPrimitive()->getBRDF()->getKA());    
+    color->add(inter->getPrimitive()->getBRDF()->getKA());    
 
-    Coordinate* surfacePt = inter->getLocalGeo()->getPosition();
-    Vector* normal = inter->getLocalGeo()->getNormal();
+    Vector* worldViewDir = viewDir;
 
-    // Current Ray's Direction
-    Vector* reflectDirection = reflectedVector(viewDir, normal);
-    reflectDirection->normalize();
+    // Get the Surface Intersection Point in WORLD Coordinates
+    Coordinate* objSurfacePoint = inter->getLocalGeo()->getPosition();
+    Coordinate* worldSurfacePoint = transform->pointToWorld(objSurfacePoint);
 
-    Ray* reflectionRay = new Ray(surfacePt, reflectDirection);
+    Vector* objNormal = inter->getLocalGeo()->getNormal();
+    objNormal->normalize();
+    Vector* worldNormal = transform->normalToWorld(objNormal);
+    worldNormal->normalize();
+
+    Vector* worldReflectDir = reflectedVector(worldViewDir, worldNormal);
+
+    Ray* reflectionRay = new Ray(worldSurfacePoint, worldReflectDir);
     Color* reflectedValue = trace(reflectionRay, depth+1);
 
-    Color* kr = inter->getPrimitive()->getBRDF()->getKR();
+
+    // Note Spec for AS2 derives reflectiveness from specularity
+    Color* kr = inter->getPrimitive()->getBRDF()->getKS();
     Color* temp = new Color(reflectedValue->getR()*kr->getR(), reflectedValue->getG()*kr->getG(), reflectedValue->getB()*kr->getB());
     color->add(temp);
 
     return color;
 }
+/*
+    LocalGeo* worldLocGeo = inter->getWorldGeo();
+    Coordinate* worldSurfacePoint = worldLocGeo->getPosition();
+    Vector* worldNormal = worldLocGeo->getNormal();
+
+    Vector* reflectDirection = reflectedVector(viewDir, worldNormal);
+    reflectDirection->normalize();
+
+    Ray* reflectionRay = new Ray(worldSurfacePoint, reflectDirection);
+    Color* reflectedValue = trace(reflectionRay, depth+1);
+
+
+    Color* ks = inter->getPrimitive()->getBRDF()->getKS();
+//    Color* kr = inter->getPrimitive()->getBRDF()->getKR();
+    Color* temp = new Color(reflectedValue->getR()*ks->getR(), reflectedValue->getG()*ks->getG(), reflectedValue->getB()*ks->getB());
+    color->add(temp);
+
+    return color;
+}*/
 
 //****************************************************
 // Trace Function - Determines Color for a given Ray
@@ -277,10 +419,14 @@ Color* RayTracer::trace(Ray* ray, int depth) {
     }
 
     // Detect closest intersection of Ray and Shape:
+    // Reference Frame = OBJECT
     Intersection* closeInter = this->closestIntersection(ray); 
 
-    // Vector Direction from surface Pt to Ray Origin
+    // World: Vector Direction from surface Pt to Ray Origin
+    // Reference Frame = WORLD
     Vector* viewDir = ray->getDirection()->getOpposite();
+
+   // Vector* viewDir = new Vector(0,0,1);
 
     if(closeInter != NULL) {
 	    return getColorFromIntersect(closeInter, viewDir, depth);

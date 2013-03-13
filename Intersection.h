@@ -13,15 +13,17 @@ class Intersection {
   private:
     GeometricPrimitive* primitive;
     LocalGeo* localGeo;
-    float dist;
+    float worldDist;
+    float objDist;
 
   public:
-    Intersection(GeometricPrimitive* p, LocalGeo* geo, float tdist);
+    Intersection(GeometricPrimitive* p, LocalGeo* geo, float distWorld, float distObj);
    
     // Getter Functions 
     GeometricPrimitive* getPrimitive() { return primitive; };
     LocalGeo* getLocalGeo() { return localGeo; };
-    float getDist() { return dist; };
+    float getWorldDist() { return worldDist; };
+    float getObjDist() { return objDist; };
 
 };
 

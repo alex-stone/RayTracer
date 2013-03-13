@@ -18,5 +18,7 @@ class Light {
     virtual bool isPointLight() = 0;
     virtual Vector* getLightDirection(Coordinate* pt) = 0;
     virtual Coordinate* getPosition() = 0;
+    virtual Vector* getDirection() = 0;
+//    virtual Light* applyTransform(Transformation* transform) = 0;
 };
 #endif

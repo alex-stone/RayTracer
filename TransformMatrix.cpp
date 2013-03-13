@@ -13,13 +13,13 @@
 TransformMatrix::TransformMatrix() {
 
     for(int i = 0; i < 4; i++) {
-	for(int j = 0; j < 4; j++) {
-	    if(i == j) {
-		mat(i,j) = 1.0f;
-	    } else {
-	     	mat(i,j) = 0.0f;
-	    } 
-	}
+	    for(int j = 0; j < 4; j++) {
+            if(i == j) {
+                mat(i,j) = 1.0f;
+            } else {
+                mat(i,j) = 0.0f;
+            } 
+        }
     }
 }
 
@@ -138,63 +138,10 @@ TransformMatrix* TransformMatrix::rotateMatrix(float x, float y, float z, float 
 
     TransformMatrix* result = new TransformMatrix(returnMatrix);
 /*
-
-    float u = test->getX();
-    float v = test->getY();
-    float w = test->getZ();
-
-    float a = 0.0f;
-    float b = 0.0f;
-    float c = 0.0f;
-
-    angle = angle*3.141592654/180;
-
-    matrix->setValue(0,0, u*(1 - u*u)*cos(angle) );
-    matrix->setValue(0,1, u*v*(1-cos(angle)) - w*sin(angle));
-    matrix->setValue(0,2, u*w*(1-cos(angle)) - v*sin(angle));
-    matrix->setValue(0,3, 0);
-
-    matrix->setValue(1,0, u*v*(1-cos(angle)) + w*sin(angle) );
-    matrix->setValue(1,1, v*v + (1 - v*v)*cos(angle) );
-    matrix->setValue(1,2, v*w*(1-cos(angle)) - u*sin(angle));
-    matrix->setValue(1,3, 0);
-
-    matrix->setValue(2,0, u*w*(1-cos(angle) - v*sin(angle)));
-    matrix->setValue(2,1, v*w*(1-cos(angle)) + u*sin(angle));
-    matrix->setValue(2,2, w*w + (1-w*w)*cos(angle));
-    matrix->setValue(2,3, 0);
-
-    matrix->setValue(3,0, 0);
-    matrix->setValue(3,1, 0);
-    matrix->setValue(3,2, 0);
-    matrix->setValue(3,3, 1);
-
-    */
-/*
     matrix->setValue(0,0, cos(angle));
     matrix->setValue(0,1, -sin(angle));
     matrix->setValue(1,1, sin(angle));
     matrix->setValue(1,2, cos(angle));
-*/
-/*
-    // Just Rotating about a vector, that goes thru origin so (a, b, c) = (0,0,0)
-    // Check it correct angle for phef
-    mat(0,0) = pow(u, 2) + (pow(v, 2) + pow(w, 2))*cos(angle);
-    mat(0,1) = u*v*(1 - cos(angle))-w*sin(angle);
-    mat(0,2) = u*w*(1 - cos(angle))+ v*sin(angle);
-    mat(0,3) = (a*(v*v + w*w) - u*(b*v + c*w))*(1 - cos(angle)) + (b*w-c*v)*sin(angle);
-    mat(1,0) = u*v*(1 - cos(angle)) + w * sin(angle);
-    mat(1,1) = pow(v, 2) + (pow(u, 2) + pow(w, 2))*cos(angle);
-    mat(1,2) = v*w*(1 - cos(angle)) - u * sin(angle); 
-    mat(1,3) = (b*(pow(u,2) + pow(w,2)) - v*(a*u + c*w))*(1 - cos(angle)) + (c*u - a*w)*sin(angle);
-    mat(2,0) = u*w*(1-cos(angle)) - v*sin(angle);
-    mat(2,1) = v*w*(1-cos(angle)) + u*sin(angle);
-    mat(2,2) = pow(w,2) + (pow(u,2) + pow(v,2))*cos(angle);
-    mat(2,3) = (c*(pow(u,2) + pow(w,2)) - w*(a*u + b*v)) * (1 - cos(angle)) + (a*v - b*u)*sin(angle);
-    mat(3,0) = 0;
-    mat(3,1) = 0;
-    mat(3,2) = 0;
-    mat(3,3) = 1;
 */
 
     return result;

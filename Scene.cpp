@@ -442,6 +442,7 @@ void Scene::loadScene(std::string file) {
     Color* diffuse = new Color(0.0f, 0.0f, 0.0f);
     Color* specular = new Color(0.0f, 0.0f, 0.0f);  
     Color* reflective = new Color(0.0f, 0.0f, 0.0f);
+    Color* emission = new Color(0.0f, 0.0f, 0.0f);
     float shininess = 0.0f;
 
     // Camera Properties
@@ -742,11 +743,9 @@ void Scene::loadScene(std::string file) {
                     std::cerr << "File Input Error: PopTransform called without corresponding pushTransform" << std::endl;
                     std::exit(1);
                 } else {
-                    std::cout << "before printing this is what transform is" << std::endl;
-                    transformations.top()->print();
+
                     transformations.pop();
-                    std::cout<<"after popping this is what the transform is " << std::endl;
-                    transformations.top()->print();
+
                 }
             }
 
@@ -760,10 +759,20 @@ void Scene::loadScene(std::string file) {
                     std::exit(1);
                 }
 
-                Vector* vec = new Vector(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
-                Color* col = new Color(atof(splitline[4].c_str()),atof(splitline[5].c_str()),atof(splitline[6].c_str()));
+                float x = atof(splitline[1].c_str());
+                float y = atof(splitline[2].c_str());
+                float z = atof(splitline[3].c_str());
 
-                Light* dirLight = new DirectionLight(vec->getOpposite(), col);
+                Vector* vec = new Vector(x,y,z);
+                Vector* vec2 = vec->getOpposite();
+
+                float r = atof(splitline[4].c_str());
+                float g = atof(splitline[5].c_str());
+                float b = atof(splitline[6].c_str());
+
+                Color* col = new Color(r,g,b);
+        
+                Light* dirLight = new DirectionLight(vec2, col);
 
                 lightCount += 1; 
                 lights.push_back(dirLight);
@@ -777,8 +786,18 @@ void Scene::loadScene(std::string file) {
                     std::exit(1);
                 }
 
-                Coordinate* pt = new Coordinate(atof(splitline[1].c_str()),  atof(splitline[2].c_str()),  atof(splitline[3].c_str()));
-                Color* col = new Color(atof(splitline[4].c_str()),atof(splitline[5].c_str()),atof(splitline[6].c_str()));
+                float x = atof(splitline[1].c_str());
+                float y = atof(splitline[2].c_str());
+                float z = atof(splitline[3].c_str());
+
+                Coordinate* pt = new Coordinate(x,y,z);
+
+                float r = atof(splitline[4].c_str());
+                float g = atof(splitline[5].c_str());
+                float b = atof(splitline[6].c_str());
+
+                Color* col = new Color(r,g,b);
+
                 Light* ptLight = new PointLight(pt, col);
 
                 lightCount += 1;
@@ -835,6 +854,7 @@ void Scene::loadScene(std::string file) {
                 float b = atof(splitline[3].c_str());
 
                 specular = new Color(r,g,b);
+                reflective = new Color(r,g,b);
   
             }
             //shininess s
@@ -864,7 +884,7 @@ void Scene::loadScene(std::string file) {
                 float g = atof(splitline[2].c_str());
                 float b = atof(splitline[3].c_str());
 
-                reflective = new Color(r,g,b);
+                //reflective = new Color(r,g,b);
 
             } else {
                 std::cerr << "Unknown command: " << splitline[0] << std::endl;

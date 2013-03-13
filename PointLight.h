@@ -21,10 +21,11 @@ class PointLight : public Light {
     Color* getColor() { return color; };
     bool isPointLight() { return true; };
     Vector* getLightDirection(Coordinate* pt);
+    Vector* getDirection() {return NULL; };
     
     Coordinate* getPosition() { return point; };
 
-    PointLight* applyTransform(Transformation* transform) {
+    Light* applyTransform(Transformation* transform); 
 
 
 };

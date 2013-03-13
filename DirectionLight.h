@@ -26,7 +26,7 @@ class DirectionLight : public Light {
     Vector* getLightDirection(Coordinate* pt);
     Coordinate* getPosition() { return NULL; };
 
-    DirectionLight* applyTransform(Transformation* transform);
+    Light* applyTransform(Transformation* transform);
 };
 
 
