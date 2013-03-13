@@ -55,7 +55,10 @@ Camera::Camera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVe
     float imageWidth = imageHeight*aspectRatio;
 
 
-    Vector* upVec = up->getCopy();
+    Vector* upVec = rightVec->cross(view);
+    upVec->normalize();
+
+   // Vector* upVec = up->getCopy();
 
 
     upVec->normalize();
