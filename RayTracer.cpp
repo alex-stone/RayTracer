@@ -70,13 +70,23 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
 //****************************************************
 bool RayTracer::isLightBlocked(Intersection* inter, Light* light) {
     float distToLight;
+
+//    LocalGeo* worldLoc = inter->getWorldGeo();
+//    Ray* worldLightRay = light->generateLightRay(worldLoc->getPosition());
+
     if(light->isPointLight()) {
+       // distToLight = worldLoc->getPosition()->distTo(light->getPosition());
         distToLight = inter->getLocalGeo()->getPosition()->distTo(light->getPosition());
     } else {
         distToLight = -1.0f;
     }
 
+    // Light Ray generated from position that is NOT in Object Coordinates
+
+    // Perhaps use WorldGeo
+
     Ray* lightRay = light->generateLightRay(inter->getLocalGeo()->getPosition());
+
 
     // Iterate thru shapes to check if Shape is blocking
     for(int i = 0; i < shapeCount; i++) {
@@ -88,10 +98,14 @@ bool RayTracer::isLightBlocked(Intersection* inter, Light* light) {
             if(!light->isPointLight()) {
                 return true;
             } else {
-                Intersection* shadowObject = primitives[i]->intersect(light->generateLightRay(inter->getLocalGeo()->getPosition()));
-                if(inter->getLocalGeo()->getPosition()->distTo(shadowObject->getLocalGeo()->getPosition()) < distToLight ) {
+                if(shadowObject->getDist() < distToLight ) {
                     return true;
                 }
+
+               // Intersection* shadowObject = primitives[i]->intersect(light->generateLightRay(inter->getLocalGeo()->getPosition()));
+          //      if(inter->getLocalGeo()->getPosition()->distTo(shadowObject->getLocalGeo()->getPosition()) < distToLight ) {
+          //          return true;
+            //    }
             }
         }
     }
@@ -176,8 +190,12 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
     Vector* normal = inter->getLocalGeo()->getNormal();
     BRDF* brdf = inter->getPrimitive()->getBRDF();
 
+    Light* objLight = light->applyTransform(inter->getPrimitive()->getTransformation());
+
+    // Replace light with objLight
+
     // Vector Direction - From Light to Surface
-    lightDir = light->getLightDirection(surfacePt)->getCopy();
+    lightDir = objLight->getLightDirection(surfacePt)->getCopy();
     lightDir->normalize();
 
     // Vector Direction - From Surface to Light
