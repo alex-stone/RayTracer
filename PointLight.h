@@ -23,6 +23,10 @@ class PointLight : public Light {
     Vector* getLightDirection(Coordinate* pt);
     
     Coordinate* getPosition() { return point; };
+
+    PointLight* applyTransform(Transformation* transform) {
+
+
 };
 
 #endif

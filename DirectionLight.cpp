@@ -27,3 +27,11 @@ Vector* DirectionLight::getLightDirection(Coordinate* pt) {
     returnVec->normalize(); 
     return returnVec;
 }
+
+DirectionLight* DirectionLight::applyTransform(Transformation* transform) {
+    DirectionLight* returnLight = new DirectionLight(transform->transformVec(direction), col);
+
+    return returnLight;
+}
+
+
