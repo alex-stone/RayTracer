@@ -3,7 +3,12 @@
 #include "Eigen/Dense"
 #include "Transformation.h"
 #include "TransformMatrix.h"
-
+#include "Ray.h"
+#include "Vector.h"
+#include "Coordinate.h"
+#include "Light.h"
+#include "PointLight.h"
+#include "DirectionLight.h"
 
 //****************************************************
 // Transformation Class Definition
@@ -39,6 +44,164 @@ void Transformation::rotate(float x, float y, float z, float angle) {
     TransformMatrix* rotate = mat->rotateMatrix(x, y, z, angle);
     this->addMatrix(rotate);
 }
+
+// 4th Position = 1, because we want translations on 
+Coordinate* Transformation::pointTransformToObject(Coordinate* pt) {
+    Eigen::Matrix4f matrix = mat->getMatrix();
+    Eigen::Vector4f temp(pt->getX(), pt->getY(), pt->getZ(), 1.0f);
+
+    temp = matrix * temp;
+
+    return new Coordinate(temp(0), temp(1), temp(2));
+}
+   
+Coordinate* Transformation::pointTransformToWorld(Coordinate* pt) {
+    Eigen::Matrix4f matrix = inverseMatrix->getMatrix();
+    Eigen::Vector4f temp(pt->getX(), pt->getY(), pt->getZ(), 1.0f);
+
+    temp = matrix * temp;
+
+    return new Coordinate(temp(0), temp(1), temp(2));
+}
+
+// For Ray's and Vectors, 4th Position = 0, no translation
+Ray* Transformation::rayTransformToObject(Ray* ray) {
+    Coordinate* rayPt = ray->getPosition();
+    Vector* rayDir = ray->getDirection();
+
+    Eigen::Vector4f returnPt(rayPt->getX(), rayPt->getY(), rayPt->getZ(), 1.0f);
+    Eigen::Vector4f returnDir(rayDir->getX(), rayDir->getY(), rayDir->getZ(), 0.0f);
+
+    Eigen::Matrix4f matrix = mat->getMatrix();
+
+    returnPt = matrix * returnPt;
+    returnDir = matrix * returnDir;
+
+    Coordinate* newPt = new Coordinate(returnPt(0), returnPt(1), returnPt(2));
+    Vector* newDir = new Vector(returnDir(0), returnDir(1), returnDir(2));
+
+    return new Ray(newPt, newDir);
+}
+
+Ray* Transformation::rayTransformToWorld(Ray* ray) {
+    Coordinate* rayPt = ray->getPosition();
+    Vector* rayDir = ray->getDirection();
+
+    Eigen::Vector4f returnPt(rayPt->getX(), rayPt->getY(), rayPt->getZ(), 1.0f);
+    Eigen::Vector4f returnDir(rayDir->getX(), rayDir->getY(), rayDir->getZ(), 0.0f);
+
+    Eigen::Matrix<float,4,4> invMatrix = inverseMatrix->getMatrix();
+
+    returnPt = invMatrix * returnPt;
+    returnDir = invMatrix * returnDir;
+
+    Coordinate* newPt = new Coordinate(returnPt(0), returnPt(1), returnPt(2));
+    Vector* newDir = new Vector(returnDir(0), returnDir(1), returnDir(2));
+
+    return new Ray(newPt, newDir);
+}
+
+Light* Transformation::lightTransformToObject(Light* light) {
+    Light* returnLight;
+    Eigen::Matrix<float,4,4> matrix = mat->getMatrix();
+
+    if(light->isPointLight()) {
+        Coordinate* lightPos = light->getPosition();
+        Eigen::Vector4f lightPt(lightPos->getX(), lightPos->getY(), lightPos->getZ(), 1.0f);
+
+        lightPt = matrix * lightPt;
+
+        returnLight = new PointLight(new Coordinate(lightPt(0),lightPt(1), lightPt(2)), light->getColor());
+    } else {
+        Vector* lightDir = light->getDirection();
+        Eigen::Vector4f lightVec(lightDir->getX(), lightDir->getY(), lightDir->getZ(), 0.0f);
+
+        lightVec = matrix * lightVec;
+
+        returnLight = new PointLight(new Coordinate(lightVec(0),lightVec(1), lightVec(2)), light->getColor());
+    }
+
+    return returnLight;
+}
+
+Light* Transformation::lightTransformToWorld(Light* light) {
+    Light* returnLight;
+    Eigen::Matrix<float,4,4> invMatrix = inverseMatrix->getMatrix();
+
+    if(light->isPointLight()) {
+        Coordinate* lightPos = light->getPosition();
+        
+        if(lightPos == NULL) {
+            returnLight = NULL;
+        } else {
+
+            Eigen::Vector4f lightPt(lightPos->getX(), lightPos->getY(), lightPos->getZ(), 1.0f);
+            lightPt = invMatrix * lightPt;
+
+            returnLight = new PointLight(new Coordinate(lightPt(0),lightPt(1), lightPt(2)), light->getColor());
+         }   
+    } else {
+        Vector* lightDir = light->getDirection();
+
+        if(lightDir == NULL) {
+            returnLight = NULL;
+        } else {
+        
+            Eigen::Vector4f lightVec(lightDir->getX(), lightDir->getY(), lightDir->getZ(), 0.0f);
+
+            lightVec = invMatrix * lightVec;
+
+            returnLight = new PointLight(new Coordinate(lightVec(0),lightVec(1), lightVec(2)), light->getColor());
+        }
+    }
+
+    return returnLight;
+}
+
+Vector* Transformation::vectorTransformToObject(Vector* vec) {
+  
+    Eigen::Vector4f returnDir(vec->getX(), vec->getY(), vec->getZ(), 0.0f);
+    Eigen::Matrix<float,4,4> matrix = mat->getMatrix();
+
+    returnDir = matrix * returnDir;
+
+    Vector* result = new Vector(returnDir(0), returnDir(1), returnDir(2));
+
+    return result;
+}
+
+Vector* Transformation::vectorTransformToWorld(Vector* vec) {
+    Eigen::Vector4f returnDir(vec->getX(), vec->getY(), vec->getZ(), 0.0f);
+    Eigen::Matrix<float,4,4> invMatrix = inverseMatrix->getMatrix();
+
+    returnDir = invMatrix * returnDir;
+
+
+    Vector* result = new Vector(returnDir(0), returnDir(1), returnDir(2));
+    return result;
+}
+
+Vector* Transformation::normalTransformToObject(Vector* vec) {
+    std::cout << "This case should not be needed" << std::endl;
+    return new Vector();
+}
+
+// Uses the inverse transpose matrix
+Vector* Transformation::normalTransformToWorld(Vector* vec) {
+    Eigen::Vector4f normal(vec->getX(), vec->getY(), vec->getZ(), 0.0f);
+
+    Eigen::Matrix<float,4,4> minv = inverseMatrix->getMatrix();
+    Eigen::Matrix<float,4,4> minvTranspose = minv.transpose();
+
+    normal = minvTranspose * normal;
+
+    Vector* result = new Vector(normal(0), normal(1), normal(2));
+
+    return result;
+}
+
+
+
 
 Coordinate* Transformation::transformPt(Coordinate* pt) {
     return mat->transformPt(pt);
