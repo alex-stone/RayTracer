@@ -40,6 +40,15 @@ void Transformation::rotate(float x, float y, float z, float angle) {
     this->addMatrix(rotate);
 }
 
+Coordinate* Transformation::transformPt(Coordinate* pt) {
+    return mat->transformPt(pt);
+}
+
+Vector* Transformation::transformVec(Vector* vec) {
+    return mat->transformVec(vec);
+}
+
+
 void Transformation::print() {
     this->mat->print();
 }

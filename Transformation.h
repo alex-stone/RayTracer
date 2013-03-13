@@ -3,6 +3,8 @@
 
 #include "Eigen/Dense"
 #include "TransformMatrix.h"
+#include "Coordinate.h"
+#include "Vector.h"
 
 //****************************************************
 // Transformation Header Definition
@@ -24,6 +26,9 @@ class Transformation {
     void translate(float x, float y, float z);
     void scale(float x, float y, float z);
     void rotate(float x, float y, float z, float angle); 
+
+    Coordinate* transformPt(Coordinate* pt);
+    Vector* transformVec(Vector* vec);
 
     void print();
 
