@@ -1,7 +1,7 @@
 #ifndef TRANSFORMATION_H
 #define TRANSFORMATION_H
 
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 #include "TransformMatrix.h"
 
 //****************************************************
@@ -24,11 +24,10 @@ class Transformation {
     void translate(float x, float y, float z);
     void scale(float x, float y, float z);
     void rotate(float x, float y, float z, float angle); 
- 
+
     void print();
 
-    
-
+    Transformation* getCopy();
 };
 
 #endif

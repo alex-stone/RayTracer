@@ -27,7 +27,7 @@ class Scene {
 
     RayTracer* sceneTracer;
 
-    void initializeSampleFilm(int h, int w);
+    void initializeSampleFilm(int h, int w, std::string fname);
 
     void setDefaultSampleFilm();
     void setDefaultImageSize();
@@ -65,6 +65,7 @@ class Scene {
 
     void render();
 
+    void printCameraInfo();
 };
 
 #endif

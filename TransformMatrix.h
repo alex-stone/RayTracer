@@ -5,7 +5,10 @@
 // Matrix Header Definition
 //****************************************************
 
-#include <Eigen/Dense>
+#include "Eigen/Dense"
+#include "Coordinate.h"
+#include "Vector.h"
+
 using namespace Eigen;
 
 class TransformMatrix {
@@ -33,6 +36,11 @@ class TransformMatrix {
 
     void setValue(int row, int col, float value);
 
+    
+    Coordinate* transformPt(Coordinate* pt);
+//    Coordinate* inverseTransformPt(Coordinate* pt);
+    Vector* transformVec(Vector* vec);
+  //  Vector* inverseTransformVec(Vector* vec);
     void print();
 };
 

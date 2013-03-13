@@ -3,6 +3,8 @@
 
 #include "Coordinate.h"
 #include "Vector.h"
+#include "Transformation.h"
+#include "LocalGeo.h"
 
 //****************************************************
 // LocalGeo Header Definition
@@ -19,6 +21,9 @@ class LocalGeo {
     //Getters
     Coordinate* getPosition() { return position; };
     Vector* getNormal() { return normal; };
+
+    LocalGeo* applyTransformation(Transformation* transform);
+    LocalGeo* applyInverseTransformation(Transformation* transform);
 
 };
 

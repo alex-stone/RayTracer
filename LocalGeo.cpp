@@ -11,6 +11,22 @@ LocalGeo::LocalGeo(Coordinate* pos, Vector* norm) {
     normal = norm;
 }
 
+LocalGeo* LocalGeo::applyTransformation(Transformation* transform) {
+    Coordinate* pos = transform->getMatrix()->transformPt(position);
+
+    LocalGeo* loc = new LocalGeo(pos,this->normal );
+ 
+    return loc;
+}  
+
+LocalGeo* LocalGeo::applyInverseTransformation(Transformation* transform) {
+    Coordinate* pos = transform->getInverseTransformation()->transformPt(position);
+
+    LocalGeo* loc = new LocalGeo(pos,this->normal);
+ 
+    return loc;
+}  
+
 
 
 

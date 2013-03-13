@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Vector.h"
 #include "Coordinate.h"
+#include "Transformation.h"
 
 //****************************************************
 // Ray Header Definition 
@@ -26,7 +27,7 @@ class Ray {
     Coordinate* getPointFromDist(float dist);
 
     Ray* applyTransformation(Transformation* transform);
-
+    Ray* applyInverseTransformation(Transformation* transform);
 };
 
 #endif

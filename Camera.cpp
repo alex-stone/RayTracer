@@ -20,41 +20,28 @@ Camera::Camera(int h, int w) {
     pixelWidth = w;
 }
 
-Camera::Camera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVert, int h, int w) {
-    // lookFrom = eyePosition
-    // lookat -> Center of the Image Plane
-    // up Vector is 
-    // fov is in degrees
-    // aspectRation = width/height
+//****************************************************
+// Camera Header Definitions
+//****************************************************
 
+Camera::Camera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVert, int h, int w) {
     // tan (fovVert / 2) = (ImageHeight/2) / d   and d = 1
     // ImageHeight = 2 * tan (fovVert / 2)
 
+    eyePosition = lookfrom;
+    pixelHeight = h;
+    pixelWidth = w;
+
+
     float aspectRatio = (float) w / (float) h;
     float fovVertRad = (fovVert * 3.141592654) / 180; 
-    eyePosition = lookfrom;
 
+    // View X UP Vector, gives a vector pointing to the right.
     Vector* view = lookfrom->vectorTo(lookat);
     Vector* rightVec = view->cross(up);
-    rightVec->normalize();
-
-
-    std::cout << "View Vector should be (-2, -2, -2) " << std::endl;
-    view->print();
-
-    std::cout << "Up vector should be (-1, -1, 2)" << std::endl;
-    up->print();
-
-
-    std::cout << "Cross vector should be (-6, 6, 0)" << std::endl;
-    rightVec->print();
-
-    std::cout << "Right Vector shoulde = (-0.5, 0.5): " << std::endl;
-    rightVec->print();
-
-
     
-
+    // Normalize Vector's to use for directions.
+    rightVec->normalize();
     view->normalize();
 
     // aspectRatio = tan(fovHoriz/2) / tan(fovVert/2)
@@ -71,58 +58,24 @@ Camera::Camera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVe
     Vector* upVec = up->getCopy();
 
 
-    std::cout << "Image Height = " << imageHeight << std::endl;
-    std::cout << "Image Width  = " << imageWidth << std::endl;
- 
-    upVec->print();
-
     upVec->normalize();
     upVec->scale(imageHeight/2);
 
     rightVec->normalize();
     rightVec->scale(imageWidth/2);
 
-    Coordinate* upperMiddle = eyePosition->addVector(view)->addVector(upVec);
-    Coordinate* lowerMiddle = eyePosition->addVector(view)->addVector(upVec->getOpposite());
-
-
-    std::cout << "eye to upperMidle dist= " << eyePosition->distTo(upperMiddle) << std::endl;
-    std::cout << "eye to lowerMiddle dist  = " << eyePosition->distTo(lowerMiddle)<< std::endl;
 
     upperLeft = eyePosition->addVector(view)->addVector(upVec)->addVector(rightVec->getOpposite());
     upperRight = eyePosition->addVector(view)->addVector(upVec)->addVector(rightVec);
     lowerLeft = eyePosition->addVector(view)->addVector(upVec->getOpposite())->addVector(rightVec->getOpposite());
     lowerRight = eyePosition->addVector(view)->addVector(upVec->getOpposite())->addVector(rightVec);
  
-
-    std::cout << "Vector from eyePosition to upperLeft = " << eyePosition->distTo(upperLeft)<< std::endl;
-    Vector* eyeToUpLeft = eyePosition->vectorTo(upperLeft);
-    eyeToUpLeft->print();
-    upperLeft->print();
-
-        std::cout << "Vector from eyePosition to lowerLeft = " << eyePosition->distTo(lowerLeft) << std::endl;
-    Vector* eyeToLowLeft = eyePosition->vectorTo(lowerLeft);
-    eyeToLowLeft->print();
-    lowerLeft->print();
-
-    Vector* vec00 = pixelToVector(0,0);
-    Vector* vec11 = pixelToVector(0,h-1);
-
-    std::cout << "PixelToVector(0,0) " << vec00->getDist() << std::endl;
-    std::cout << "PixelToVector(w-1,0) " << vec11->getDist() << std::endl;
-
-
-    Vector* horiz = upperLeft->vectorTo(upperRight);    
     Vector* vert = upperLeft->vectorTo(lowerLeft);
 
     Vector* returnVec = eyePosition->vectorTo(upperLeft);
 
-
-    std::cout << "eyePosition->vectorTo(upperLeft) "<< returnVec->getDist() << std::endl;
     returnVec->add(vert);
-    std::cout << "eyePosition->vectorTo(lowerLeft) "<< returnVec->getDist() << std::endl;
 
-    std::cout << "PixelToVector(w-1,0) " << vec11->getDist() << std::endl;
 
 /*
 
@@ -137,20 +90,8 @@ Camera::Camera(Coordinate* lookfrom, Coordinate* lookat, Vector* up, float fovVe
     lowerRight = lowerMid->addVector(rightVec);
 
 */
-    std::cout << "Upper Left Coordinates: = " << std::endl;
-    upperLeft->print();
 
-    std::cout << "Upper Right Coordinates: = " << std::endl;
-    upperRight->print();
 
-    std::cout << "Lower Left Coordinates: = " << std::endl;
-    lowerLeft->print();
-
-    std::cout << "Lower Right Coordinates: = " << std::endl;
-    lowerRight->print();
-
-    pixelHeight = h;
-    pixelWidth = w;
 
 }
 
@@ -185,6 +126,23 @@ Vector* Camera::pixelToVector(int x, int y) {
     returnVec->add(vert);
 
     return returnVec;
+}
+
+void Camera::printCameraInfo(){
+    std::cout << "EyePosition = ";
+    eyePosition->print();
+
+    std::cout << "upperLeft = ";
+    upperLeft->print();
+
+    std::cout << "upperRight = ";
+    upperRight->print();
+
+    std::cout << "lowerLeft = ";
+    lowerLeft->print();
+
+    std::cout << "lowerRight = ";
+    lowerRight->print();
 }
 
 Ray* Camera::generateRay(Sample* samp) {

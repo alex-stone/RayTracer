@@ -40,7 +40,8 @@ Scene::Scene(int h, int w) {
     setDefaultRayTracer();
     if (isValidDimensions(h, w)) {
         setImageSize(h, w);
-	    initializeSampleFilm(h, w);
+        std::string fname = "output.png";
+	    initializeSampleFilm(h, w, fname);
         setCameraSize(h, w);
     } else {
         setDefaultImageSize();
@@ -52,7 +53,8 @@ Scene::Scene(int h, int w) {
 Scene::Scene(Coordinate* ep, Coordinate* UL, Coordinate* UR, Coordinate* LR, Coordinate* LL, int h, int w, Light** lights, GeometricPrimitive** primitives, int lightCount, int shapeCount, int depth) {
     if (isValidDimensions(h, w)) {
         setImageSize(h,w);
-        initializeSampleFilm(h,w);
+        std::string fname = "output.png";
+        initializeSampleFilm(h,w, fname);
         setCamera(ep, UL, UR, LR, LL, h, w);	
     } else {
         setDefaultImageSize();
@@ -132,14 +134,15 @@ void Scene::setDefaultRayTracer() {
     sceneTracer = new RayTracer(lights, primitives, lightCount, shapeCount, depth);
 }
 
-void Scene::initializeSampleFilm(int h, int w) {
+void Scene::initializeSampleFilm(int h, int w, std::string fname) {
     sceneSampler = new Sampler(h, w);
-    sceneFilm = new Film(h, w);
+    sceneFilm = new Film(h, w, fname);
 }
 
 void Scene::setDefaultSampleFilm() {
     sceneSampler = new Sampler(480, 640);
-    sceneFilm = new Film(480, 640);
+    std::string fname = "output.png";
+    sceneFilm = new Film(480, 640, fname);
 }
 
 void Scene::setDefaultImageSize() {
@@ -158,6 +161,10 @@ void Scene::printProgressBar(Sample* sample) {
         int intPercent = (int) percent; 
         std::cout << "Progress: " << intPercent << "%\r";	    
     }
+}
+
+void Scene::printCameraInfo() {
+    sceneCamera->printCameraInfo();
 }
 
 //****************************************************
@@ -421,27 +428,16 @@ Scene* loadTestFromDiary() {
 
 void Scene::loadScene(std::string file) {
 
-  //store variables and set stuff at the end
-  
-    // These Values all must be set
-    //pixelHeight = -1;
-    //pixelWidth = -1;
-    //sceneSampler;
-    //sceneFilm;
-    //sceneCamera;
-    //sceneTracer;
-
-    // Vectors of Shapes and Lights
+    // Vectors of Shapes, Lights, and Vertices
     std::vector<GeometricPrimitive*> primitives;
     std::vector<Light*> lights;
-
     std::vector<Coordinate*> vertices;
 
     int shapeCount = 0;
     int lightCount = 0;
     int recurseDepth = 5;
  
-    // Ambient Coefficient with default (0.2, 0.2, 0.2)
+    // BRDF Color Coefficient initialized with Default Values
     Color* ambient = new Color(0.2f, 0.2f, 0.2f);
     Color* diffuse = new Color(0.0f, 0.0f, 0.0f);
     Color* specular = new Color(0.0f, 0.0f, 0.0f);  
@@ -449,18 +445,22 @@ void Scene::loadScene(std::string file) {
     float shininess = 0.0f;
     Color* emission = new Color(0.0f, 0.0f, 0.0f);
 
+
+    // Camera Properties
     Coordinate* lookfrom = new Coordinate();
     Coordinate* lookat = new Coordinate();
     Vector* up = new Vector();
     float fovVert = 90;
 
- //   bool sizeSet, cameraSet  
-
+    // Transformation Stack Initialization
     std::stack<Transformation*> transformations;
     Transformation* identity = new Transformation(); // Make sure this is correct Identity
     transformations.push(identity);
 
-    std::string fname = "output.bmp";
+    int lineCount = 0;
+
+    // Default Output File Name
+    std::string fname = "output.png";
 
     std::ifstream inpfile(file.c_str());
     if(!inpfile.is_open()) {
@@ -475,6 +475,8 @@ void Scene::loadScene(std::string file) {
 
             std::getline(inpfile,line);
             std::stringstream ss(line);
+
+            lineCount++;
 
             while (ss >> buf) {
                 splitline.push_back(buf);
@@ -492,6 +494,12 @@ void Scene::loadScene(std::string file) {
             //size width height
             //  must be first command of file, controls image size
             else if(!splitline[0].compare("size")) {
+
+                if(splitline.size() != 3) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to size on line " << lineCount << ". Requires 2 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 int width = atoi(splitline[1].c_str());
                 int height = atoi(splitline[2].c_str());
 
@@ -512,12 +520,20 @@ void Scene::loadScene(std::string file) {
             //output filename
             //  output file to write image to 
             else if(!splitline[0].compare("output")) {
+                if(splitline.size() != 2) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to OUTPUT on line " << lineCount << ". Requires 1 arguments." << std::endl;
+                    std::exit(1);
+                }
                 fname = splitline[1];
             }
 
             //camera lookfromx lookfromy lookfromz lookatx lookaty lookatz upx upy upz fov
             //  speciﬁes the camera in the standard way, as in homework 2.
             else if(!splitline[0].compare("camera")) {
+                if(splitline.size() != 11) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to CAMERA on line " << lineCount << ". Requires 10 arguments." << std::endl;
+                    std::exit(1);
+                }
                
                 lookfrom->setCoordinate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 lookat->setCoordinate(atof(splitline[4].c_str()), atof(splitline[5].c_str()), atof(splitline[6].c_str()));
@@ -526,26 +542,16 @@ void Scene::loadScene(std::string file) {
                 up->setZ(atof(splitline[9].c_str()));
                 fovVert = atof(splitline[10].c_str());
 
-                // Maybe Just add Camera in here
-
-                // lookfrom:
-                //    atof(splitline[1].c_str())
-                //    atof(splitline[2].c_str())
-                //    atof(splitline[3].c_str())
-                // lookat:
-                //    atof(splitline[4].c_str())
-                //    atof(splitline[5].c_str())
-                //    atof(splitline[6].c_str())
-                // up:
-                //    atof(splitline[7].c_str())
-                //    atof(splitline[8].c_str())
-                //    atof(splitline[9].c_str())
-                // fov: atof(splitline[10].c_str());
             }
 
             //sphere x y z radius
             //  Deﬁnes a sphere with a given position and radius.
             else if(!splitline[0].compare("sphere")) {
+                if(splitline.size() != 5) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to SPHERE on line " << lineCount << ". Requires 4 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 Coordinate* position = new Coordinate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 float radius = atof(splitline[4].c_str());
 
@@ -565,19 +571,15 @@ void Scene::loadScene(std::string file) {
                 shapeCount += 1;
                 primitives.push_back(prim);
 
-                // x: atof(splitline[1].c_str())
-                // y: atof(splitline[1].c_str())
-                // z: atof(splitline[1].c_str())
-                // r: atof(splitline[4].c_str())
-                // Create new sphere:
-                //   Store 4 numbers
-                //   Store current property values
-                //   Store current top of matrix stack
             }
             //maxverts number
             //  Deﬁnes a maximum number of vertices for later triangle speciﬁcations. 
             //  It must be set before vertices are deﬁned.
             else if(!splitline[0].compare("maxverts")) {
+                if(splitline.size() != 2) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to MAXVERTS on line " << lineCount << ". Requires 1 arguments." << std::endl;
+                    std::exit(1);
+                }
 
                 // Care if you want
                 // Here, either declare array size
@@ -587,18 +589,22 @@ void Scene::loadScene(std::string file) {
             //  Deﬁnes a maximum number of vertices with normals for later speciﬁcations.
             //  It must be set before vertices with normals are deﬁned.
             else if(!splitline[0].compare("maxvertnorms")) {
+
                 // Care if you want
             }
             //vertex x y z
             //  Deﬁnes a vertex at the given location.
             //  The vertex is put into a pile, starting to be numbered at 0.
             else if(!splitline[0].compare("vertex")) {
+                if(splitline.size() != 4) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to VERTEX on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::exit(1);
+                }
+
+
                 Coordinate* vert = new Coordinate(atof(splitline[1].c_str()),atof(splitline[2].c_str()),atof(splitline[3].c_str()));
                 vertices.push_back(vert);
-                // x: atof(splitline[1].c_str()),
-                // y: atof(splitline[2].c_str()),
-                // z: atof(splitline[3].c_str()));
-                // Create a new vertex with these 3 values, store in some array
+                
             }
             //vertexnormal x y z nx ny nz
             //  Similar to the above, but deﬁne a surface normal with each vertex.
@@ -618,26 +624,16 @@ void Scene::loadScene(std::string file) {
             //  the vertex command). The vertices are assumed to be speciﬁed in counter-clockwise order. Your code
             //  should internally compute a face normal for this triangle.
             else if(!splitline[0].compare("tri")) {
+                if(splitline.size() != 4) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to TRI on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 Coordinate* pt1 = vertices.at(atof(splitline[1].c_str()));
                 Coordinate* pt2 = vertices.at(atof(splitline[2].c_str()));
                 Coordinate* pt3 = vertices.at(atof(splitline[3].c_str()));
                 Shape* triangle = new Triangle(pt1, pt2, pt3);
                 BRDF* brdf = new BRDF(diffuse, specular, ambient, reflective, shininess);
-
-/*
-                std::cout << "using Diffuse: " << std::endl;
-                brdf->getKD()->print();
-
-                std::cout << "using Color: " << std::endl;
-                ambient->print();
-
-                std::cout << "Adding a Triangle with vertices:" << std::endl;
-                pt1->print();
-                pt2->print();
-                pt3->print();*/
-            //    std::cout << "pt1 = (" << triangle->getv1()->getX() << ", " << triangle->getv1()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
-          //      std::cout << "pt2 = (" << triangle->getv2()->getX() << ", " << triangle->getv2()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
-              //  std::cout << "pt3 = (" << triangle->getv3()->getX() << ", " << triangle->getv3()->getY() << ", " << triangle->getv1()->getZ() << ") " << std::endl;
 
                 Transformation* transform = transformations.top()->getCopy();
 
@@ -645,15 +641,6 @@ void Scene::loadScene(std::string file) {
                 shapeCount += 1;
                 primitives.push_back(new GeometricPrimitive(triangle, brdf, transform));
 
-
-                // v1: atof(splitline[1].c_str())
-                // v2: atof(splitline[2].c_str())
-                // v3: atof(splitline[3].c_str())
-                // Create new triangle:
-                //   Store pointer to array of vertices
-                //   Store 3 integers to index into array
-                //   Store current property values
-                //   Store current top of matrix stack
             }
             //trinormal v1 v2 v3
             //  Same as above but for vertices speciﬁed with normals.
@@ -674,38 +661,45 @@ void Scene::loadScene(std::string file) {
             //translate x y z
             //  A translation 3-vector
             else if(!splitline[0].compare("translate")) {
+                if(splitline.size() != 4) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to TRANSLATE on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::exit(1);
+                }
                 transformations.top()->translate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
               
-                // x: atof(splitline[1].c_str())
-                // y: atof(splitline[2].c_str())
-                // z: atof(splitline[3].c_str())
-                // Update top of matrix stack
             }
             //rotate x y z angle
             //  Rotate by angle (in degrees) about the given axis as in OpenGL.
             else if(!splitline[0].compare("rotate")) {
+                if(splitline.size() != 5) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to ROTATE on line " << lineCount << ". Requires 4 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 transformations.top()->rotate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()), atof(splitline[3].c_str()));
               
-                // x: atof(splitline[1].c_str())
-                // y: atof(splitline[2].c_str())
-                // z: atof(splitline[3].c_str())
-                // angle: atof(splitline[4].c_str())
-                // Update top of matrix stack
             }
             //scale x y z
             //  Scale by the corresponding amount in each axis (a non-uniform scaling).
             else if(!splitline[0].compare("scale")) {
+                if(splitline.size() != 4) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to SCALE on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 transformations.top()->scale(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
-                // x: atof(splitline[1].c_str())
-                // y: atof(splitline[2].c_str())
-                // z: atof(splitline[3].c_str())
-                // Update top of matrix stack
+
             }
             //pushTransform
             //  Push the current modeling transform on the stack as in OpenGL. 
             //  You might want to do pushTransform immediately after setting 
             //   the camera to preserve the “identity” transformation.
             else if(!splitline[0].compare("pushTransform")) {
+                if(splitline.size() != 1) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to PUSHTRANSFORM on line " << lineCount << ". Requires 0 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 Transformation* newTransform = transformations.top()->getCopy();
                 transformations.push(newTransform);
                 //mst.push();
@@ -717,6 +711,10 @@ void Scene::loadScene(std::string file) {
             //  (assuming the initial camera transformation is on the stack as 
             //  discussed above).
             else if(!splitline[0].compare("popTransform")) {
+                if(splitline.size() != 1) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to PUSHTRANSFORM on line " << lineCount << ". Requires 0 arguments." << std::endl;
+                    std::exit(1);
+                }                
                 //mst.pop();
                 if(transformations.size() <= 1) {
                     std::cout << "File Input Error: PopTransform called without corresponding pushTransform" << std::endl;
@@ -730,37 +728,36 @@ void Scene::loadScene(std::string file) {
             //  The direction to the light source, and the color, as in OpenGL.
             else if(!splitline[0].compare("directional")) {
                 // Note this is a vector TOWARDS the directional light
+ 
+                if(splitline.size() != 7) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to DIRECTIONAL on line " << lineCount << ". Requires 6 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 Vector* vec = new Vector(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
                 Color* col = new Color(atof(splitline[4].c_str()),atof(splitline[5].c_str()),atof(splitline[6].c_str()));
+
                 Light* dirLight = new DirectionLight(vec->getOpposite(), col);
 
                 lightCount += 1; 
                 lights.push_back(dirLight);
 
-                // x: atof(splitline[1].c_str()),
-                // y: atof(splitline[2].c_str()),
-                // z: atof(splitline[3].c_str()));
-                // r: atof(splitline[4].c_str()),
-                // g: atof(splitline[5].c_str()),
-                // b: atof(splitline[6].c_str()));
-                // add light to scene...
             }
             //point x y z r g b
             //  The location of a point source and the color, as in OpenGL.
             else if(!splitline[0].compare("point")) {
+                if(splitline.size() != 7) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to POINT on line " << lineCount << ". Requires 6 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 Coordinate* pt = new Coordinate(atof(splitline[1].c_str()),  atof(splitline[2].c_str()),  atof(splitline[3].c_str()));
                 Color* col = new Color(atof(splitline[4].c_str()),atof(splitline[5].c_str()),atof(splitline[6].c_str()));
                 Light* ptLight = new PointLight(pt, col);
 
                 lightCount += 1;
                 lights.push_back(ptLight);
-                // x: atof(splitline[1].c_str()),
-                // y: atof(splitline[2].c_str()),
-                // z: atof(splitline[3].c_str()));
-                // r: atof(splitline[4].c_str()),
-                // g: atof(splitline[5].c_str()),
-                // b: atof(splitline[6].c_str()));
-                // add light to scene...
+
             }
             //attenuation const linear quadratic
             //  Sets the constant, linear and quadratic attenuations 
@@ -774,51 +771,62 @@ void Scene::loadScene(std::string file) {
             //  The global ambient color to be added for each object 
             //  (default is .2,.2,.2)
             else if(!splitline[0].compare("ambient")) {
+                if(splitline.size() != 4) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to AMBIENT on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 ambient = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
 
-                // r: atof(splitline[1].c_str())
-                // g: atof(splitline[2].c_str())
-                // b: atof(splitline[3].c_str())
             }
 
             //diﬀuse r g b
             //  speciﬁes the diﬀuse color of the surface.
             else if(!splitline[0].compare("diffuse")) {
+                if(splitline.size() != 4) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to DIFFUSE on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 diffuse = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
-                // r: atof(splitline[1].c_str())
-                // g: atof(splitline[2].c_str())
-                // b: atof(splitline[3].c_str())
-                // Update current properties
+
             }
             //specular r g b 
             //  speciﬁes the specular color of the surface.
             else if(!splitline[0].compare("specular")) {
+                if(splitline.size() != 4) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to SPECULAR on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 specular = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
-                // r: atof(splitline[1].c_str())
-                // g: atof(splitline[2].c_str())
-                // b: atof(splitline[3].c_str())
-                // Update current properties
+  
             }
             //shininess s
             //  speciﬁes the shininess of the surface.
             else if(!splitline[0].compare("shininess")) {
+                if(splitline.size() != 2) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to SHININESS on line " << lineCount << ". Requires 1 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 shininess = atof(splitline[1].c_str());
                 if(shininess < 0.0f) {
                     std::cout << "File Input Error: Negative Shininess Value" << std::endl;
                     std::exit(1);
                 }
-                // shininess: atof(splitline[1].c_str())
-                // Update current properties
+
             }
             //emission r g b
             //  gives the emissive color of the surface.
             else if(!splitline[0].compare("emission")) {
+                if(splitline.size() != 4) {
+                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to EMISSION on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::exit(1);
+                }
+
                 emission = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
-            
-                // r: atof(splitline[1].c_str())
-                // g: atof(splitline[2].c_str())
-                // b: atof(splitline[3].c_str())
-                // Update current properties
+
             } else {
                 std::cerr << "Unknown command: " << splitline[0] << std::endl;
             }
@@ -831,24 +839,27 @@ void Scene::loadScene(std::string file) {
     setCamera(lookfrom, lookat, up, fovVert);
     //setDefaultCamera();
     //Initializes the sceneSampler and sceneFilm;
-    initializeSampleFilm(pixelHeight, pixelWidth);
+    initializeSampleFilm(pixelHeight, pixelWidth, fname);
 
     // Initializes the sceneTracer;
     setRayTracer(lights, primitives, lightCount, shapeCount, recurseDepth);
 
+
 }
 
 Scene* testSphere() {
-       Coordinate* eye = new Coordinate(0.0f, 0.0f, 2.0f);
-    Coordinate* UL = new Coordinate(-1.0f, 1.0f, -3.0f);
-    Coordinate* UR = new Coordinate(1.0f, 1.0f, -3.0f);
-    Coordinate* LR = new Coordinate(1.0f, -1.0f, -3.0f);
-    Coordinate* LL = new Coordinate(-1.0f, -1.0f, -3.0f);
+    Coordinate* eye = new Coordinate(0.0f, 0.0f, 1.0f);
+  
+    Coordinate* UL = new Coordinate(-1.0f, 1.0f, 0.0f);
+    Coordinate* UR = new Coordinate(1.0f, 1.0f, 0.0f);
+    Coordinate* LR = new Coordinate(1.0f, -1.0f, 0.0f);
+    Coordinate* LL = new Coordinate(-1.0f, -1.0f, 0.0f);
+
 
     int width = 680;
     int height = 680;
 
-    Shape* sphere1 = new Sphere(new Coordinate(0.0f, 0.0f, -20.0f), 3.0f);
+    Shape* sphere1 = new Sphere(new Coordinate(0.0f, 0.0f, -10.0f), 5.0f);
     Color* ka1 = new Color(0.1f, 0.1f, 0.1f);
     Color* kd1 = new Color(1.0f, 0.0f, 1.0f);
     Color* ks1 = new Color(1.0f, 1.0f, 1.0f);
@@ -865,7 +876,7 @@ Scene* testSphere() {
     DirectionLight* light2 = new DirectionLight(dir2, col2);
 
     Transformation* transform1 = new Transformation();
-    transform1->scale(3.0f, 1.0f, 1.0f);
+    transform1->scale(1.5f, 1.0f, 1.0f);
 
     int shapeCount = 1;
     GeometricPrimitive** primitives = new GeometricPrimitive*[shapeCount]; 

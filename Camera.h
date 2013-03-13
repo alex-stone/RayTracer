@@ -31,6 +31,7 @@ class Camera {
 
     Ray* generateRay(Sample* samp);
 
+    void printCameraInfo();
 };
 
 #endif

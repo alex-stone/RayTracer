@@ -1,7 +1,9 @@
 #include <iostream>
 #include <math.h>
 #include "TransformMatrix.h"
-#include <Eigen/Dense>
+#include "Eigen/Dense"
+#include "Vector.h"
+#include "Coordinate.h"
 #include "Vector.h"
 
 //****************************************************
@@ -88,7 +90,7 @@ TransformMatrix* TransformMatrix::rotateMatrix(float x, float y, float z, float 
     float c = 0.0f;
 
     angle = angle*3.141592654/180;
-
+/*
     // Just Rotating about a vector, that goes thru origin so (a, b, c) = (0,0,0)
     // Check it correct angle for phef
     mat(0,0) = pow(u, 2) + (pow(v, 2) + pow(w, 2))*cos(angle);
@@ -107,8 +109,27 @@ TransformMatrix* TransformMatrix::rotateMatrix(float x, float y, float z, float 
     mat(3,1) = 0;
     mat(3,2) = 0;
     mat(3,3) = 1;
+*/
 
+    return matrix;
 
+}
+
+Coordinate* TransformMatrix::transformPt(Coordinate* pt) {
+    Vector4f temp(pt->getX(), pt->getY(), pt->getZ(), 0.0f);
+ 
+    temp = this->mat * temp;
+
+    return new Coordinate(temp(0), temp(1), temp(2));
+
+}
+
+Vector* TransformMatrix::transformVec(Vector* vec) {
+    Vector4f temp(vec->getX(), vec->getY(), vec->getZ(), 0.0f);
+
+    temp = this->mat * temp;
+   
+    return new Vector(temp(0), temp(1), temp(2));
 }
 
 void TransformMatrix::print() {

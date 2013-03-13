@@ -1,6 +1,6 @@
 #include <iostream>
 #include <iostream>
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 #include "Transformation.h"
 #include "TransformMatrix.h"
 
@@ -31,6 +31,7 @@ void Transformation::translate(float x, float y, float z) {
 
 void Transformation::scale(float x, float y, float z) {
     TransformMatrix* scale = mat->scaleMatrix(x, y, z);
+
     this->addMatrix(scale);
 }
 
@@ -43,6 +44,13 @@ void Transformation::print() {
     this->mat->print();
 }
 
+Transformation* Transformation::getCopy() {
+    Transformation* returnTransform = new Transformation();
+    TransformMatrix* m = new TransformMatrix(this->getMatrix()->getMatrix());
+    returnTransform->addMatrix(m);
+    return returnTransform;   
+}
+/*
 int main(int argc, char* argv[]) {
     Transformation* transform = new Transformation(); 
     transform->print();
@@ -74,6 +82,6 @@ int main(int argc, char* argv[]) {
     matrix4f = matrix4f * m2; 
 
     std::cout << matrix4f << std::endl;
-}
+}*/
 
 

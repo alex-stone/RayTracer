@@ -28,7 +28,7 @@ Film::Film(int h, int w, std::string file) {
        	pixelBucket[i] = new Color[h];
     }
 
-    fileName = file.c_str();
+    fileName = file;
 }
 
 void Film::setSize(int h, int w) {
@@ -66,8 +66,8 @@ void Film::writeImage() {
 
     } 
 
-    if (FreeImage_Save(FIF_PNG, bitmap, fileName, 0))
-	cout << "Image Successfuly Saved!" << endl;
+    if (FreeImage_Save(FIF_PNG, bitmap, fileName.c_str(), 0))
+	cout << "Image Successfuly Saved to file: " << fileName << "!" << std::endl;
 
     FreeImage_DeInitialise();
 

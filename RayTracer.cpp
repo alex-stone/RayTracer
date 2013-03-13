@@ -32,14 +32,11 @@ RayTracer::RayTracer(std::vector<Light*> lightVec, std::vector<GeometricPrimitiv
 
     for(int i = 0; i < numLights; i++) {
         lights[i] = lightVec.at(i);
-        std::cout << "Lights Color" << std::endl;
-        lights[i]->getColor()->print();
     }
 
     for(int i = 0; i < numShapes; i++) {
         primitives[i] = primitiveVec.at(i);
-        //std::cout << "Primitives Color" << std::endl;
-        primitives[i]->getBRDF()->getKA()->print();
+
     }
      
     recurseDepth = depth;

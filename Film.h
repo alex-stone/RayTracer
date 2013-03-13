@@ -13,7 +13,7 @@ class Film {
     int pixelHeight;
     int pixelWidth;
     Color** pixelBucket;
-    char* fileName;
+    std::string fileName;
 
   public:
     Film();
