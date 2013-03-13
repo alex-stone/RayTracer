@@ -15,8 +15,10 @@ directional -.577 -.577 .577 0 0 1
 pushTransform
 
 
-rotate 0 1 0 25 
+translate 0 0 -.5 
+#rotate 0 1 0 25 
 scale 1.5 1 1
+
 sphere 0 0 -20 5
 
 popTransform

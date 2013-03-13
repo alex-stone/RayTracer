@@ -34,8 +34,14 @@ Intersection* GeometricPrimitive::intersect(Ray* ray) {
 
     //Transform objLoc to worldLoc
 
+    LocalGeo* worldLoc = objLoc->applyTransformation(worldToObj);
+
+    float dist = ray->getPosition()->distTo(worldLoc->getPosition());
+
     // Distance = distance from origin of ray to localGeo position.
-    float dist = ray->getPosition()->distTo(objLoc->getPosition());   
+  //  float dist = objRay->getPosition()->distTo(objLoc->getPosition());   
+
+
     GeometricPrimitive* self = this;
 
 
@@ -43,7 +49,7 @@ Intersection* GeometricPrimitive::intersect(Ray* ray) {
 
     return in; 
 
-} 
+}
 
 bool GeometricPrimitive::intersectP(Ray* ray) {
     Ray* objRay = ray->applyTransformation(worldToObj);

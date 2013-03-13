@@ -29,4 +29,3 @@ LocalGeo* LocalGeo::applyInverseTransformation(Transformation* transform) {
 
 
 
-

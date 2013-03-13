@@ -48,7 +48,11 @@ Intersection* RayTracer::closestIntersection(Ray* ray) {
     Intersection* closest = NULL;
 
     for(int i = 0; i< shapeCount; i++) {
+
+    //    GeometricPrimitive* temp = primitives[i];
+      //  Ray* objRay = ray->applyInverseTransformation(temp->getTransformation());
 	    Intersection* temp = primitives[i]->intersect(ray);
+
 	    if(temp != NULL && temp->getDist() > 0.001f) {
 	        if(closest == NULL || (temp->getDist() < closest->getDist())) {
 		         closest = temp;

@@ -18,8 +18,8 @@ vertex -1 +1 +1
 pushTransform
 ambient .7 .7 .4
 
-#translate -1.75 -.8 -.25
-translate 0 0 .3 
+translate -1.75 -.8 -.25
+translate 0 3 0 
 scale 0.15 0.15 2.0
 tri 0 1 5
 tri 0 5 4
