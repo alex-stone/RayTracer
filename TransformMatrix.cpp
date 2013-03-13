@@ -212,7 +212,7 @@ Coordinate* TransformMatrix::transformPt(Coordinate* pt) {
 }
 
 Vector* TransformMatrix::transformVec(Vector* vec) {
-    Vector4f temp(vec->getX(), vec->getY(), vec->getZ(), 1.0f);
+    Vector4f temp(vec->getX(), vec->getY(), vec->getZ(), 0.0f);
 
     temp = this->mat * temp;
 
