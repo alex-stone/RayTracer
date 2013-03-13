@@ -443,8 +443,6 @@ void Scene::loadScene(std::string file) {
     Color* specular = new Color(0.0f, 0.0f, 0.0f);  
     Color* reflective = new Color(0.0f, 0.0f, 0.0f);
     float shininess = 0.0f;
-    Color* emission = new Color(0.0f, 0.0f, 0.0f);
-
 
     // Camera Properties
     Coordinate* lookfrom = new Coordinate();
@@ -496,7 +494,7 @@ void Scene::loadScene(std::string file) {
             else if(!splitline[0].compare("size")) {
 
                 if(splitline.size() != 3) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to size on line " << lineCount << ". Requires 2 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to size on line " << lineCount << ". Requires 2 arguments." << std::endl;
                     std::exit(1);
                 }
 
@@ -507,7 +505,7 @@ void Scene::loadScene(std::string file) {
                     pixelWidth = width;
                     pixelHeight = height;
                 } else {
-                    std::cout << "File Input Error: Size Dimensions Invalid" << std::endl;
+                    std::cerr << "File Input Error: Size Dimensions Invalid" << std::endl;
                     std::exit(1);
                 }
 
@@ -515,13 +513,19 @@ void Scene::loadScene(std::string file) {
             //maxdepth depth
             //  max # of bounces for ray (default 5)
             else if(!splitline[0].compare("maxdepth")) {
-                // maxdepth: atoi(splitline[1].c_str())
+                if(splitline.size() != 2) {
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to MAXDEPTH on line " << lineCount << ". Requires 1 arguments." << std::endl;
+                    std::exit(1);
+                }
+
+                recurseDepth = atoi(splitline[1].c_str());
+
             }
             //output filename
             //  output file to write image to 
             else if(!splitline[0].compare("output")) {
                 if(splitline.size() != 2) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to OUTPUT on line " << lineCount << ". Requires 1 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to OUTPUT on line " << lineCount << ". Requires 1 arguments." << std::endl;
                     std::exit(1);
                 }
                 fname = splitline[1];
@@ -531,7 +535,7 @@ void Scene::loadScene(std::string file) {
             //  speciﬁes the camera in the standard way, as in homework 2.
             else if(!splitline[0].compare("camera")) {
                 if(splitline.size() != 11) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to CAMERA on line " << lineCount << ". Requires 10 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to CAMERA on line " << lineCount << ". Requires 10 arguments." << std::endl;
                     std::exit(1);
                 }
                
@@ -548,7 +552,7 @@ void Scene::loadScene(std::string file) {
             //  Deﬁnes a sphere with a given position and radius.
             else if(!splitline[0].compare("sphere")) {
                 if(splitline.size() != 5) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to SPHERE on line " << lineCount << ". Requires 4 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to SPHERE on line " << lineCount << ". Requires 4 arguments." << std::endl;
                     std::exit(1);
                 }
 
@@ -556,7 +560,7 @@ void Scene::loadScene(std::string file) {
                 float radius = atof(splitline[4].c_str());
 
                 if(radius < 0.0f) {
-                    std::cout << "File Input Error: Negative Radius of a Sphere" << std::endl;
+                    std::cerr << "File Input Error: Negative Radius of a Sphere" << std::endl;
                     std::exit(1);
                 }
                 // Temporarily just Add it, ignoring Transformations
@@ -577,7 +581,7 @@ void Scene::loadScene(std::string file) {
             //  It must be set before vertices are deﬁned.
             else if(!splitline[0].compare("maxverts")) {
                 if(splitline.size() != 2) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to MAXVERTS on line " << lineCount << ". Requires 1 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to MAXVERTS on line " << lineCount << ". Requires 1 arguments." << std::endl;
                     std::exit(1);
                 }
 
@@ -597,7 +601,7 @@ void Scene::loadScene(std::string file) {
             //  The vertex is put into a pile, starting to be numbered at 0.
             else if(!splitline[0].compare("vertex")) {
                 if(splitline.size() != 4) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to VERTEX on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to VERTEX on line " << lineCount << ". Requires 3 arguments." << std::endl;
                     std::exit(1);
                 }
 
@@ -625,20 +629,16 @@ void Scene::loadScene(std::string file) {
             //  should internally compute a face normal for this triangle.
             else if(!splitline[0].compare("tri")) {
                 if(splitline.size() != 4) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to TRI on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to TRI on line " << lineCount << ". Requires 3 arguments." << std::endl;
                     std::exit(1);
                 }
-
-
 
                 Coordinate* pt1 = vertices.at(atof(splitline[1].c_str()));
                 Coordinate* pt2 = vertices.at(atof(splitline[2].c_str()));
                 Coordinate* pt3 = vertices.at(atof(splitline[3].c_str()));
 
-
                 Shape* triangle = new Triangle(pt1, pt2, pt3);
                 BRDF* brdf = new BRDF(diffuse, specular, ambient, reflective, shininess);
-
 
                 Transformation* transform = transformations.top()->getCopy();
 
@@ -666,32 +666,51 @@ void Scene::loadScene(std::string file) {
             //  A translation 3-vector
             else if(!splitline[0].compare("translate")) {
                 if(splitline.size() != 4) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to TRANSLATE on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to TRANSLATE on line " << lineCount << ". Requires 3 arguments." << std::endl;
                     std::exit(1);
                 }
-                transformations.top()->translate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+                float x = atof(splitline[1].c_str());
+                float y = atof(splitline[2].c_str());
+                float z = atof(splitline[3].c_str());
+                transformations.top()->translate(x,y,z);
+
+                std::cout << "Added Translation: " << "( "<< x << ", " << y << ", " << z << ")" << std::endl;
+                transformations.top()->print();
 
             }
             //rotate x y z angle
             //  Rotate by angle (in degrees) about the given axis as in OpenGL.
             else if(!splitline[0].compare("rotate")) {
                 if(splitline.size() != 5) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to ROTATE on line " << lineCount << ". Requires 4 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to ROTATE on line " << lineCount << ". Requires 4 arguments." << std::endl;
                     std::exit(1);
                 }
+                float x = atof(splitline[1].c_str());
+                float y = atof(splitline[2].c_str());
+                float z = atof(splitline[3].c_str());
+                float angle = atof(splitline[4].c_str());
+                transformations.top()->rotate(x,y,z,angle);
 
-                transformations.top()->rotate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()), atof(splitline[4].c_str()));
-              
+                std::cout << "Added Rotation on axis: " << "( "<< x << ", " << y << ", " << z << ") by " << angle << " degrees" << std::endl;
+                transformations.top()->print();
+
             }
             //scale x y z
             //  Scale by the corresponding amount in each axis (a non-uniform scaling).
             else if(!splitline[0].compare("scale")) {
                 if(splitline.size() != 4) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to SCALE on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to SCALE on line " << lineCount << ". Requires 3 arguments." << std::endl;
                     std::exit(1);
                 }
 
-                transformations.top()->scale(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+                float x = atof(splitline[1].c_str());
+                float y = atof(splitline[2].c_str());
+                float z = atof(splitline[3].c_str());
+
+                transformations.top()->scale(x,y,z);
+
+                std::cout << "Added Scale: " << "( "<< x << ", " << y << ", " << z << ")" << std::endl;
+                transformations.top()->print();
 
             }
             //pushTransform
@@ -700,13 +719,12 @@ void Scene::loadScene(std::string file) {
             //   the camera to preserve the “identity” transformation.
             else if(!splitline[0].compare("pushTransform")) {
                 if(splitline.size() != 1) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to PUSHTRANSFORM on line " << lineCount << ". Requires 0 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to PUSHTRANSFORM on line " << lineCount << ". Requires 0 arguments." << std::endl;
                     std::exit(1);
                 }
 
                 Transformation* newTransform = transformations.top()->getCopy();
                 transformations.push(newTransform);
-                //mst.push();
             }
             //popTransform
             //  Pop the current transform from the stack as in OpenGL. 
@@ -716,15 +734,19 @@ void Scene::loadScene(std::string file) {
             //  discussed above).
             else if(!splitline[0].compare("popTransform")) {
                 if(splitline.size() != 1) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to PUSHTRANSFORM on line " << lineCount << ". Requires 0 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to PUSHTRANSFORM on line " << lineCount << ". Requires 0 arguments." << std::endl;
                     std::exit(1);
                 }                
-                //mst.pop();
+
                 if(transformations.size() <= 1) {
-                    std::cout << "File Input Error: PopTransform called without corresponding pushTransform" << std::endl;
+                    std::cerr << "File Input Error: PopTransform called without corresponding pushTransform" << std::endl;
                     std::exit(1);
                 } else {
+                    std::cout << "before printing this is what transform is" << std::endl;
+                    transformations.top()->print();
                     transformations.pop();
+                    std::cout<<"after popping this is what the transform is " << std::endl;
+                    transformations.top()->print();
                 }
             }
 
@@ -734,7 +756,7 @@ void Scene::loadScene(std::string file) {
                 // Note this is a vector TOWARDS the directional light
  
                 if(splitline.size() != 7) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to DIRECTIONAL on line " << lineCount << ". Requires 6 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to DIRECTIONAL on line " << lineCount << ". Requires 6 arguments." << std::endl;
                     std::exit(1);
                 }
 
@@ -751,7 +773,7 @@ void Scene::loadScene(std::string file) {
             //  The location of a point source and the color, as in OpenGL.
             else if(!splitline[0].compare("point")) {
                 if(splitline.size() != 7) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to POINT on line " << lineCount << ". Requires 6 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to POINT on line " << lineCount << ". Requires 6 arguments." << std::endl;
                     std::exit(1);
                 }
 
@@ -776,47 +798,56 @@ void Scene::loadScene(std::string file) {
             //  (default is .2,.2,.2)
             else if(!splitline[0].compare("ambient")) {
                 if(splitline.size() != 4) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to AMBIENT on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to AMBIENT on line " << lineCount << ". Requires 3 arguments." << std::endl;
                     std::exit(1);
                 }
+                float r = atof(splitline[1].c_str());
+                float g = atof(splitline[2].c_str());
+                float b = atof(splitline[3].c_str());
 
-                ambient = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
-
+                ambient = new Color(r,g,b);
             }
 
             //diﬀuse r g b
             //  speciﬁes the diﬀuse color of the surface.
             else if(!splitline[0].compare("diffuse")) {
                 if(splitline.size() != 4) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to DIFFUSE on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to DIFFUSE on line " << lineCount << ". Requires 3 arguments." << std::endl;
                     std::exit(1);
                 }
 
-                diffuse = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+                float r = atof(splitline[1].c_str());
+                float g = atof(splitline[2].c_str());
+                float b = atof(splitline[3].c_str());
 
+                diffuse = new Color(r,g,b);
             }
             //specular r g b 
             //  speciﬁes the specular color of the surface.
             else if(!splitline[0].compare("specular")) {
                 if(splitline.size() != 4) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to SPECULAR on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to SPECULAR on line " << lineCount << ". Requires 3 arguments." << std::endl;
                     std::exit(1);
                 }
 
-                specular = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+                float r = atof(splitline[1].c_str());
+                float g = atof(splitline[2].c_str());
+                float b = atof(splitline[3].c_str());
+
+                specular = new Color(r,g,b);
   
             }
             //shininess s
             //  speciﬁes the shininess of the surface.
             else if(!splitline[0].compare("shininess")) {
                 if(splitline.size() != 2) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to SHININESS on line " << lineCount << ". Requires 1 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to SHININESS on line " << lineCount << ". Requires 1 arguments." << std::endl;
                     std::exit(1);
                 }
 
                 shininess = atof(splitline[1].c_str());
                 if(shininess < 0.0f) {
-                    std::cout << "File Input Error: Negative Shininess Value" << std::endl;
+                    std::cerr << "File Input Error: Negative Shininess Value" << std::endl;
                     std::exit(1);
                 }
 
@@ -825,14 +856,19 @@ void Scene::loadScene(std::string file) {
             //  gives the emissive color of the surface.
             else if(!splitline[0].compare("emission")) {
                 if(splitline.size() != 4) {
-                    std::cout << "File Input Error: " << splitline.size() - 1 << " arguments provided to EMISSION on line " << lineCount << ". Requires 3 arguments." << std::endl;
+                    std::cerr << "File Input Error: " << splitline.size() - 1 << " arguments provided to EMISSION on line " << lineCount << ". Requires 3 arguments." << std::endl;
                     std::exit(1);
                 }
 
-                reflective = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+                float r = atof(splitline[1].c_str());
+                float g = atof(splitline[2].c_str());
+                float b = atof(splitline[3].c_str());
+
+                reflective = new Color(r,g,b);
 
             } else {
                 std::cerr << "Unknown command: " << splitline[0] << std::endl;
+                std::exit(1);
             }
         }
 

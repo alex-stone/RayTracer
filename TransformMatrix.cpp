@@ -63,7 +63,7 @@ TransformMatrix* TransformMatrix::translationMatrix(float x, float y, float z) {
      matrix->setValue(0, 3, x);
      matrix->setValue(1, 3, y);
      matrix->setValue(2, 3, z);
-
+     matrix->setValue(3,3,1);
      return matrix;
 }
 
@@ -204,20 +204,22 @@ TransformMatrix* TransformMatrix::rotateMatrix(float x, float y, float z, float 
 }
 
 Coordinate* TransformMatrix::transformPt(Coordinate* pt) {
-    Vector4f temp(pt->getX(), pt->getY(), pt->getZ(), 0.0f);
+    Vector4f temp(pt->getX(), pt->getY(), pt->getZ(), 1.0f);
  
     temp = this->mat * temp;
 
-    return new Coordinate(temp(0), temp(1), temp(2));
 
+    Coordinate* result =  new Coordinate(temp(0), temp(1), temp(2));
+    return result;
 }
 
 Vector* TransformMatrix::transformVec(Vector* vec) {
-    Vector4f temp(vec->getX(), vec->getY(), vec->getZ(), 0.0f);
+    Vector4f temp(vec->getX(), vec->getY(), vec->getZ(), 1.0f);
 
     temp = this->mat * temp;
-   
-    return new Vector(temp(0), temp(1), temp(2));
+
+    Vector* result = new Vector(temp(0), temp(1), temp(2));  
+    return result;
 }
 
 
