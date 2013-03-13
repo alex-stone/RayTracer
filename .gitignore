@@ -1,4 +1,9 @@
-/Eigen
+Eigen
 a.out
 libfreeimage.a
-/test
+test
+*.swp
+*.swo
+*.swn
+*.o
+.DS_Store
