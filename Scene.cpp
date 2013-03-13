@@ -277,11 +277,11 @@ Scene* loadTestFromDiary2() {
     int width = 1000;
     int height = 1000;
 
-    Vector* dir1 = new Vector(0.57735027f, -0.57735027f, -0.57735027f);
+    Vector* dir1 = new Vector(-0.57735027f, 0.57735027f, 0.57735027f);
     Color* col1 = new Color(1.0f, 1.0f, 1.0f);
     DirectionLight* light1 = new DirectionLight(dir1, col1);
     
-    Vector* dir2 = new Vector(-0.57735027f, 0.57735027f, 0.57735027f);
+    Vector* dir2 = new Vector(0.57735027f, -0.57735027f, -0.57735027f);
     Color* col2 = new Color(1.0f, 1.0f, 1.0f);
     DirectionLight* light2 = new DirectionLight(dir2, col2);
 
@@ -329,7 +329,7 @@ Scene* loadTestFromDiary2() {
     float sp4 = 50.0f;
     BRDF* brdf4 = new BRDF(kd4, ks4, ka4, kr4, sp4);
     Transformation* transform4 = new Transformation();
-    transform4->scale(0.0f, 1.5f, 1.0f);
+    transform4->scale(0.5f, 1.5f, 1.0f);
 
     Shape* sphere5 = new Sphere(new Coordinate(-4.0f, 0.0f, -17.0f), 1.5f);
     Color* ka5 = new Color(0.1f, 0.1f, 0.1f);
@@ -629,14 +629,20 @@ void Scene::loadScene(std::string file) {
                     std::exit(1);
                 }
 
+                std::cout << "TEST error: pt1 " << std::endl;
+
                 Coordinate* pt1 = vertices.at(atof(splitline[1].c_str()));
                 Coordinate* pt2 = vertices.at(atof(splitline[2].c_str()));
                 Coordinate* pt3 = vertices.at(atof(splitline[3].c_str()));
+                  std::cout << "TEST error: pt1 " << std::endl;
+
                 Shape* triangle = new Triangle(pt1, pt2, pt3);
                 BRDF* brdf = new BRDF(diffuse, specular, ambient, reflective, shininess);
+  std::cout << "TEST error: pt1 " << std::endl;
 
                 Transformation* transform = transformations.top()->getCopy();
 
+  std::cout << "TEST error: pt1 " << std::endl;
 
                 shapeCount += 1;
                 primitives.push_back(new GeometricPrimitive(triangle, brdf, transform));
@@ -676,7 +682,7 @@ void Scene::loadScene(std::string file) {
                     std::exit(1);
                 }
 
-                transformations.top()->rotate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()), atof(splitline[3].c_str()));
+                transformations.top()->rotate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()), atof(splitline[4].c_str()));
               
             }
             //scale x y z
@@ -825,7 +831,7 @@ void Scene::loadScene(std::string file) {
                     std::exit(1);
                 }
 
-                emission = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
+                reflective = new Color(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
 
             } else {
                 std::cerr << "Unknown command: " << splitline[0] << std::endl;
@@ -902,7 +908,7 @@ int main(int argc, char* argv[]) {
           scene = new Scene(argv[1]);
     } else {
         //scene = loadTestFromDiary2();
-       scene = testSphere();
+       scene = loadTestFromDiary2();
     }
 
   //  Scene* scene = loadTestFromDiary();
