@@ -945,6 +945,12 @@ Scene* testSphere() {
 
 
 int main(int argc, char* argv[]) {
+    clock_t startTime, endTime;
+
+    startTime = clock();    
+
+    std::cout <<"Start Time: " << (double)startTime/CLOCKS_PER_SEC << std::endl;	
+ 
     Scene* scene;
 
     if(argc > 1) {
@@ -958,6 +964,11 @@ int main(int argc, char* argv[]) {
   //  Scene* scene = loadTestFromDiary();
 
     scene->render();
+
+    endTime = clock();
+    double executionTime = ((double)(startTime - endTime) / CLOCKS_PER_SEC);
+
+    std::cout << "Execution Time: " << executionTime << std::endl;
 }
 
 
