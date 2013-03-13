@@ -239,6 +239,44 @@ Color* RayTracer::specularValue(Light* light, Vector* viewDir, Vector* reflectDi
 //      worldLightDir
 //      worldReflectDir
 //****************************************************
+Color* RayTracer::getSingleLightColorObj(Intersection* inter, Vector* viewDir, Light* light, int depth) {
+    Color* color = new Color(0.0f, 0.0f, 0.0f);
+    BRDF* brdf = inter->getPrimitive()->getBRDF();
+
+    Coordinate* objSurfacePoint = inter->getLocalGeo()->getPosition();
+    Vector* objNormal = inter->getLocalGeo()->getNormal();
+    objNormal->normalize();
+
+    Transformation* transform = inter->getPrimitive()->getTransformation();
+
+    Light* objLight = transform->lightToObject(light);
+    Vector* objViewDir = transform->vectorToObject(viewDir);
+    objViewDir->normalize();
+
+    Vector* objLightDir = objLight->getLightDirection(objSurfacePoint);
+    objLightDir->normalize();
+
+    Vector* objVecToLightDir = objLightDir->getOpposite();
+    objVecToLightDir->normalize();
+
+    Vector* objReflectDir = reflectedVector(objLightDir, objNormal)->getOpposite();
+    objReflectDir->normalize();
+
+   // Check if Light Is Blocked
+    if(!isLightBlocked(inter, light)) {
+
+        //Diffuse Component in OBJ
+        color->add(diffuseValue(objLight, objVecToLightDir, objNormal, brdf->getKD()));
+
+        //Specular Component in OBJ
+        color->add(specularValue(objLight, objViewDir, objReflectDir, brdf->getKS(), brdf->getSP()));
+    }
+
+    return color;
+
+}
+
+
 Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Light* light, int depth) {
     // Color Variables
     Color* color = new Color(0.0f, 0.0f, 0.0f);
@@ -263,8 +301,10 @@ Color* RayTracer::getSingleLightColor(Intersection* inter, Vector* viewDir, Ligh
     worldLightDir->normalize();
 
     Vector* worldVecToLightDir = worldLightDir->getOpposite();
+    worldVecToLightDir->normalize();
 
     Vector* worldReflectDir = reflectedVector(worldLightDir, worldNormal)->getOpposite();
+    worldReflectDir->normalize();
 /*
     TransformMatrix* worldToObj = inter->getPrimitive()->getTransformation()->getMatrix();
     TransformMatrix* objToWorld = inter->getPrimitive()->getTransformation()->getInverseTransformation();
@@ -343,7 +383,7 @@ Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir, in
 
     // Check if Adding makes the value over 1.0f
     for(int i = 0; i < lightCount; i++) {
-        color->add(getSingleLightColor(inter, viewDir, lights[i], depth));
+        color->add(getSingleLightColorObj(inter, viewDir, lights[i], depth));
     }
 
     Transformation* transform = inter->getPrimitive()->getTransformation();
@@ -352,6 +392,7 @@ Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir, in
     color->add(inter->getPrimitive()->getBRDF()->getKA());    
 
     Vector* worldViewDir = viewDir;
+    worldViewDir->normalize();
 
     // Get the Surface Intersection Point in WORLD Coordinates
     Coordinate* objSurfacePoint = inter->getLocalGeo()->getPosition();
@@ -363,6 +404,7 @@ Color* RayTracer::getColorFromIntersect(Intersection* inter, Vector* viewDir, in
     worldNormal->normalize();
 
     Vector* worldReflectDir = reflectedVector(worldViewDir, worldNormal);
+    worldReflectDir->normalize();
 
     Ray* reflectionRay = new Ray(worldSurfacePoint, worldReflectDir);
     Color* reflectedValue = trace(reflectionRay, depth+1);
@@ -425,6 +467,7 @@ Color* RayTracer::trace(Ray* ray, int depth) {
     // World: Vector Direction from surface Pt to Ray Origin
     // Reference Frame = WORLD
     Vector* viewDir = ray->getDirection()->getOpposite();
+    viewDir->normalize();
 
    // Vector* viewDir = new Vector(0,0,1);
 
