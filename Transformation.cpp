@@ -79,6 +79,7 @@ Ray* Transformation::rayToObject(Ray* ray) {
 
     Coordinate* newPt = new Coordinate(returnPt(0), returnPt(1), returnPt(2));
     Vector* newDir = new Vector(returnDir(0), returnDir(1), returnDir(2));
+    newDir->normalize();
 
     return new Ray(newPt, newDir);
 }
@@ -98,6 +99,8 @@ Ray* Transformation::rayToWorld(Ray* ray) {
     Coordinate* newPt = new Coordinate(returnPt(0), returnPt(1), returnPt(2));
     Vector* newDir = new Vector(returnDir(0), returnDir(1), returnDir(2));
 
+    newDir->normalize();
+
     return new Ray(newPt, newDir);
 }
 
@@ -113,12 +116,15 @@ Light* Transformation::lightToObject(Light* light) {
 
         returnLight = new PointLight(new Coordinate(lightPt(0),lightPt(1), lightPt(2)), light->getColor());
     } else {
-        Vector* lightDir = light->getDirection();
+        Vector* lightDir = light->getDirection()->getOpposite();
         Eigen::Vector4f lightVec(lightDir->getX(), lightDir->getY(), lightDir->getZ(), 0.0f);
 
         lightVec = matrix * lightVec;
 
-        returnLight = new PointLight(new Coordinate(lightVec(0),lightVec(1), lightVec(2)), light->getColor());
+        Vector* returnDir = new Vector(lightVec(0),lightVec(1), lightVec(2));
+        returnDir->normalize();
+
+        returnLight = new DirectionLight(returnDir, light->getColor());
     }
 
     return returnLight;
@@ -141,7 +147,7 @@ Light* Transformation::lightToWorld(Light* light) {
             returnLight = new PointLight(new Coordinate(lightPt(0),lightPt(1), lightPt(2)), light->getColor());
          }   
     } else {
-        Vector* lightDir = light->getDirection();
+        Vector* lightDir = light->getDirection()->getOpposite();
 
         if(lightDir == NULL) {
             returnLight = NULL;
@@ -151,7 +157,10 @@ Light* Transformation::lightToWorld(Light* light) {
 
             lightVec = invMatrix * lightVec;
 
-            returnLight = new PointLight(new Coordinate(lightVec(0),lightVec(1), lightVec(2)), light->getColor());
+            Vector* returnDir = new Vector(lightVec(0),lightVec(1), lightVec(2));
+            returnDir->normalize();
+
+            returnLight = new DirectionLight(returnDir, light->getColor());
         }
     }
 
@@ -178,6 +187,7 @@ Vector* Transformation::vectorToWorld(Vector* vec) {
 
 
     Vector* result = new Vector(returnDir(0), returnDir(1), returnDir(2));
+
     return result;
 }
 
@@ -196,6 +206,8 @@ Vector* Transformation::normalToWorld(Vector* vec) {
     normal = minvTranspose * normal;
 
     Vector* result = new Vector(normal(0), normal(1), normal(2));
+
+    result->normalize();
 
     return result;
 }
@@ -222,14 +234,36 @@ Transformation* Transformation::getCopy() {
     returnTransform->addMatrix(m);
     return returnTransform;   
 }
+
 /*
 int main(int argc, char* argv[]) {
+    std::cout << "Identity Matrix"<<std::endl;
     Transformation* transform = new Transformation(); 
     transform->print();
+
+    std::cout << "Translate x:3, y:0, z:0 "<< std::endl;
     transform->translate(3.0f, 0.0f, 0.0f);
     transform->print();
+
+    std::cout << "Scale x:2, y:5 z:1"<<std::endl;
     transform->scale(2.0f, 5.0f, 1.0f);
     transform->print();
+
+    Vector* vec1 = new Vector(0.5f, 3.0f, -1.0f);
+
+    Vector* vec2 = transform->vectorToObject(vec1);
+
+    std::cout << "Original Vector: "<<std::endl;
+    vec1->print();
+
+    std::cout << "Transformed Vector: "<<std::endl;
+    vec2->print();
+
+
+    std::cout << "Transformed Vector: now Transformed Back "<<std::endl;
+    Vector* vec3 = transform->vectorToWorld(vec2);
+    vec3->print();
+
 
     Transformation* test = transform->getCopy();
 
@@ -264,6 +298,5 @@ int main(int argc, char* argv[]) {
     matrix4f = matrix4f * m2; 
 
     std::cout << matrix4f << std::endl;
-}
+}*/
 
-*/
