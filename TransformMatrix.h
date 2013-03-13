@@ -16,6 +16,8 @@ class TransformMatrix {
     //float mat[4][4];
     Eigen::Matrix<float,4,4> mat;
 
+    Eigen::Matrix4f getAntisymmetricMatrix(Vector* vec);
+
   public:
     TransformMatrix();
     TransformMatrix(float** matrix);
@@ -27,6 +29,8 @@ class TransformMatrix {
 
     Eigen::Matrix<float,4,4> getMatrix() {return mat; };
 
+
+    Eigen::Matrix4f vectorTimesTranspose(Vector* vec);
     TransformMatrix* inverse();
 
     // multMatrix - Right Multiply
