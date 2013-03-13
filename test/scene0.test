@@ -1,0 +1,24 @@
+# Test Scene 0
+
+size 640 480
+
+camera 0 0 -0.9 0 0 0 0 1 0 30
+
+
+ambient .1 .1 .1
+directional 0 0 1 .5 .5 .5
+point 4 0 4 .5 .5 .5
+diffuse 1 0 0
+specular 1 1 0
+
+sphere 0 0 -20 1 
+
+maxverts 4
+
+vertex -1 -1 0
+vertex +1 -1 0
+vertex +1 +1 0
+vertex -1 +1 0
+
+tri 0 1 2
+tri 0 2 3
