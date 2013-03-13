@@ -59,6 +59,16 @@ int main(int argc, char* argv[]) {
     transform->scale(2.0f, 5.0f, 1.0f);
     transform->print();
 
+    Transformation* test = transform->getCopy();
+
+    std::cout << "Testing if copying transformation can affect previous changes" << std::endl;
+
+    transform->print();
+    
+    transform->rotate(0.0f, 0.0f, 1.0f, 30);
+    test->print();
+    
+
 
     Eigen::Matrix<float,4,4> matrix4f ;
 
@@ -82,6 +92,6 @@ int main(int argc, char* argv[]) {
     matrix4f = matrix4f * m2; 
 
     std::cout << matrix4f << std::endl;
-}*/
+}
 
-
+*/

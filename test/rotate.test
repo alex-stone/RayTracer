@@ -2,8 +2,6 @@ size 680 680
 
 camera 0 0 1 0 0 -3 0 1 0 90 
 
-output sphere.png
-
 ambient .1 .1 .1
 diffuse 1 0 1
 specular 1 1 1
@@ -12,12 +10,15 @@ shininess 50
 directional -.577 .577 .577 1 1 1
 directional -.577 -.577 .577 0 0 1 
 
-pushTransform
+maxverts 3
 
+vertex 0 0 -10
+vertex 5 0 -10
+vertex 5 5 -10
 
-rotate 0 1 0 25 
-scale 1.5 1 1
-sphere 0 0 -20 5
+#pushTransform
 
-popTransform
+rotate 0 0 1 45 
+tri 0 1 2 
 
+#popTransform

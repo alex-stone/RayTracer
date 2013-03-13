@@ -629,20 +629,18 @@ void Scene::loadScene(std::string file) {
                     std::exit(1);
                 }
 
-                std::cout << "TEST error: pt1 " << std::endl;
+
 
                 Coordinate* pt1 = vertices.at(atof(splitline[1].c_str()));
                 Coordinate* pt2 = vertices.at(atof(splitline[2].c_str()));
                 Coordinate* pt3 = vertices.at(atof(splitline[3].c_str()));
-                  std::cout << "TEST error: pt1 " << std::endl;
+
 
                 Shape* triangle = new Triangle(pt1, pt2, pt3);
                 BRDF* brdf = new BRDF(diffuse, specular, ambient, reflective, shininess);
-  std::cout << "TEST error: pt1 " << std::endl;
+
 
                 Transformation* transform = transformations.top()->getCopy();
-
-  std::cout << "TEST error: pt1 " << std::endl;
 
                 shapeCount += 1;
                 primitives.push_back(new GeometricPrimitive(triangle, brdf, transform));
@@ -672,7 +670,7 @@ void Scene::loadScene(std::string file) {
                     std::exit(1);
                 }
                 transformations.top()->translate(atof(splitline[1].c_str()), atof(splitline[2].c_str()), atof(splitline[3].c_str()));
-              
+
             }
             //rotate x y z angle
             //  Rotate by angle (in degrees) about the given axis as in OpenGL.

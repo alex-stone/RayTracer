@@ -1,7 +1,6 @@
 Eigen
 a.out
 libfreeimage.a
-test
 *.swp
 *.swo
 *.swn

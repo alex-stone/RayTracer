@@ -128,7 +128,15 @@ TransformMatrix* TransformMatrix::rotateMatrix(float x, float y, float z, float 
     returnMatrix = vecTimesTranspose + (asymMatrix * std::sin(angle)) - (asymMatrix * asymMatrix * std::cos(angle));
     returnMatrix(3,3) = 1;
 
-    std::cout << returnMatrix << std::endl;
+    //std::cout << returnMatrix << std::endl;
+
+    Eigen::Matrix4f testMatrix = Matrix4f::Zero();
+    testMatrix(0,0) = cos(angle);
+    testMatrix(1,1) = cos(angle);
+    testMatrix(2,2) = cos(angle);
+
+    returnMatrix = testMatrix + (1 - std::cos(angle))*vecTimesTranspose + std::sin(angle)*asymMatrix;
+    returnMatrix(3,3) = 1;
 
     TransformMatrix* result = new TransformMatrix(returnMatrix);
 /*
