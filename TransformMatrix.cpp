@@ -36,11 +36,8 @@ TransformMatrix::TransformMatrix(Matrix4f matrix) {
 }
 
 void TransformMatrix::setValue(int row, int col, float value) {
-    if((value < 0.0001 && value > 0) || (value < 0 && value > -0.001)) { 
-    	mat(row, col) = 0;
-    } else {
-	mat(row,col) = value;
-    }
+    mat(row, col) = value;
+
 }
 
 TransformMatrix* TransformMatrix::inverse() {
@@ -63,7 +60,7 @@ TransformMatrix* TransformMatrix::translationMatrix(float x, float y, float z) {
      matrix->setValue(0, 3, x);
      matrix->setValue(1, 3, y);
      matrix->setValue(2, 3, z);
-     matrix->setValue(3,3,1);
+     matrix->setValue(3,3,1.0f);
      return matrix;
 }
 
@@ -73,6 +70,7 @@ TransformMatrix* TransformMatrix::scaleMatrix(float x, float y, float z) {
     matrix->setValue(0, 0, x);
     matrix->setValue(1, 1, y);
     matrix->setValue(2, 2, z);
+    matrix->setValue(3,3,1.0f);
     
     return matrix;
 }
