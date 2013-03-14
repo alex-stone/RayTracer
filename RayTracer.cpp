@@ -209,8 +209,6 @@ Color* RayTracer::specularValue(Light* light, Vector* viewDir, Vector* reflectDi
     Color* returnColor = new Color();
     Color* lightColor = light->getColor();
  
-    //iewDir->setZ(-viewDir->getZ());
-
     float intensity = pow( std::max( reflectDir->dot(viewDir), 0.0f), sp);
 
     returnColor->setR(lightColor->getR() * ks->getR() * intensity);
